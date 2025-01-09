@@ -126,7 +126,7 @@ const TestimonialCarousel = () => {
         onTouchEnd={handleTouchEnd}
       >
         <div className="p-8">
-          {testimonials.length > 0 && (
+          {testimonials && testimonials.length > 0 && (
             <div className="flex flex-col md:flex-row items-center gap-8 transition-opacity duration-300">
               <div className="w-32 h-32 flex-shrink-0">
                 <img
@@ -144,7 +144,7 @@ const TestimonialCarousel = () => {
           )}
         </div>
 
-        {testimonials.length > 1 && (
+        {testimonials && testimonials.length > 1 && (
           <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-4">
             <button
               onClick={handlePrev}
