@@ -9,7 +9,8 @@ import PopularProduct from "../Componets/PopularProduct";
 import DeleteProductButton from "../Componets/admin/DeleteProductButton";
 import WhatsappContectButton from "../Componets/WhatsappContectButton";
 import SendRequirementButton from "../Componets/SendRequirementButton";
-
+import Loading from "../Componets/Loading";
+import ReactImageMagnify from "react-image-magnify";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState();
@@ -53,12 +54,29 @@ const ProductDetail = () => {
         <div className="max-w-4xl mt-4 mx-auto p-6 bg-white shadow-lg rounded-lg">
           <div className="flex flex-col lg:flex-row">
             <div className="flex-1">
-            <img
-    src={product.imageUrl}
-    alt={product.name}
-    className="w-full h-96 object-cover"  // Fixed height for the initial image
-  />
-             
+              <ReactImageMagnify
+                {...{
+                  smallImage: {
+                    alt: product.name,
+                    isFluidWidth: true,
+                    src: product.imageUrl,
+                  },
+                  largeImage: {
+                    src: product.imageUrl,
+                    width: 900,
+                    height: 600,
+                  },
+                  enlargedImageContainerDimensions: {
+                    width: "150%",
+                    height: "150%",
+                  },
+                  isHintEnabled: true,
+                  shouldUsePositiveSpaceLens: true,
+                }}
+                className="lg:block hidden"
+              />
+
+              <img src={product.imageUrl} className="block lg:hidden flex-1" />
             </div>
             <div className="flex-1 lg:pl-6 mt-6 lg:mt-0">
               <h1 className="text-3xl font-bold mb-4 text-gray-800">
