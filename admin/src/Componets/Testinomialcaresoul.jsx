@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import 'tailwindcss/tailwind.css';
-import { Modal, Button, Form, Input, Upload, Rate } from 'antd';
+import { Modal, Button, Form, Input, Upload } from 'antd';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { userAtom } from '../Atoms/userAtom';
 import { storeReview, getAllReviews } from '../backend/manageRewiew';
@@ -14,20 +14,23 @@ const TestimonialCarousel = () => {
     const user = useRecoilValue(userAtom);
     const [modalVisible, setModalVisible] = useState(false);
     const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [isReviewAdded, setIsReviewAdded] = useState(false);
 
     useEffect(() => {
         async function fetchReviews() {
-            if (!testimonials) {
-                try {
-                    const reviews = await getAllReviews();
-                    setTestimonials(reviews);
-                } catch (error) {
-                    console.error('Error fetching reviews:', error);
-                }
+            setLoading(true);
+            try {
+                const reviews = await getAllReviews();
+                setTestimonials(reviews);
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+            } finally {
+                setLoading(false);
             }
         }
         fetchReviews();
-    }, [testimonials, setTestimonials]);
+    }, [setTestimonials]);
 
     const handleModalOpen = () => {
         setModalVisible(true);
@@ -42,6 +45,7 @@ const TestimonialCarousel = () => {
             await storeReview(values, file);
             const updatedReviews = await getAllReviews();
             setTestimonials(updatedReviews);
+            setIsReviewAdded(true); // Trigger the animation
             setModalVisible(false);
         } catch (error) {
             console.error('Error submitting review:', error);
@@ -53,13 +57,15 @@ const TestimonialCarousel = () => {
     };
 
     return (
-        <div className="container mx-auto py-10 ">
-            <div className="flex justify-center">
-                <div className="w-full ">
-                    <div className="bg-white shadow-lg rounded-lg p-8 text-center relative">
-                        <h5 className="font-bold mb-6 text-3xl">
-                            What our <span className='text-blue-600'>clients</span> are saying <span className='text-blue-600'>about us</span>.
-                        </h5>
+        <div className="container mx-auto py-16 px-4">
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="text-center">
+                    <h2 className="text-4xl font-bold text-gray-800 mb-8">
+                        What our <span className="text-blue-500">clients</span> are saying
+                    </h2>
+                    <div className="bg-gray-100 shadow-lg rounded-lg p-8">
                         <Carousel
                             showThumbs={false}
                             showStatus={false}
@@ -67,57 +73,48 @@ const TestimonialCarousel = () => {
                             autoPlay
                             interval={5000}
                             transitionTime={600}
-                            renderArrowPrev={(clickHandler, hasPrev, labelPrev) =>
-                                hasPrev && (
-                                    <button
-                                        type="button"
-                                        onClick={clickHandler}
-                                        title={labelPrev}
-                                        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-opacity-50 hover:bg-opacity-100 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center focus:outline-none shadow-lg"
-                                        style={{ zIndex: 2, marginLeft: '10px' }}
-                                    >
-                                        &larr;
-                                    </button>
-                                )
-                            }
-                            renderArrowNext={(clickHandler, hasNext, labelNext) =>
-                                hasNext && (
-                                    <button
-                                        type="button"
-                                        onClick={clickHandler}
-                                        title={labelNext}
-                                        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-opacity-50 hover:bg-opacity-100 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center focus:outline-none shadow-lg"
-                                        style={{ zIndex: 2, marginRight: '10px' }}
-                                    >
-                                        &rarr;
-                                    </button>
-                                )
-                            }
                             className="testimonial-carousel"
                         >
-                            {testimonials && testimonials.map((testimonial, index) => (
-                                <div key={index} className="relative text-gray-800 bg-[#eef9ff] rounded-lg p-8 flex flex-col md:flex-row items-center shadow-md hover:shadow-xl transition-shadow duration-300 mx-4" style={{ height: '400px' }}>
-                                    <div className="flex-shrink-0 bg-blue-200 text-black p-4 rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105 flex flex-col items-center md:items-start">
-                                        <img src={testimonial.photoUrl} alt={testimonial.name} className="w-24 h-24  mb-4" />
-                                        <h6 className="mt-4 font-semibold">{testimonial.name}</h6>
-                                        <small className="block mt-1 text-gray-800">{testimonial.companyName}</small>
+                            {testimonials &&
+                                testimonials.map((testimonial, index) => (
+                                    <div
+                                        key={index}
+                                        className="bg-white shadow-md rounded-lg p-6 md:p-10 flex flex-col md:flex-row items-center md:items-start transition-transform transform hover:scale-105 duration-300"
+                                    >
+                                        <div className="w-32 h-32 flex-shrink-0 mb-4 md:mb-0">
+                                            <img
+                                                src={testimonial.photoUrl}
+                                                alt={testimonial.name}
+                                                className="rounded-full w-full h-full object-cover border-4 border-blue-500"
+                                            />
+                                        </div>
+                                        <div className="md:ml-8 text-center md:text-left">
+                                            <h4 className="text-xl font-semibold text-blue-500 mb-2">
+                                                {testimonial.name}
+                                            </h4>
+                                            <p className="text-sm text-gray-600 mb-4">
+                                                {testimonial.companyName}
+                                            </p>
+                                            <p className="text-gray-700">{testimonial.description}</p>
+                                        </div>
                                     </div>
-                                    <div className="mt-6 md:mt-0 md:ml-12 text-center md:text-left">
-                                        <p className="text-xl font-light leading-relaxed">"{testimonial.description}"</p>
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
                         </Carousel>
                         <Button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 focus:outline-none focus:shadow-outline transition-colors duration-300"
+                            className="mt-8 py-3 px-6 text-lg font-semibold rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg hover:opacity-90"
+                            type="primary"
                             onClick={handleModalOpen}
-                            style={{  marginTop: '3em' }}
                         >
                             Give Review
                         </Button>
                     </div>
                 </div>
-            </div>
+            )}
+            {isReviewAdded && (
+                <div className="fixed bottom-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg animate__animated animate__fadeInUp">
+                    Review Added Successfully!
+                </div>
+            )}
             <ReviewModal
                 visible={modalVisible}
                 onCancel={handleModalClose}
@@ -128,21 +125,16 @@ const TestimonialCarousel = () => {
     );
 };
 
-const { TextArea } = Input;
-
 const ReviewModal = ({ visible, onCancel, onSubmit, onUpload }) => {
     const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
 
     const handleOk = async () => {
         try {
-            setLoading(true);
             const values = await form.validateFields();
-            await onSubmit(values);
+            onSubmit(values);
             form.resetFields();
-            setLoading(false);
         } catch (errorInfo) {
-            setLoading(false);
+            console.error('Failed:', errorInfo);
         }
     };
 
@@ -150,39 +142,32 @@ const ReviewModal = ({ visible, onCancel, onSubmit, onUpload }) => {
         <Modal
             title="Submit Review"
             visible={visible}
+            onOk={handleOk}
             onCancel={onCancel}
-            destroyOnClose
-            footer={[
-                <Button key="back" onClick={onCancel}>
-                    Cancel
-                </Button>,
-                <Button key="submit" type="primary" onClick={handleOk}>
-                    Submit
-                </Button>,
-            ]}
+            footer={null}
+            className="rounded-lg"
         >
             <Form form={form} name="review-form">
-                {loading && <Loading />}
                 <Form.Item
                     label="Name"
                     name="name"
                     rules={[{ required: true, message: 'Please input your name!' }]}
                 >
-                    <Input />
+                    <Input className="p-3 border rounded-md w-full focus:outline-none" />
                 </Form.Item>
                 <Form.Item
                     label="Company Name"
                     name="companyName"
                     rules={[{ required: true, message: 'Please input your company name!' }]}
                 >
-                    <Input />
+                    <Input className="p-3 border rounded-md w-full focus:outline-none" />
                 </Form.Item>
                 <Form.Item
                     label="Description"
                     name="description"
                     rules={[{ required: true, message: 'Please input your description!' }]}
                 >
-                    <TextArea />
+                    <Input.TextArea className="p-3 border rounded-md w-full focus:outline-none" />
                 </Form.Item>
                 <Form.Item
                     label="Photo"
@@ -190,10 +175,20 @@ const ReviewModal = ({ visible, onCancel, onSubmit, onUpload }) => {
                     rules={[{ required: true, message: 'Please upload your photo!' }]}
                 >
                     <Upload beforeUpload={() => false} onChange={onUpload}>
-                        <Button>Upload</Button>
+                        <Button className="bg-gradient-to-r from-green-400 to-teal-500 text-white">
+                            Upload Photo
+                        </Button>
                     </Upload>
                 </Form.Item>
-               
+                <Form.Item className="text-center">
+                    <Button
+                        type="primary"
+                        className="w-full py-3 rounded-md bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md hover:opacity-90"
+                        onClick={handleOk}
+                    >
+                        Submit Feedback
+                    </Button>
+                </Form.Item>
             </Form>
         </Modal>
     );

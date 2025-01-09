@@ -6,12 +6,19 @@ import { FaRegHandshake } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 
 const About = () => {
+  /**
+   * Scrolls the window to the top of the page with a smooth animation.
+   */
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   useEffect(() => {
     scrollToTop()
   }, [])
+  const [isExpanded, setIsExpanded] = useState(false);
+  const handleToggle = () => {
+    setIsExpanded((prev) => !prev);
+  };
 
   const { title, description, keywords } = seoData.about;
 
@@ -47,137 +54,172 @@ const About = () => {
   return (
     <>
       <SEO title={title} description={description} keywords={keywords} />
-      <br />
 
-      <section className="bg-gray-100 py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">About Us</h1>
 
-            <div className="text-gray-700 text-lg leading-relaxed mb-6">
-              <p>
-                Located in Jamnagar (Gujarat), <strong>Shashvat Brass Industries</strong> is one of the top manufacturers and suppliers of brass products in India.
-                The company started its operation in the year 1998 and now, it is working on a large scale supplying its products to every corner of the nation.
-                We are in this industry for more than 2 decades and have mastered every single aspect of our business. We are capable of understanding the exact
-                requirements of our customers and fulfilling them in the best way possible.
-              </p>
-              <p className="mt-4">
-                At Shashvat Brass Industries, we offer world-class brass flare fittings, brass anchors, brass inserts, brass pipe fittings, brass hardware fittings,
-                brass mixer grinders, and many more. With a wide assortment of brass products, we have made it easy for our customers to choose the suitable one as per their requirements.
-                Shashvat Brass Industries is uniquely positioned to handle small projects as well as big projects with the same level of attention to client requirements,
-                cost-effectiveness, and quality.
-              </p>
-              <p className="mt-4">
-                We have a state-of-the-art infrastructure where all of our business activities including manufacturing, quality analysis, material handling, warehousing,
-                order fulfillment, etc. are adroitly managed by our skilled and experienced employees. Our quality control experts conduct strict quality checks of our
-                manufactured products. They work with utmost sincerity to bring products with zero manufacturing defects.
-              </p>
-              <p className="mt-4">
-                Our company's guiding principles and our industry expertise allow us to grow successfully establishing a distinct place in the industry.
-                We ensure to serve all of our customers across the nation with the special attention they deserve.
-              </p>
-            </div>
-            <div className="overflow-x-auto mx-4 sm:mx-6 lg:mx-20">
-  <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-    <tbody>
-      <tr className="bg-gray-100 hover:bg-gray-200 transition duration-200">
-        <th className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm font-semibold text-gray-900 border-b border-gray-200">
-          Nature of Business
-        </th>
-        <td className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm text-gray-700 border-b border-gray-200">
-          Manufacturers, Wholesaler, Trader
-        </td>
-      </tr>
-      <tr className="hover:bg-gray-200 transition duration-200">
-        <th className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm font-semibold text-gray-900 border-b border-gray-200">
-          Number of Employees
-        </th>
-        <td className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm text-gray-700 border-b border-gray-200">
-          12
-        </td>
-      </tr>
-      <tr className="bg-gray-100 hover:bg-gray-200 transition duration-200">
-        <th className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm font-semibold text-gray-900 border-b border-gray-200">
-          Year of Establishment
-        </th>
-        <td className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm text-gray-700 border-b border-gray-200">
-          1989
-        </td>
-      </tr>
-      <tr className="hover:bg-gray-200 transition duration-200">
-        <th className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm font-semibold text-gray-900 border-b border-gray-200">
-          Market Covered
-        </th>
-        <td className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm text-gray-700 border-b border-gray-200">
-          India
-        </td>
-      </tr>
-      <tr className="bg-gray-100 hover:bg-gray-200 transition duration-200">
-        <th className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm font-semibold text-gray-900 border-b border-gray-200">
-          Name of Founder
-        </th>
-        <td className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm text-gray-700 border-b border-gray-200">
-          Mr. KamleshBhai Sanghani
-        </td>
-      </tr>
-      <tr className="hover:bg-gray-200 transition duration-200">
-        <th className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm font-semibold text-gray-900 border-b border-gray-200">
-          GST No
-        </th>
-        <td className="w-1/2 py-4 px-4 sm:px-6 text-left text-xs sm:text-sm text-gray-700 border-b border-gray-200">
-          24BHIPS7I90FIZI
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-          </div>
+      <section className="relative bg-blue-800 text-white">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-50"
+          style={{
+            backgroundImage:
+              "url('https://static.vecteezy.com/system/resources/thumbnails/050/680/704/small_2x/skilled-workers-performing-metal-fabrication-and-welding-in-a-modern-manufacturing-facility-photo.jpg')",
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative container mx-auto px-4 py-24">
+          <h1 className="text-5xl font-bold mb-4">Premium Brass Solutions</h1>
+          <p className="text-xl mb-8">
+            Discover our high-quality brass components, hardware, and sanitary
+            parts.
+          </p>
         </div>
       </section>
 
-      <div className="h-full w-full pt-12 p-4" style={{ backgroundColor: '#eef9ff', borderRadius: '2em' }}>
+      <div className="bg-gradient-to-r from-white to-gray-100 p-8 rounded-lg shadow-lg">
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-6 border-b-4 border-teal-500 inline-block">
+          About Us
+        </h1>
+        <div className="text-gray-800 text-lg leading-8 space-y-6">
+          {/* Paragraph 1 */}
+          <p>
+            Located in Jamnagar (Gujarat),{" "}
+            <strong className="text-teal-600">Shashvat Brass Industries</strong>{" "}
+            is one of the top manufacturers and suppliers of brass products in
+            India. Established in 1998, the company has grown into a large-scale
+            operation, delivering products across the nation. With over two
+            decades of experience, we have honed our expertise to meet and exceed
+            customer expectations with precision and excellence.
+          </p>
+
+          {/* Paragraph 2 */}
+          <p>
+            At Shashvat Brass Industries, we offer a wide range of high-quality
+            products including brass flare fittings, brass anchors, brass inserts,
+            brass pipe fittings, brass hardware fittings, and brass mixer
+            grinders. Our diverse product catalog ensures that customers find the
+            perfect solution tailored to their needs. Whether it’s a small project
+            or a large-scale endeavor, we bring the same commitment to quality,
+            cost-effectiveness, and customer satisfaction.
+          </p>
+
+          {/* Expandable Content */}
+          <div
+            className={`transition-all duration-500 overflow-hidden ${isExpanded ? "max-h-screen" : "max-h-0"
+              }`}
+          >
+            {/* Paragraph 3 */}
+            <p>
+              Our state-of-the-art infrastructure is designed to streamline every
+              aspect of our operations, from manufacturing and quality assurance
+              to material handling and order fulfillment. Skilled and experienced
+              professionals manage these processes with precision, while our
+              quality control team ensures that every product meets the highest
+              standards of excellence.
+            </p>
+
+            {/* Paragraph 4 */}
+            <p>
+              Guided by strong principles and industry expertise, Shashvat Brass
+              Industries has established a unique position in the industry. We are
+              dedicated to delivering unparalleled service and exceptional
+              products to customers across the nation, fostering long-term
+              relationships built on trust and reliability.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+  <button
+    onClick={handleToggle}
+    className="px-6 py-3 text-white bg-teal-500 rounded-full shadow-md transition duration-300 transform hover:bg-teal-600 active:bg-teal-700 animate-bounce"
+  >
+    {isExpanded ? "View Less" : "Learn More"}
+  </button>
+</div>
+
+      </div>
+
+
+      <div className="h-full w-full pt-12 p-4 bg-gradient-to-b from-blue-100">
         <div className="grid gap-14 md:grid-cols-3 md:gap-5">
           {/* Vision Card */}
-          <div className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'vision' ? 'hovered-card' : ''}`}
+          <div
+            className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'vision' ? 'hovered-card' : ''
+              }`}
             onMouseEnter={() => setHoveredValue('vision')}
-            onMouseLeave={() => setHoveredValue(null)}>
-            <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-teal-400 shadow-lg shadow-teal-500/40">
+            onMouseLeave={() => setHoveredValue(null)}
+          >
+            <div
+              className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-teal-400 shadow-lg shadow-teal-500/40"
+              style={{
+                transition: 'transform 1s ease',
+                transform: hoveredValue === 'vision' ? 'rotate(360deg)' : 'rotate(0deg)',
+              }}
+            >
               <FaEye style={{ fontSize: '2em' }} />
             </div>
             <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Vision</h1>
             <p className="px-4 text-gray-500">
-              At Shashvat Brass Industries, our vision is to be the leading global provider of high-quality brass products, recognized for our innovation, sustainability, and exceptional customer service. We aim to set industry standards through continuous improvement and technological advancements, contributing to a more efficient and sustainable future.
+              At Shashvat Brass Industries, our vision is to be the leading global
+              provider of high-quality brass products, recognized for our innovation,
+              sustainability, and exceptional customer service. We aim to set industry
+              standards through continuous improvement and technological advancements,
+              contributing to a more efficient and sustainable future.
             </p>
           </div>
 
           {/* Mission Card */}
-          <div className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'mission' ? 'hovered-card' : ''}`}
+          <div
+            className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'mission' ? 'hovered-card' : ''
+              }`}
             onMouseEnter={() => setHoveredValue('mission')}
-            onMouseLeave={() => setHoveredValue(null)}>
-            <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full shadow-lg bg-rose-500 shadow-rose-500/40">
+            onMouseLeave={() => setHoveredValue(null)}
+          >
+            <div
+              className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full shadow-lg bg-rose-500 shadow-rose-500/40"
+              style={{
+                transition: 'transform 1s ease',
+                transform: hoveredValue === 'mission' ? 'rotate(360deg)' : 'rotate(0deg)',
+              }}
+            >
               <FaRegHandshake style={{ fontSize: '2em' }} />
             </div>
-            <h1 className="text-darken mb-3  text-xl font-medium lg:px-14">Mission</h1>
+            <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Mission</h1>
             <p className="px-4 text-gray-500">
-              Our mission is to deliver superior brass products that meet the diverse needs of our customers while maintaining the highest standards of quality and craftsmanship. We are committed to fostering long-term relationships with our clients by providing reliable, sustainable, and innovative solutions. At Shashvat Brass Industries, we strive to create value for our stakeholders through ethical business practices and a dedication to excellence.
+              Our mission is to deliver superior brass products that meet the diverse
+              needs of our customers while maintaining the highest standards of quality
+              and craftsmanship. We are committed to fostering long-term relationships
+              with our clients by providing reliable, sustainable, and innovative
+              solutions. At Shashvat Brass Industries, we strive to create value for
+              our stakeholders through ethical business practices and a dedication to
+              excellence.
             </p>
           </div>
 
           {/* Core Values Card */}
-          <div className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'coreValues' ? 'hovered-card' : ''}`}
+          <div
+            className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'coreValues' ? 'hovered-card' : ''
+              }`}
             onMouseEnter={() => setHoveredValue('coreValues')}
-            onMouseLeave={() => setHoveredValue(null)}>
-            <div className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-amber-400 shadow-lg shadow-amber-500/40">
+            onMouseLeave={() => setHoveredValue(null)}
+          >
+            <div
+              className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-amber-400 shadow-lg shadow-amber-500/40"
+              style={{
+                transition: 'transform 2s ease',
+                transform: hoveredValue === 'coreValues' ? 'rotate(360deg)' : 'rotate(0deg)',
+              }}
+            >
               <SiReact style={{ fontSize: '2em' }} />
             </div>
             <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Core Values</h1>
             <div className="text-left px-4">
               {coreValues.map((value, index) => (
                 <div key={index} className={`${index !== 0 ? 'mt-4' : ''}`}>
-                  <p className="text-gray-500 font-semibold cursor-pointer"
+                  <p
+                    className="text-gray-500 font-semibold cursor-pointer"
                     onMouseEnter={() => setHoveredValue(`coreValue${index}`)}
-                    onMouseLeave={() => setHoveredValue(null)}>
+                    onMouseLeave={() => setHoveredValue(null)}
+                  >
                     {index + 1}) {value.title}
                   </p>
                   {hoveredValue === `coreValue${index}` && (
@@ -193,58 +235,69 @@ const About = () => {
         </div>
       </div>
 
-      <section className="text-gray-700 body-font">
-        <div className="flex justify-center mt-10 text-4xl font-regular">
-          Why Shashvat?
+      <section className="bg-gradient-to-b from-white to-gray-100 py-16">
+        <div className="text-center">
+          <h1 className="text-5xl font-extrabold text-gray-800 mb-6">
+            Why <span className="text-teal-500">Shashvat?</span>
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover what makes us stand out in the industry and why our customers trust us for excellence and reliability.
+          </p>
         </div>
-        <div className="container px-5 py-12 mx-auto">
-          <div className="flex flex-wrap text-center justify-center">
-            <div className="p-4 md:w-1/4 sm:w-1/2">
-              <div className="px-4 py-6 transform transition duration-500 hover:scale-110">
-                <div className="flex justify-center">
-                  <img
-                    src="https://image3.jdomni.in/banner/13062021/58/97/7C/E53960D1295621EFCB5B13F335_1623567851299.png?output-format=webp"
-                    className="w-32 mb-3"
-                    alt="Latest Milling Machinery"
-                  />
-                </div>
-                <h2 className="title-font font-regular text-2xl text-gray-900">Latest Milling Machinery</h2>
+
+        <div className="container mx-auto px-6 mt-12">
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {/* Feature 1 */}
+            <div className="group relative text-center transform transition duration-500 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-500 opacity-20 rounded-full blur-xl"></div>
+              <div className="relative z-10">
+                <img
+                  src="https://image3.jdomni.in/banner/13062021/58/97/7C/E53960D1295621EFCB5B13F335_1623567851299.png?output-format=webp"
+                  alt="Latest Milling Machinery"
+                  className="w-21 h-20 mx-auto mb-4"
+                />
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Latest Milling Machinery
+                </h2>
               </div>
             </div>
-            <div className="p-4 md:w-1/4 sm:w-1/2">
-              <div className="px-4 py-6 transform transition duration-500 hover:scale-110">
-                <div className="flex justify-center">
-                  <img
-                    src="https://image2.jdomni.in/banner/13062021/3E/57/E8/1D6E23DD7E12571705CAC761E7_1623567977295.png?output-format=webp"
-                    className="w-32 mb-3"
-                    alt="Reasonable Rates"
-                  />
-                </div>
-                <h2 className="title-font font-regular text-2xl text-gray-900">Reasonable Rates</h2>
+
+            {/* Feature 2 */}
+            <div className="group relative text-center transform transition duration-500 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-500 opacity-20 rounded-full blur-xl"></div>
+              <div className="relative z-10">
+                <img
+                  src="https://image2.jdomni.in/banner/13062021/3E/57/E8/1D6E23DD7E12571705CAC761E7_1623567977295.png?output-format=webp"
+                  alt="Reasonable Rates"
+                  className="w-21 h-20 mx-auto mb-4"
+                />
+                <h2 className="text-2xl font-bold text-gray-800">Reasonable Rates</h2>
               </div>
             </div>
-            <div className="p-4 md:w-1/4 sm:w-1/2">
-              <div className="px-4 py-6 transform transition duration-500 hover:scale-110">
-                <div className="flex justify-center">
-                  <img
-                    src="https://image3.jdomni.in/banner/13062021/16/7E/7E/5A9920439E52EF309F27B43EEB_1623568010437.png?output-format=webp"
-                    className="w-32 mb-3"
-                    alt="Time Efficiency"
-                  />
-                </div>
-                <h2 className="title-font font-regular text-2xl text-gray-900">Time Efficiency</h2>
+
+            {/* Feature 3 */}
+            <div className="group relative text-center transform transition duration-500 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-20 rounded-full blur-xl"></div>
+              <div className="relative z-10">
+                <img
+                  src="https://image3.jdomni.in/banner/13062021/16/7E/7E/5A9920439E52EF309F27B43EEB_1623568010437.png?output-format=webp"
+                  alt="Time Efficiency"
+                  className="w-21 h-20 mx-auto mb-4"
+                />
+                <h2 className="text-2xl font-bold text-gray-800">Time Efficiency</h2>
               </div>
             </div>
-            <div className="p-4 md:w-1/4 sm:w-1/2">
-              <div className="px-4 py-6 transform transition duration-500 hover:scale-110">
-                <div className="flex justify-center">
-                  <img
-                    src="https://image3.jdomni.in/banner/13062021/EB/99/EE/8B46027500E987A5142ECC1CE1_1623567959360.png?output-format=webp"
-                    className="w-32 mb-3"
-                    alt="Expertise in Industry"
-                  />
-                </div>
-                <h2 className="title-font font-regular text-2xl text-gray-900">Expertise in Industry</h2>
+
+            {/* Feature 4 */}
+            <div className="group relative text-center transform transition duration-500 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-lime-500 opacity-20 rounded-full blur-xl"></div>
+              <div className="relative z-10">
+                <img
+                  src="https://image3.jdomni.in/banner/13062021/EB/99/EE/8B46027500E987A5142ECC1CE1_1623567959360.png?output-format=webp"
+                  alt="Expertise in Industry"
+                  className="w-21 h-20 mx-auto mb-4"
+                />
+                <h2 className="text-2xl font-bold text-gray-800">Expertise in Industry</h2>
               </div>
             </div>
           </div>

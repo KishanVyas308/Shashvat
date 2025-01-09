@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+
 import ProductPage from "./pages/ProductPage";
 import Productdetail from "./pages/Productdetail";
 import CheckIsAdmin from "./middlewares/CheckIsAdmin";
@@ -39,7 +39,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+         
               <Route path="/products" element={<ProductPage />} />
               <Route path="/productdetail/:id" element={<Productdetail />} />
               {/* user */}
