@@ -19,6 +19,23 @@ const Contact = () => {
   return (
     <div>
         <SEO title={title} description={description} keywords={keywords}  />
+        <section className="relative bg-blue-800 text-white">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-50"
+          style={{
+            backgroundImage:
+              "url('https://static.vecteezy.com/system/resources/thumbnails/007/067/602/small_2x/businessman-shows-outstretched-hand-with-social-icon-on-virtual-screen-contact-us-free-photo.jpg')",
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative container mx-auto px-4 py-24">
+          <h1 className="text-5xl font-bold mb-4">Contact Us</h1>
+          <p className="text-xl mb-8">
+            Discover our high-quality brass components, hardware, and sanitary
+            parts.
+          </p>
+        </div>
+      </section>  
       <section className="bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row">

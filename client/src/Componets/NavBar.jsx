@@ -82,8 +82,67 @@ function NavBar(props) {
             <ListItemText primary="Contact Us" />
           </ListItemButton>
         </ListItem>
-       
+        {user === null ? (
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{ textAlign: "center" }}
+              onClick={() => navigate("/login")}
+            >
+              <ListItemText primary="Login" />
+            </ListItemButton>
+          </ListItem>
+        ) : (
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{ textAlign: "center" }}
+              onClick={() => setUser(null)}
+            >
+              <ListItemText primary="Log-Out" />
+            </ListItemButton>
+          </ListItem>
+        )}
 
+        {user !== null && user.isAdmin && (
+          <>
+            <Divider />
+            <Typography
+              sx={{
+                bgcolor: "white",
+                padding: "10px",
+              }}
+            >
+              Admin
+            </Typography>
+            <Divider />
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{ textAlign: "center" }}
+                onClick={() => navigate("/admin/manage-products")}
+              >
+                <ListItemText primary="Manage Products" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{ textAlign: "center" }}
+                onClick={() => navigate("/admin/customer-reviews")}
+              >
+                <ListItemText primary="Reviews" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{ textAlign: "center" }}
+                onClick={() => navigate("/admin/client-requirements")}
+              >
+                <ListItemText primary="Requests" />
+                {isNewRequrimentRequest && (
+                  <div className="bg-red-500 rounded-full mb-4 h-2 w-2 ml-1"></div>
+                )}
+              </ListItemButton>
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
@@ -96,16 +155,8 @@ function NavBar(props) {
       <Box sx={{ height: { xs: "50px", sm: "100px" } }}></Box>
       <CssBaseline />
       <HideOnScroll {...props}>
-        <AppBar component="nav" sx={{ bgcolor: "white" }}>
+        <AppBar component="nav" sx={{ bgcolor: "#f6f3e7" }}>
           <Toolbar sx={{ justifyContent: "space-between" }}>
-            <IconButton
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" }, color: "black" }}
-            >
-              <MenuIcon />
-            </IconButton>
             <Link to={"/"}>
               <Typography
                 component="img"
@@ -156,10 +207,54 @@ function NavBar(props) {
                 >
                   Contact Us
                 </Button>
-             
+               
               </Box>
-             
+              {user !== null && user.isAdmin && (
+                <>
+                  <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                  <Box
+                    sx={{
+                      display: { xs: "none", sm: "flex" },
+                      alignItems: "center",
+                    }}
+                  >
+                    <Button
+                      variant="text"
+                      sx={{ color: "black", margin: "5px" }}
+                      onClick={() => navigate("/admin/manage-products")}
+                    >
+                      Manage Products
+                    </Button>
+                    <Button
+                      variant="text"
+                      sx={{ color: "black", margin: "5px" }}
+                      onClick={() => navigate("/admin/customer-reviews")}
+                    >
+                      Reviews
+                    </Button>
+                    <Button
+                      variant="text"
+                      sx={{ color: "black", margin: "5px" }}
+                      onClick={() => navigate("/admin/client-requirements")}
+                    >
+                      Requests
+                      {isNewRequrimentRequest && (
+                        <div className="bg-red-500 rounded-full mb-4 h-2 w-2 ml-1"></div>
+                      )}
+                    </Button>
+                  </Box>
+                </>
+              )}
             </Stack>
+            
+            <IconButton
+              aria-label="open drawer"
+              edge="end"
+              onClick={handleDrawerToggle}
+              sx={{ display: { sm: "none" }, color: "black" }}
+            >
+              <MenuIcon />
+            </IconButton>
           </Toolbar>
         </AppBar>
       </HideOnScroll>
@@ -169,15 +264,14 @@ function NavBar(props) {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
           sx={{
             display: { xs: "block", sm: "none" },
             "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-
               width: drawerWidth,
+              backgroundColor: "#f6f3e7",
+              color: "black",
+              boxSizing: "border-box",
+              border: "none",
             },
           }}
         >
@@ -189,26 +283,18 @@ function NavBar(props) {
 }
 
 function HideOnScroll(props) {
-  const { children, window } = props;
-  const trigger = useScrollTrigger({
-    target: window ? window() : undefined,
-  });
+  const { children } = props;
+  const trigger = useScrollTrigger();
 
   return (
     <Slide appear={false} direction="down" in={!trigger}>
-            {children}
+      {children}
     </Slide>
   );
 }
-
-HideOnScroll.propTypes = {
-  children: PropTypes.element.isRequired,
-  window: PropTypes.func,
-};
 
 NavBar.propTypes = {
   window: PropTypes.func,
 };
 
 export default NavBar;
-
