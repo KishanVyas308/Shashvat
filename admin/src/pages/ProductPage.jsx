@@ -39,7 +39,7 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
           isHovered ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <h2 className="text-2xl font-bold">{product.name}</h2>
+        
         <ul className="space-y-2">
           {Object.entries(product.details || {}).map(([key, value]) => (
             <li key={key} className="text-md">
@@ -64,6 +64,11 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
         }`}
       >
         <FiChevronRight size={20} />
+      </div>
+
+        {/* Product Title */}
+        <div className="absolute bottom-0 left-0 w-full bg-blue-500 text-white text-center py-2">
+        <h2 className="text-xl font-bold">{product.name}</h2>
       </div>
 
       {/* Admin Delete Button */}
