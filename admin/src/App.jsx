@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import ProductPage from "./pages/ProductPage";
 import Productdetail from "./pages/Productdetail";
@@ -31,6 +33,15 @@ function App() {
     <HelmetProvider>
       <RecoilRoot>
         <div className="App">
+        <ToastContainer   position="bottom-right" // Set toast position to bottom-right
+        autoClose={3000 }// Auto close after 3 seconds (optional)
+        hideProgressBar={false} // Show or hide progress bar (optional)
+        newestOnTop={false} // Display newest toast on top
+        closeOnClick // Allow to close the toast on click
+        rtl={false} // Set right-to-left if needed (optional)
+        pauseOnFocusLoss // Pause toast timer when the window loses focus
+        draggable // Allow dragging of the toast
+        pauseOnHover />
           <Router>
             <NavBar />
             {isLoading ? <Loading /> : <></>}

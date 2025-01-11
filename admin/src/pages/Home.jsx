@@ -18,6 +18,7 @@ import SEO from '../Componets/SEO';
 import seoData from '../Componets/Seos';
 import Testinomialcaresoul from "../Componets/Testinomialcaresoul";
 import CounterContainer from "../Componets/CounterContainer";
+// import ManufacturingProcess from "../Componets/ManufacturingProcess";
 const Home = () => {
   const [products, setProducts] = useRecoilState(productAtom);
 
@@ -54,6 +55,7 @@ const Home = () => {
       <ProductList />
       <InfoSection />
       <PopularProduct />
+      {/* <ManufacturingProcess/> */}
       <CounterContainer />
       <Testinomialcaresoul />
       {/* <Testinomial /> */}
