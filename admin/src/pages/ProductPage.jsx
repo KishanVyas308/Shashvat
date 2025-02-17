@@ -59,6 +59,7 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
       </button>
     </div>
 
+
     {/* Product Name Always Visible at Bottom, Moves Up on Hover */}
     <div
       className={`absolute bottom-0 left-0 w-full bg-blue-700 bg-opacity-80 text-white text-center py-2 font-semibold text-lg sm:text-base md:text-lg transition-all duration-500 ${
@@ -76,6 +77,7 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
       }`}
     >
       <FiChevronRight size={20} />
+
     </div>
 
     {/* Admin Delete Button */}
