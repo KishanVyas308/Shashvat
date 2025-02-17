@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="container px-5 py-10 mx-auto flex flex-wrap justify-between">
           <div className="w-64 flex-shrink-0 mx-auto text-center md:text-left">
             <a className="flex title-font font-medium items-center justify-center text-black">
-              <img src={logo} className="mr-3" alt="Logo" style={{ height: '4em', width: '7em' }} />
+              <img src={logo} className="mr-3" alt="Logo" style={{ height: '5em', width: '7em' }} />
             </a>
           </div>
           <div className="flex-grow flex flex-wrap justify-center md:pl-20 -mb-10 md:mt-0 mt-10">

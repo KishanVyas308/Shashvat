@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { db, storage } from "./firebase";
 import { deleteObject, ref } from "firebase/storage";
+import { toast } from "react-toastify";
 
 export async function addProduct(product, imageUrl) {
   const {
@@ -22,7 +23,7 @@ export async function addProduct(product, imageUrl) {
   } = product;
 
   if (!imageUrl) {
-    alert("image is uploading! click button after few seconds.");
+   toast.error("image is uploading! click button after few seconds.");
     return;
   }
 
@@ -52,11 +53,9 @@ export async function addProduct(product, imageUrl) {
     });
   } catch (error) {
     console.log(error);
-    alert("error to add new product!!");
+    
     return;
   }
-
-  alert("product added..");
 }
 
 export async function allProduct() {
@@ -96,9 +95,9 @@ export async function deleteProduct(productId, imageUrl) {
     }
     await deleteDoc(docRef);
 
-    alert("producted deleted..");
+    toast.success("Product deleted successfully!");
   } catch (error) {
-    alert("Something went wrong");
+    toast.error("Failed to delete product. Please try again.");
   }
 }
 
@@ -122,7 +121,7 @@ export async function updateProduct(product) {
   }
 
   if (!name || !moq || !category || !size || !material) {
-    alert("Fill all required fields!!");
+   toast.error("Fill all required fields!!");
     return;
   }
 
@@ -148,9 +147,9 @@ export async function updateProduct(product) {
     ); // Use merge to update existing fields
 
   } catch (error) {
-    alert("Error updating the product!!");
+   toast.error("Failed to update product. Please try again.");
     return;
   }
 
-  alert("Product updated.");
+  toast.success("Product updated successfully!")
 }

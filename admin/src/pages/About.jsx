@@ -4,7 +4,9 @@ import seoData from '../Componets/Seos';
 import { SiReact } from "react-icons/si";
 import { FaRegHandshake } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
-
+import Lottie from 'lottie-react';
+import { motion } from "framer-motion";
+import arrowAnimation from "../Animation - 1739605311778.json"; 
 const About = () => {
   /**
    * Scrolls the window to the top of the page with a smooth animation.
@@ -56,12 +58,13 @@ const About = () => {
       <SEO title={title} description={description} keywords={keywords} />
 
 
-      <section className="relative bg-blue-800 text-white">
+      <section className="relative bg-blue-800 text-white" style={{height:'45vh'}}>
         <div
           className="absolute inset-0 bg-cover bg-center opacity-50"
           style={{
             backgroundImage:
               "url('https://static.vecteezy.com/system/resources/thumbnails/050/680/704/small_2x/skilled-workers-performing-metal-fabrication-and-welding-in-a-modern-manufacturing-facility-photo.jpg')",
+              height:'45vh'
           }}
         ></div>
         <div className="absolute inset-0 bg-black/60"></div>
@@ -84,7 +87,7 @@ const About = () => {
             Located in Jamnagar (Gujarat),{" "}
             <strong className="text-teal-600">Shashvat Brass Industries</strong>{" "}
             is one of the top manufacturers and suppliers of brass products in
-            India. Established in 1998, the company has grown into a large-scale
+            India. Established in 2019, the company has grown into a large-scale
             operation, delivering products across the nation. With over two
             decades of experience, we have honed our expertise to meet and exceed
             customer expectations with precision and excellence.
@@ -126,115 +129,130 @@ const About = () => {
             </p>
           </div>
         </div>
+        <div className="mt-10 flex flex-col items-center">
+      {/* Clickable Circular Lottie Icon */}
+      <motion.div
+        className="cursor-pointer flex items-center justify-center w-15 h-15 rounded-full bg-gray-200 shadow-lg hover:bg-gray-300 transition-all duration-300"
+        animate={{ rotate: isExpanded ? 180 : 0 }} // Rotate animation
+        transition={{ duration: 0.5 }}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <Lottie animationData={arrowAnimation} loop className="w-12 h-12" />
+      </motion.div>
 
-        <div className="mt-8 flex justify-center">
-  <button
-    onClick={handleToggle}
-    className="px-6 py-3 text-white bg-teal-500 rounded-full shadow-md transition duration-300 transform hover:bg-teal-600 active:bg-teal-700 animate-bounce"
-  >
-    {isExpanded ? "View Less" : "Learn More"}
-  </button>
-</div>
+      {/* Expanding Content */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }} // Hidden state
+        animate={{ opacity: isExpanded ? 1 : 0, y: isExpanded ? 0 : -10 }} // Fade & slide animation
+        transition={{ duration: 0.5 }}
+        className={`overflow-hidden transition-all ${
+          isExpanded ? "max-h-96" : "max-h-0"
+        } w-full`}
+      >
+      
+      </motion.div>
+    </div>
 
       </div>
-
 
       <div className="h-full w-full pt-12 p-4 bg-gradient-to-b from-blue-100">
-        <div className="grid gap-14 md:grid-cols-3 md:gap-5">
-          {/* Vision Card */}
-          <div
-            className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'vision' ? 'hovered-card' : ''
-              }`}
-            onMouseEnter={() => setHoveredValue('vision')}
-            onMouseLeave={() => setHoveredValue(null)}
-          >
-            <div
-              className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-teal-400 shadow-lg shadow-teal-500/40"
-              style={{
-                transition: 'transform 1s ease',
-                transform: hoveredValue === 'vision' ? 'rotate(360deg)' : 'rotate(0deg)',
-              }}
-            >
-              <FaEye style={{ fontSize: '2em' }} />
-            </div>
-            <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Vision</h1>
-            <p className="px-4 text-gray-500">
-              At Shashvat Brass Industries, our vision is to be the leading global
-              provider of high-quality brass products, recognized for our innovation,
-              sustainability, and exceptional customer service. We aim to set industry
-              standards through continuous improvement and technological advancements,
-              contributing to a more efficient and sustainable future.
-            </p>
-          </div>
-
-          {/* Mission Card */}
-          <div
-            className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'mission' ? 'hovered-card' : ''
-              }`}
-            onMouseEnter={() => setHoveredValue('mission')}
-            onMouseLeave={() => setHoveredValue(null)}
-          >
-            <div
-              className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full shadow-lg bg-rose-500 shadow-rose-500/40"
-              style={{
-                transition: 'transform 1s ease',
-                transform: hoveredValue === 'mission' ? 'rotate(360deg)' : 'rotate(0deg)',
-              }}
-            >
-              <FaRegHandshake style={{ fontSize: '2em' }} />
-            </div>
-            <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Mission</h1>
-            <p className="px-4 text-gray-500">
-              Our mission is to deliver superior brass products that meet the diverse
-              needs of our customers while maintaining the highest standards of quality
-              and craftsmanship. We are committed to fostering long-term relationships
-              with our clients by providing reliable, sustainable, and innovative
-              solutions. At Shashvat Brass Industries, we strive to create value for
-              our stakeholders through ethical business practices and a dedication to
-              excellence.
-            </p>
-          </div>
-
-          {/* Core Values Card */}
-          <div
-            className={`rounded-xl bg-white p-6 text-center shadow-xl transform transition duration-300 ${hoveredValue === 'coreValues' ? 'hovered-card' : ''
-              }`}
-            onMouseEnter={() => setHoveredValue('coreValues')}
-            onMouseLeave={() => setHoveredValue(null)}
-          >
-            <div
-              className="mx-auto flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-amber-400 shadow-lg shadow-amber-500/40"
-              style={{
-                transition: 'transform 2s ease',
-                transform: hoveredValue === 'coreValues' ? 'rotate(360deg)' : 'rotate(0deg)',
-              }}
-            >
-              <SiReact style={{ fontSize: '2em' }} />
-            </div>
-            <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Core Values</h1>
-            <div className="text-left px-4">
-              {coreValues.map((value, index) => (
-                <div key={index} className={`${index !== 0 ? 'mt-4' : ''}`}>
-                  <p
-                    className="text-gray-500 font-semibold cursor-pointer"
-                    onMouseEnter={() => setHoveredValue(`coreValue${index}`)}
-                    onMouseLeave={() => setHoveredValue(null)}
-                  >
-                    {index + 1}) {value.title}
-                  </p>
-                  {hoveredValue === `coreValue${index}` && (
-                    <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-left max-w-md mt-2">
-                      <h2 className="font-bold">{value.title}</h2>
-                      <p className="text-gray-600 mt-2">{value.description}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+  <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-3 md:gap-5">
+    {/* Vision Card */}
+    <div
+      className={`rounded-xl bg-white p-6 text-center md:text-left shadow-xl transform transition duration-300 ${
+        hoveredValue === 'vision' ? 'hovered-card' : ''
+      }`}
+      onMouseEnter={() => setHoveredValue('vision')}
+      onMouseLeave={() => setHoveredValue(null)}
+    >
+      <div
+        className="mx-auto md:mx-0 flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-teal-400 shadow-lg shadow-teal-500/40"
+        style={{
+          transition: 'transform 1s ease',
+          transform: hoveredValue === 'vision' ? 'rotate(360deg)' : 'rotate(0deg)',
+        }}
+      >
+        <FaEye style={{ fontSize: '2em' }} />
       </div>
+      <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Vision</h1>
+      <p className="px-4 md:px-0 text-gray-500">
+        At Shashvat Brass Industries, our vision is to be the leading global
+        provider of high-quality brass products, recognized for our innovation,
+        sustainability, and exceptional customer service. We aim to set industry
+        standards through continuous improvement and technological advancements,
+        contributing to a more efficient and sustainable future.
+      </p>
+    </div>
 
+    {/* Mission Card */}
+    <div
+      className={`rounded-xl bg-white p-6 text-center md:text-left shadow-xl transform transition duration-300 ${
+        hoveredValue === 'mission' ? 'hovered-card' : ''
+      }`}
+      onMouseEnter={() => setHoveredValue('mission')}
+      onMouseLeave={() => setHoveredValue(null)}
+    >
+      <div
+        className="mx-auto md:mx-0 flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full shadow-lg bg-rose-500 shadow-rose-500/40"
+        style={{
+          transition: 'transform 1s ease',
+          transform: hoveredValue === 'mission' ? 'rotate(360deg)' : 'rotate(0deg)',
+        }}
+      >
+        <FaRegHandshake style={{ fontSize: '2em' }} />
+      </div>
+      <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Mission</h1>
+      <p className="px-4 md:px-0 text-gray-500">
+        Our mission is to deliver superior brass products that meet the diverse
+        needs of our customers while maintaining the highest standards of quality
+        and craftsmanship. We are committed to fostering long-term relationships
+        with our clients by providing reliable, sustainable, and innovative
+        solutions. At Shashvat Brass Industries, we strive to create value for
+        our stakeholders through ethical business practices and a dedication to
+        excellence.
+      </p>
+    </div>
+
+    {/* Core Values Card */}
+    <div
+      className={`rounded-xl bg-white p-6 text-center md:text-left shadow-xl transform transition duration-300 ${
+        hoveredValue === 'coreValues' ? 'hovered-card' : ''
+      }`}
+      onMouseEnter={() => setHoveredValue('coreValues')}
+      onMouseLeave={() => setHoveredValue(null)}
+    >
+      <div
+        className="mx-auto md:mx-0 flex h-16 w-16 -translate-y-12 transform items-center justify-center rounded-full bg-amber-400 shadow-lg shadow-amber-500/40"
+        style={{
+          transition: 'transform 2s ease',
+          transform: hoveredValue === 'coreValues' ? 'rotate(360deg)' : 'rotate(0deg)',
+        }}
+      >
+        <SiReact style={{ fontSize: '2em' }} />
+      </div>
+      <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Core Values</h1>
+      <div className="text-left px-4 md:px-0">
+        {coreValues.map((value, index) => (
+          <div key={index} className={`${index !== 0 ? 'mt-4' : ''}`}>
+            <p
+              className="text-gray-500 font-semibold cursor-pointer"
+              onMouseEnter={() => setHoveredValue(`coreValue${index}`)}
+              onMouseLeave={() => setHoveredValue(null)}
+            >
+              {index + 1}) {value.title}
+            </p>
+            {hoveredValue === `coreValue${index}` && (
+              <div className="absolute bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-left max-w-md mt-2">
+                <h2 className="font-bold">{value.title}</h2>
+                <p className="text-gray-600 mt-2">{value.description}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
       <section className="bg-gradient-to-b from-white to-gray-100 py-16">
         <div className="text-center">
           <h1 className="text-5xl font-extrabold text-gray-800 mb-6">
