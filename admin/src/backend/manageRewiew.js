@@ -1,6 +1,7 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { db, storage } from "./firebase";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { toast } from "react-toastify";
 
 
 export async function storeReview(review, imageFile) {
@@ -28,9 +29,9 @@ export async function storeReview(review, imageFile) {
     });
 
 
-    alert("review added..")
+    toast.success("Review added successfully!")
   } catch (error) {
-    alert("Something went wrong, Please refresh!!")
+   toast.error("Something went wrong, Please refresh!!")
    
   }
 }
@@ -76,10 +77,9 @@ export async function deleteReview(reviewId, photoUrl) {
     // Delete the review document
     await deleteDoc(docRef);
 
-  
-    alert("rewiew deleted!!")
+  toast.success("review Delete sucessful")
   } catch (error) {
     console.log(error)
-    alert("error in deleting review")
+    toast.error("error in deleting review");
   }
 }

@@ -5,7 +5,7 @@ import HeroSlider from "../Componets/HeroSlider";
 import ProductList from "../Componets/ProductList";
 import InfoSection from "../Componets/InfoSection";
 import PopularProduct from "../Componets/PopularProduct";
-import Testinomial from "../Componets/Testinomial";
+// import Testinomial from "../Componets/Testinomial";
 
 import ContactInfo from "../Componets/ContactInfo";
 import Fotter from "../Componets/Fotter";

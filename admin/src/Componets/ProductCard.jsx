@@ -12,18 +12,27 @@ const ProductCard = ({ product }) => {
 
   return (
     <div
-      className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl"
+      className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => handleProductClick(product.id)}
     >
       {/* Image Wrapper */}
       <div className="relative h-80 overflow-hidden bg-white">
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110 cursor-pointer"
-          onClick={() => handleProductClick(product.id)}
+          className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
         />
+        
+        {/* Product Name (Initially Visible) */}
+        <div
+          className={`absolute bottom-0 w-full bg-blue-800 bg-opacity-80 text-white text-center py-2 font-semibold transition-all duration-500 ease-in-out ${
+            isHovered ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {product.name}
+        </div>
       </div>
 
       {/* Product Details with Hover Effect */}
@@ -41,7 +50,7 @@ const ProductCard = ({ product }) => {
           ))}
         </ul>
         <button
-          onClick={() => handleProductClick(product.id)}
+          onClick={(e) => { e.stopPropagation(); handleProductClick(product.id); }}
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex items-center justify-center space-x-2"
         >
           <FiEye size={20} />

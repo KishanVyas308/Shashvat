@@ -9,6 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { toast } from "react-toastify";
 
 export async function addProductRequirementRequest(
   user,
@@ -26,9 +27,9 @@ export async function addProductRequirementRequest(
       isViewd: false,
     });
 
-    alert("Requirement request sended!!");
+    toast.success("Requirement request sended!!");
   } catch (error) {
-    alert("Something gose wrong!!");
+    toast.error("someThing Went Wrong!!");
   }
 }
 
@@ -89,8 +90,8 @@ export async function deleteRequirementRequest(id) {
     console.log(id);
     await deleteDoc(doc(db, "Requirements", id));
 
-    alert("Request deleted..");
+    toast.success("Request deleted..");
   } catch (error) {
-    alert("Something went wrong");
+    toast.error("Something went wrong");
   }
 }
