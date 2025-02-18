@@ -1,9 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // filepath: /d:/All-Project/Freelance/Shasvat - final/backend/src/routes/authRoute.ts
-import { Router } from 'express';
-import { register, login } from '../controller/authController';
-
-const router = Router();
-
+const express_1 = require("express");
+const authController_1 = require("../controller/authController");
+const router = (0, express_1.Router)();
 /**
  * @swagger
  * /auth/register:
@@ -37,8 +37,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.post('/register', register);
-
+router.post('/register', authController_1.register);
 /**
  * @swagger
  * /auth/login:
@@ -64,6 +63,5 @@ router.post('/register', register);
  *       500:
  *         description: Internal server error
  */
-router.post('/login', login);
-
-export default router;
+router.post('/login', authController_1.login);
+exports.default = router;
