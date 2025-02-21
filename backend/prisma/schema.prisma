@@ -24,9 +24,7 @@ model User {
   whatsAppNo String
   createdAt  DateTime @default(now())
 
-  reviews      Review[]
   products     Product[]
-  requirements Requirement[]
 }
 
 model Review {
@@ -37,9 +35,7 @@ model Review {
   img         String
   rating      Int
   createdAt   DateTime @default(now())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  isApproved  Boolean  @default(false)
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
@@ -63,7 +59,6 @@ model Product {
 
   user         User          @relation(fields: [userId], references: [id])
   reviews      Review[]
-  requirements Requirement[]
 }
 
 model Details {
@@ -80,28 +75,19 @@ model Details {
   product   Product @relation(fields: [productId], references: [id])
 }
 
-model Requirement {
-  id             String   @id @default(uuid())
-  isViewed       Boolean  @default(false)
-  category       String
-  createdAt      DateTime @default(now())
-  color          String?
-  finish         String?
-  pattern        String?
-  shape          String?
-  img            String
-  isPopular      Boolean  @default(false)
-  lastUpdatedAt  DateTime @updatedAt
-  latest         Boolean  @default(false)
-  material       String
-  moq            String
-  name           String
-  size           String
-  specificDetail String
+model Requests {
+  id       String  @id @default(uuid())
+  isViewed Boolean @default(false)
+  
+  name                String
+  email               String
+  contactNo           String
+  whatsAppNo          String?
+  companyName         String
+  description         String
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  isNewProductRequest Boolean  @default(false)
+  productId   String?
+  productName String?
 
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
 }
