@@ -89,5 +89,4 @@ model Requests {
   isNewProductRequest Boolean  @default(false)
   productId   String?
   productName String?
-
 }
