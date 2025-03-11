@@ -64,7 +64,7 @@ function NavBar(props) {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 5 }}>
         <Link to="/">
-          <img src={logo} alt="Logo" style={{ height: "4.4em" }} />
+          <img src={logo} alt="Logo" style={{ height: "4.4em" , marginBottom:'4px'}} />
         </Link>
       </Box>
       <Divider />
