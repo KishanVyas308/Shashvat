@@ -32,6 +32,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/products" element={<ProductPage />} />
               <Route path="/productdetail/:id" element={<Productdetail />} />
+              
             
             </Routes>
           <Fotter />
