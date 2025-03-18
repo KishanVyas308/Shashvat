@@ -20,7 +20,7 @@ const ContactInfo = () => {
   });
 
   const contactItems = [
-    { icon: <FaFileInvoice />, title: "GST NO", value: "24BGIPS7190F1Z1" },
+    { icon: <FaFileInvoice />, title: "GST NO", value: "24BHIPS7190F1Z1" },
     { icon: <MdPhone />, title: "Contact no", value: "+91 9825049059" },
     { icon: <IoMdMail />, title: "Email id", value: "shashvat2019@gmail.com" },
     { icon: <FaWhatsapp />, title: "Business WhatsApp no", value: "9099757588" },

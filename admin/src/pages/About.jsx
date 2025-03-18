@@ -6,6 +6,7 @@ import { FaRegHandshake } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import Lottie from 'lottie-react';
 import { motion } from "framer-motion";
+// import { WrenchScrewdriverIcon } from "@heroicons/react/24/solid";
 import arrowAnimation from "../Animation - 1739605311778.json"; 
 const About = () => {
   /**
@@ -85,7 +86,7 @@ const About = () => {
           {/* Paragraph 1 */}
           <p>
             Located in Jamnagar (Gujarat),{" "}
-            <strong className="text-teal-600">Shashvat Brass Industries</strong>{" "}
+            <strong className="text-teal-600">Shashvat Enterprise</strong>{" "}
             is one of the top manufacturers and suppliers of brass products in
             India. Established in 2019, the company has grown into a large-scale
             operation, delivering products across the nation. With over two
@@ -95,7 +96,7 @@ const About = () => {
 
           {/* Paragraph 2 */}
           <p>
-            At Shashvat Brass Industries, we offer a wide range of high-quality
+            At Shashvat Enterprise, we offer a wide range of high-quality
             products including brass flare fittings, brass anchors, brass inserts,
             brass pipe fittings, brass hardware fittings, and brass mixer
             grinders. Our diverse product catalog ensures that customers find the
@@ -121,8 +122,7 @@ const About = () => {
 
             {/* Paragraph 4 */}
             <p>
-              Guided by strong principles and industry expertise, Shashvat Brass
-              Industries has established a unique position in the industry. We are
+              Guided by strong principles and industry expertise, Shashvat Enterprise has established a unique position in the industry. We are
               dedicated to delivering unparalleled service and exceptional
               products to customers across the nation, fostering long-term
               relationships built on trust and reliability.
@@ -176,7 +176,7 @@ const About = () => {
       </div>
       <h1 className="text-darken mb-3 text-xl font-medium lg:px-14">Vision</h1>
       <p className="px-4 md:px-0 text-gray-500">
-        At Shashvat Brass Industries, our vision is to be the leading global
+        At Shashvat Enterprise, our vision is to be the leading global
         provider of high-quality brass products, recognized for our innovation,
         sustainability, and exceptional customer service. We aim to set industry
         standards through continuous improvement and technological advancements,
@@ -207,7 +207,7 @@ const About = () => {
         needs of our customers while maintaining the highest standards of quality
         and craftsmanship. We are committed to fostering long-term relationships
         with our clients by providing reliable, sustainable, and innovative
-        solutions. At Shashvat Brass Industries, we strive to create value for
+        solutions. At Shashvat Enterprise, we strive to create value for
         our stakeholders through ethical business practices and a dedication to
         excellence.
       </p>
@@ -253,74 +253,81 @@ const About = () => {
     </div>
   </div>
 </div>
-      <section className="bg-gradient-to-b from-white to-gray-100 py-16">
-        <div className="text-center">
-          <h1 className="text-5xl font-extrabold text-gray-800 mb-6">
-            Why <span className="text-teal-500">Shashvat?</span>
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover what makes us stand out in the industry and why our customers trust us for excellence and reliability.
+<section className="bg-gradient-to-b from-white to-gray-100 py-16">
+  <div className="text-center">
+    <h1 className="text-5xl font-extrabold text-gray-800 mb-6">
+      Why <span className="text-teal-500">Shashvat?</span>
+    </h1>
+    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+      Explore what sets us apart in the industry and why businesses rely on our precision, quality, and innovation.
+    </p>
+  </div>
+
+  <div className="container mx-auto px-6 mt-12">
+    <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {/* Feature 1: Precision Engineering */}
+      <div className="group relative text-center transform transition duration-500 hover:scale-105">
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-500 opacity-20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+        <img src="https://cdn-icons-png.flaticon.com/128/5439/5439335.png" alt="Latest Milling Machinery" className="w-20 h-20 mx-auto mb-4" />
+
+          <h2 className="text-2xl font-bold text-gray-800">Precision Engineering</h2>
+          <p className="text-gray-600 text-sm mt-2">
+            State-of-the-art machinery ensures high accuracy and superior quality in every product.
           </p>
         </div>
+      </div>
 
-        <div className="container mx-auto px-6 mt-12">
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {/* Feature 1 */}
-            <div className="group relative text-center transform transition duration-500 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-500 opacity-20 rounded-full blur-xl"></div>
-              <div className="relative z-10">
-                <img
-                  src="https://image3.jdomni.in/banner/13062021/58/97/7C/E53960D1295621EFCB5B13F335_1623567851299.png?output-format=webp"
-                  alt="Latest Milling Machinery"
-                  className="w-21 h-20 mx-auto mb-4"
-                />
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Latest Milling Machinery
-                </h2>
-              </div>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="group relative text-center transform transition duration-500 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-500 opacity-20 rounded-full blur-xl"></div>
-              <div className="relative z-10">
-                <img
-                  src="https://image2.jdomni.in/banner/13062021/3E/57/E8/1D6E23DD7E12571705CAC761E7_1623567977295.png?output-format=webp"
-                  alt="Reasonable Rates"
-                  className="w-21 h-20 mx-auto mb-4"
-                />
-                <h2 className="text-2xl font-bold text-gray-800">Reasonable Rates</h2>
-              </div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="group relative text-center transform transition duration-500 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-20 rounded-full blur-xl"></div>
-              <div className="relative z-10">
-                <img
-                  src="https://image3.jdomni.in/banner/13062021/16/7E/7E/5A9920439E52EF309F27B43EEB_1623568010437.png?output-format=webp"
-                  alt="Time Efficiency"
-                  className="w-21 h-20 mx-auto mb-4"
-                />
-                <h2 className="text-2xl font-bold text-gray-800">Time Efficiency</h2>
-              </div>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="group relative text-center transform transition duration-500 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-lime-500 opacity-20 rounded-full blur-xl"></div>
-              <div className="relative z-10">
-                <img
-                  src="https://image3.jdomni.in/banner/13062021/EB/99/EE/8B46027500E987A5142ECC1CE1_1623567959360.png?output-format=webp"
-                  alt="Expertise in Industry"
-                  className="w-21 h-20 mx-auto mb-4"
-                />
-                <h2 className="text-2xl font-bold text-gray-800">Expertise in Industry</h2>
-              </div>
-            </div>
-          </div>
+      {/* Feature 2: Competitive Pricing */}
+      <div className="group relative text-center transform transition duration-500 hover:scale-105">
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-500 opacity-20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/3135/3135706.png"
+            alt="Competitive Pricing"
+            className="w-20 h-20 mx-auto mb-4"
+          />
+          <h2 className="text-2xl font-bold text-gray-800">Competitive Pricing</h2>
+          <p className="text-gray-600 text-sm mt-2">
+            Get the best value for money with high-quality products at affordable rates.
+          </p>
         </div>
-      </section>
+      </div>
+
+      {/* Feature 3: On-Time Delivery */}
+      <div className="group relative text-center transform transition duration-500 hover:scale-105">
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+          <img
+            src="https://cdn-icons-png.flaticon.com/128/2331/2331970.png"
+            alt="On-Time Delivery"
+            className="w-20 h-20 mx-auto mb-4"
+          />
+          <h2 className="text-2xl font-bold text-gray-800">Quickly Delivery</h2>
+          <p className="text-gray-600 text-sm mt-2">
+            Reliable logistics ensure your orders are delivered on time, every time.
+          </p>
+        </div>
+      </div>
+
+      {/* Feature 4: Certified Quality Standards */}
+      <div className="group relative text-center transform transition duration-500 hover:scale-105">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-lime-500 opacity-20 rounded-full blur-xl"></div>
+        <div className="relative z-10">
+        <img src="https://cdn-icons-png.flaticon.com/128/1176/1176189.png" alt="Expertise in Industry" className="w-20 h-20 mx-auto mb-4" />
+
+          <h2 className="text-2xl font-bold text-gray-800">Certified Quality Standards</h2>
+          <p className="text-gray-600 text-sm mt-2">
+            Every product undergoes strict quality checks to meet industry standards.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
 
     </>
   );
