@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  isAdmin    Boolean  @default(false)
+  address    String
+  contactNo  String
+  whatsAppNo String
+  createdAt  DateTime @default(now())
+
+  products     Product[]
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  companyName String
+  description String
+  name        String
+  img         String
+  rating      Int
+  createdAt   DateTime @default(now())
+  isApproved  Boolean  @default(false)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Product {
+  id            String    @id @default(uuid())
+  name          String
+  category      String
+  img           String
+  isPopular     Boolean   @default(false)
+  latest        Boolean   @default(false)
+  material      String
+  moq           String
+  size          String
+  createdAt     DateTime  @default(now())
+  lastUpdatedAt DateTime  @updatedAt
+  details       Details[]
+
+  userId String
+
+  user         User          @relation(fields: [userId], references: [id])
+  reviews      Review[]
+}
+
+model Details {
+  id      String  @id @default(uuid())
+  color   String?
+  finish  String?
+  pattern String?
+  shape   String?
+  weight  String?
+  height  String?
+  width   String?
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Requests {
+  id       String  @id @default(uuid())
+  isViewed Boolean @default(false)
+  
+  name                String
+  email               String
+  contactNo           String
+  whatsAppNo          String?
+  companyName         String
+  description         String
+
+  isNewProductRequest Boolean  @default(false)
+  productId   String?
+  productName String?
+}
