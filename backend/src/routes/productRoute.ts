@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import multer from 'multer';
 import { addProduct, getAllProducts, getProductById, deleteProduct, updateProduct } from '../controller/productController';
 import { authTokenMiddleware } from '../middleware/middleware';
 
 const router = Router();
-const upload = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
@@ -43,7 +41,7 @@ const upload = multer({ dest: 'uploads/' });
  *       500:
  *         description: Some server error
  */
-router.post('/add', upload.single('image'), authTokenMiddleware, addProduct);
+router.post('/add', authTokenMiddleware, addProduct);
 
 /**
  * @swagger

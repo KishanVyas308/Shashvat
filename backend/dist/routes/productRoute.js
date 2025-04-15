@@ -1,14 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const multer_1 = __importDefault(require("multer"));
 const productController_1 = require("../controller/productController");
 const middleware_1 = require("../middleware/middleware");
 const router = (0, express_1.Router)();
-const upload = (0, multer_1.default)({ dest: 'uploads/' });
 /**
  * @swagger
  * tags:
@@ -45,7 +40,7 @@ const upload = (0, multer_1.default)({ dest: 'uploads/' });
  *       500:
  *         description: Some server error
  */
-router.post('/add', upload.single('image'), middleware_1.authTokenMiddleware, productController_1.addProduct);
+router.post('/add', middleware_1.authTokenMiddleware, productController_1.addProduct);
 /**
  * @swagger
  * /products/all:
