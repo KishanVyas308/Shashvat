@@ -268,11 +268,8 @@ import fs from 'fs';
  *         description: Some server error
  */
 export const addProduct = async (req: any, res: any) => {
-  const { name, category, isPopular, latest, material, moq, size, details }: ProductInterface = req.body;
+  const { name, category, isPopular, latest, material, moq, size, details, image }: ProductInterface = req.body;
 
-  if (!req.file) {
-    return res.status(400).json({ message: 'Image is required.' });
-  }
 
   if (!name || !moq || !category || !size || !material) {
     return res.status(400).json({ message: 'Fill all required fields!' });
@@ -280,17 +277,19 @@ export const addProduct = async (req: any, res: any) => {
 
   try {
     const currentTime = new Date();
-    const imagePath = `/uploads/${req.file.filename}`;
+
 
     const isPopularBool = isPopular ? true : false;
     const latestBool = latest ? true : false;
     const decodedDetail = JSON.parse(details)
 
+    
+
     const newProduct = await prisma.product.create({
       data: {
         name,
         category,
-        img: imagePath,
+        img: image,
         isPopular : isPopularBool ,
         latest : latestBool,
         material,
@@ -448,9 +447,9 @@ export const deleteProduct = async (req: any, res: any) => {
  *         description: Some server error
  */
 export const updateProduct = async (req: any, res: any) => {
-  const { id, name, category, img, isPopular, latest, material, moq, size, details }: ProductInterface = req.body;
+  const { id, name, category, image, isPopular, latest, material, moq, size, details }: ProductInterface = req.body;
 
-  if (!img) {
+  if (!image) {
     return res.status(400).json({ message: 'Image is uploading! Please click the button after a few seconds.' });
   }
 
@@ -468,7 +467,7 @@ export const updateProduct = async (req: any, res: any) => {
       data: {
         name,
         category,
-        img,
+        img : image,
         isPopular,
         latest,
         material,

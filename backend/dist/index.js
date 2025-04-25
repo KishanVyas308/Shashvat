@@ -7,7 +7,6 @@ exports.prisma = void 0;
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const client_1 = require("@prisma/client");
-const path_1 = __importDefault(require("path"));
 // Importing routes
 const authRoute_1 = __importDefault(require("./routes/authRoute"));
 const productRoute_1 = __importDefault(require("./routes/productRoute"));
@@ -22,7 +21,6 @@ app.use((0, cors_1.default)());
 // Serve static files for uploaded images
 // Routers
 const api = '/api/v1';
-app.use(api + '/uploads', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
 app.use(api + '/auth', authRoute_1.default);
 app.use(api + '/image', multerImageController_1.default);
 app.use(api + '/products', productRoute_1.default);

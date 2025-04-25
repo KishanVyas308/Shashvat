@@ -2,7 +2,7 @@ export interface ProductInterface {
     id: string;
     name: string;
     category: string;
-    img: string;
+    image: string;
     isPopular: boolean;
     latest: boolean;
     material: string;

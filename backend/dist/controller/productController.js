@@ -274,16 +274,12 @@ const index_1 = require("../index");
  *         description: Some server error
  */
 const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, category, isPopular, latest, material, moq, size, details } = req.body;
-    if (!req.file) {
-        return res.status(400).json({ message: 'Image is required.' });
-    }
+    const { name, category, isPopular, latest, material, moq, size, details, image } = req.body;
     if (!name || !moq || !category || !size || !material) {
         return res.status(400).json({ message: 'Fill all required fields!' });
     }
     try {
         const currentTime = new Date();
-        const imagePath = `/uploads/${req.file.filename}`;
         const isPopularBool = isPopular ? true : false;
         const latestBool = latest ? true : false;
         const decodedDetail = JSON.parse(details);
@@ -291,7 +287,7 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             data: {
                 name,
                 category,
-                img: imagePath,
+                img: image,
                 isPopular: isPopularBool,
                 latest: latestBool,
                 material,
@@ -447,8 +443,8 @@ exports.deleteProduct = deleteProduct;
  *         description: Some server error
  */
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, name, category, img, isPopular, latest, material, moq, size, details } = req.body;
-    if (!img) {
+    const { id, name, category, image, isPopular, latest, material, moq, size, details } = req.body;
+    if (!image) {
         return res.status(400).json({ message: 'Image is uploading! Please click the button after a few seconds.' });
     }
     if (!name || !moq || !category || !size || !material) {
@@ -462,7 +458,7 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             data: {
                 name,
                 category,
-                img,
+                img: image,
                 isPopular,
                 latest,
                 material,

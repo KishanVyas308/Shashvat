@@ -24,7 +24,6 @@ app.use(cors());
 
 // Routers
 const api = '/api/v1';
-app.use(api + '/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(api + '/auth', authRoute);
 app.use(api + '/image', multerImage);
 app.use(api + '/products', productRoute);
