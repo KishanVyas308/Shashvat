@@ -7,7 +7,6 @@ exports.prisma = void 0;
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const client_1 = require("@prisma/client");
-const path_1 = __importDefault(require("path"));
 // Importing routes
 const authRoute_1 = __importDefault(require("./routes/authRoute"));
 const productRoute_1 = __importDefault(require("./routes/productRoute"));
@@ -17,19 +16,18 @@ const swagger_1 = __importDefault(require("./swagger"));
 const multerImageController_1 = __importDefault(require("./controller/multerImageController"));
 exports.prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
-app.use("/uploads", express_1.default.static(path_1.default.join(__dirname, "uploads")));
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 // Serve static files for uploaded images
 // Routers
-const api = "/api/v1";
-app.use(api + "/auth", authRoute_1.default);
-app.use(api + "/image", multerImageController_1.default);
-app.use(api + "/products", productRoute_1.default);
-app.use(api + "/requirements", requirementRoute_1.default);
-app.use(api + "/reviews", reviewRoute_1.default);
+const api = '/api/v1';
+app.use(api + '/auth', authRoute_1.default);
+app.use(api + '/image', multerImageController_1.default);
+app.use(api + '/products', productRoute_1.default);
+app.use(api + '/requirements', requirementRoute_1.default);
+app.use(api + '/reviews', reviewRoute_1.default);
 // Setup Swagger
 (0, swagger_1.default)(app);
 app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+    console.log('Server is running on port 3000');
 });

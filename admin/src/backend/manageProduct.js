@@ -5,6 +5,18 @@ import { backendUrl } from "../globle";
 export async function addProduct(formData) {
   try {
 
+    // Convert the image file to base64 string if needed
+    const imageFile = formData.image;
+    const imageurl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(imageFile);
+    });
+
+    formData.image = imageurl;
+    console.log("formData", formData);
+
     const response = await axios.post(`${backendUrl}/products/add`, formData, {
       headers: { 
       "Content-Type": "multipart/form-data",
