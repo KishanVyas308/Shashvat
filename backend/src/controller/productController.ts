@@ -1,8 +1,8 @@
-import e, { Request, Response } from 'express';
-import { prisma } from '../index';
-import { ProductInterface, DetailsInterface } from '../type';
-import path from 'path';
-import fs from 'fs';
+import e, { Request, Response } from "express";
+import { prisma } from "../index";
+import { ProductInterface, DetailsInterface } from "../type";
+import path from "path";
+import fs from "fs";
 
 /**
  * @swagger
@@ -268,46 +268,66 @@ import fs from 'fs';
  *         description: Some server error
  */
 export const addProduct = async (req: any, res: any) => {
-  const { name, category, isPopular, latest, material, moq, size, details, image }: ProductInterface = req.body;
+  const {
+    name,
+    category,
+    isPopular,
+    latest,
+    material,
+    moq,
+    size,
+    details,
+    image,
+  }: ProductInterface = req.body;
 
+  const missingFields = [];
+  if (!name) missingFields.push("name");
+  if (!moq) missingFields.push("moq");
+  if (!category) missingFields.push("category");
+  if (!size) missingFields.push("size");
+  if (!material) missingFields.push("material");
+  if (!image) missingFields.push("image");
 
-  if (!name || !moq || !category || !size || !material) {
-    return res.status(400).json({ message: 'Fill all required fields!' });
+  if (missingFields.length > 0) {
+    return res
+      .status(400)
+      .json({ message: "Fill all required fields!", missingFields });
   }
 
   try {
     const currentTime = new Date();
 
-
     const isPopularBool = isPopular ? true : false;
     const latestBool = latest ? true : false;
-    const decodedDetail = JSON.parse(details)
-
-    
+    const decodedDetail = JSON.parse(details);
 
     const newProduct = await prisma.product.create({
       data: {
         name,
         category,
         img: image,
-        isPopular : isPopularBool ,
-        latest : latestBool,
+        isPopular: isPopularBool,
+        latest: latestBool,
         material,
         moq,
         size,
         createdAt: currentTime,
         lastUpdatedAt: currentTime,
-        userId : req.user.id,
+        userId: req.user.id,
         details: {
           create: decodedDetail as DetailsInterface,
         },
       },
     });
 
-    return res.status(201).json({ message: 'Product added successfully!', product: newProduct });
+    return res
+      .status(201)
+      .json({ message: "Product added successfully!", product: newProduct });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Failed to add product. Please try again.' });
+    return res
+      .status(500)
+      .json({ message: "Failed to add product. Please try again." });
   }
 };
 
@@ -339,8 +359,10 @@ export const getAllProducts = async (req: any, res: any) => {
 
     return res.status(200).json(products);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    return res.status(500).json({ message: 'Failed to fetch products. Please try again.' });
+    console.error("Error fetching products:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch products. Please try again." });
   }
 };
 
@@ -377,13 +399,15 @@ export const getProductById = async (req: any, res: any) => {
     });
 
     if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     return res.status(200).json(product);
   } catch (error) {
-    console.log('Error fetching product by ID:', error);
-    return res.status(500).json({ message: 'Failed to fetch product by ID. Please try again.' });
+    console.log("Error fetching product by ID:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch product by ID. Please try again." });
   }
 };
 
@@ -413,14 +437,20 @@ export const deleteProduct = async (req: any, res: any) => {
   const { productId }: { productId: string } = req.body;
 
   try {
+    await prisma.details.deleteMany({
+      where: { productId },
+    });
+
     await prisma.product.delete({
       where: { id: productId },
     });
 
-    return res.status(200).json({ message: 'Product deleted successfully!' });
+    return res.status(200).json({ message: "Product deleted successfully!" });
   } catch (error) {
-    console.error('Error deleting product:', error);
-    return res.status(500).json({ message: 'Failed to delete product. Please try again.' });
+    console.error("Error deleting product:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to delete product. Please try again." });
   }
 };
 
@@ -447,17 +477,50 @@ export const deleteProduct = async (req: any, res: any) => {
  *         description: Some server error
  */
 export const updateProduct = async (req: any, res: any) => {
-  const { id, name, category, image, isPopular, latest, material, moq, size, details }: ProductInterface = req.body;
+  const {
+    id,
+    name,
+    category,
+    image,
+    isPopular,
+    latest,
+    material,
+    moq,
+    size,
+    details,
+  }: ProductInterface = req.body;
 
   if (!image) {
-    return res.status(400).json({ message: 'Image is uploading! Please click the button after a few seconds.' });
+    return res
+      .status(400)
+      .json({
+        message:
+          "Image is uploading! Please click the button after a few seconds.",
+      });
   }
 
   if (!name || !moq || !category || !size || !material) {
-    return res.status(400).json({ message: 'Fill all required fields!' });
+    return res.status(400).json({ message: "Fill all required fields!" });
   }
 
-  const decodedDetail : DetailsInterface[] = JSON.parse(details)
+  let decodedDetail: DetailsInterface[];
+
+  if (typeof details === "string") {
+    try {
+      const parsed = JSON.parse(details);
+      if (Array.isArray(parsed)) {
+        decodedDetail = parsed;
+      } else {
+        throw new Error("Parsed 'details' is not an array.");
+      }
+    } catch (err) {
+      return res.status(400).json({ message: "Invalid details format." });
+    }
+  } else if (Array.isArray(details)) {
+    decodedDetail = details;
+  } else {
+    return res.status(400).json({ message: "Invalid details data." });
+  }
 
   try {
     const currentTime = new Date();
@@ -467,7 +530,7 @@ export const updateProduct = async (req: any, res: any) => {
       data: {
         name,
         category,
-        img : image,
+        img: image,
         isPopular,
         latest,
         material,
@@ -483,9 +546,16 @@ export const updateProduct = async (req: any, res: any) => {
       },
     });
 
-    return res.status(200).json({ message: 'Product updated successfully!', product: updatedProduct });
+    return res
+      .status(200)
+      .json({
+        message: "Product updated successfully!",
+        product: updatedProduct,
+      });
   } catch (error) {
-    console.error('Error updating product:', error);
-    return res.status(500).json({ message: 'Failed to update product. Please try again.' });
+    console.error("Error updating product:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update product. Please try again." });
   }
 };
