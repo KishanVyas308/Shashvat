@@ -146,6 +146,8 @@ const CreateProduct = () => {
       formData.append("size", product.size)
       formData.append("details", JSON.stringify(product.details))
 
+    
+
       await addProduct(formData)
       await setAllProduct()
       resetForm()

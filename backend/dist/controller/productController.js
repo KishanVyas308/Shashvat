@@ -274,9 +274,24 @@ const index_1 = require("../index");
  *         description: Some server error
  */
 const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, category, isPopular, latest, material, moq, size, details, image } = req.body;
-    if (!name || !moq || !category || !size || !material) {
-        return res.status(400).json({ message: 'Fill all required fields!' });
+    const { name, category, isPopular, latest, material, moq, size, details, image, } = req.body;
+    const missingFields = [];
+    if (!name)
+        missingFields.push("name");
+    if (!moq)
+        missingFields.push("moq");
+    if (!category)
+        missingFields.push("category");
+    if (!size)
+        missingFields.push("size");
+    if (!material)
+        missingFields.push("material");
+    if (!image)
+        missingFields.push("image");
+    if (missingFields.length > 0) {
+        return res
+            .status(400)
+            .json({ message: "Fill all required fields!", missingFields });
     }
     try {
         const currentTime = new Date();
@@ -301,11 +316,15 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 },
             },
         });
-        return res.status(201).json({ message: 'Product added successfully!', product: newProduct });
+        return res
+            .status(201)
+            .json({ message: "Product added successfully!", product: newProduct });
     }
     catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Failed to add product. Please try again.' });
+        return res
+            .status(500)
+            .json({ message: "Failed to add product. Please try again." });
     }
 });
 exports.addProduct = addProduct;
@@ -337,8 +356,10 @@ const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
         return res.status(200).json(products);
     }
     catch (error) {
-        console.error('Error fetching products:', error);
-        return res.status(500).json({ message: 'Failed to fetch products. Please try again.' });
+        console.error("Error fetching products:", error);
+        return res
+            .status(500)
+            .json({ message: "Failed to fetch products. Please try again." });
     }
 });
 exports.getAllProducts = getAllProducts;
@@ -374,13 +395,15 @@ const getProductById = (req, res) => __awaiter(void 0, void 0, void 0, function*
             },
         });
         if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: "Product not found" });
         }
         return res.status(200).json(product);
     }
     catch (error) {
-        console.log('Error fetching product by ID:', error);
-        return res.status(500).json({ message: 'Failed to fetch product by ID. Please try again.' });
+        console.log("Error fetching product by ID:", error);
+        return res
+            .status(500)
+            .json({ message: "Failed to fetch product by ID. Please try again." });
     }
 });
 exports.getProductById = getProductById;
@@ -409,14 +432,19 @@ exports.getProductById = getProductById;
 const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { productId } = req.body;
     try {
+        yield index_1.prisma.details.deleteMany({
+            where: { productId },
+        });
         yield index_1.prisma.product.delete({
             where: { id: productId },
         });
-        return res.status(200).json({ message: 'Product deleted successfully!' });
+        return res.status(200).json({ message: "Product deleted successfully!" });
     }
     catch (error) {
-        console.error('Error deleting product:', error);
-        return res.status(500).json({ message: 'Failed to delete product. Please try again.' });
+        console.error("Error deleting product:", error);
+        return res
+            .status(500)
+            .json({ message: "Failed to delete product. Please try again." });
     }
 });
 exports.deleteProduct = deleteProduct;
@@ -443,14 +471,38 @@ exports.deleteProduct = deleteProduct;
  *         description: Some server error
  */
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, name, category, image, isPopular, latest, material, moq, size, details } = req.body;
+    const { id, name, category, image, isPopular, latest, material, moq, size, details, } = req.body;
     if (!image) {
-        return res.status(400).json({ message: 'Image is uploading! Please click the button after a few seconds.' });
+        return res
+            .status(400)
+            .json({
+            message: "Image is uploading! Please click the button after a few seconds.",
+        });
     }
     if (!name || !moq || !category || !size || !material) {
-        return res.status(400).json({ message: 'Fill all required fields!' });
+        return res.status(400).json({ message: "Fill all required fields!" });
     }
-    const decodedDetail = JSON.parse(details);
+    let decodedDetail;
+    if (typeof details === "string") {
+        try {
+            const parsed = JSON.parse(details);
+            if (Array.isArray(parsed)) {
+                decodedDetail = parsed;
+            }
+            else {
+                throw new Error("Parsed 'details' is not an array.");
+            }
+        }
+        catch (err) {
+            return res.status(400).json({ message: "Invalid details format." });
+        }
+    }
+    else if (Array.isArray(details)) {
+        decodedDetail = details;
+    }
+    else {
+        return res.status(400).json({ message: "Invalid details data." });
+    }
     try {
         const currentTime = new Date();
         const updatedProduct = yield index_1.prisma.product.update({
@@ -473,11 +525,18 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 },
             },
         });
-        return res.status(200).json({ message: 'Product updated successfully!', product: updatedProduct });
+        return res
+            .status(200)
+            .json({
+            message: "Product updated successfully!",
+            product: updatedProduct,
+        });
     }
     catch (error) {
-        console.error('Error updating product:', error);
-        return res.status(500).json({ message: 'Failed to update product. Please try again.' });
+        console.error("Error updating product:", error);
+        return res
+            .status(500)
+            .json({ message: "Failed to update product. Please try again." });
     }
 });
 exports.updateProduct = updateProduct;
