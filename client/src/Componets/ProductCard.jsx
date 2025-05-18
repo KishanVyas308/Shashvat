@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiChevronRight } from "react-icons/fi";
+import { FiChevronRight, FiEye } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
@@ -12,50 +12,69 @@ const ProductCard = ({ product }) => {
 
   return (
     <div
-      className={`ring-blue-400 p-4    rounded-xl ${
-        isHovered ? "ring-2" : "border-transparent"
-      }`}
+      className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-102 hover:shadow-xl cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-    >
-      <div
-        className={`shadow-lg p-4 sm:p-1 rounded-xl bg-white transition-transform duration-300 relative 
-      }`}
-       
-      >
-        <div className="w-full h-48 relative overflow-hidden rounded-lg mb-4">
-          <img
-            onClick={() => handleProductClick(product.id)}
-            src={product.imageUrl} // Make sure product.imageUrl is properly defined in your data structure
-            alt={product.name}
-            className="w-full cursor-pointer h-full object-cover transform hover:scale-110 transition-transform duration-600"
-          />
-        </div>
-        <h2 className="text-lg font-semibold mb-2 text-gray-800 text-center">
+   onClick={(e) => { 
+            e.stopPropagation();
+            handleProductClick(product.id);
+          }} >
+      {/* Image Wrapper with improved animation */}
+      <div className="relative h-80 overflow-hidden bg-white">
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
+        />
+
+        {/* Product Name (Initially Visible) */}
+        <div
+          className={`absolute bottom-0 w-full bg-blue-700 bg-opacity-85 text-white text-center py-2 font-semibold transition-all duration-500 ease-in-out ${
+            isHovered ? "opacity-0 translate-y-full" : "opacity-100 translate-y-0"
+          }`}
+        >
           {product.name}
-        </h2>
-        <ul className="mb-4 text-center">
-          <li className="text-sm text-gray-700">
-            Shape: {product.details.shape}
-          </li>
-          <li className="text-sm text-gray-700">
-            Color: {product.details.color}
-          </li>
-          <li className="text-sm text-gray-700">
-            Pattern: {product.details.pattern}
-          </li>
-          <li className="text-sm text-gray-700">
-            Finish: {product.details.finish}
-          </li>
-        </ul>
-        {isHovered && (
-          <button
-            onClick={() => handleProductClick(product.id)}
-            className="absolute right-4 bottom-4 bg-blue-500 text-white rounded-full p-3   flex items-center justify-center"
-          >
-            <FiChevronRight />
-          </button>
-        )}
+        </div>
+      </div>
+
+      {/* Product Details with Improved Hover Effect */}
+      <div
+        className={`absolute inset-0 bg-blue-800 bg-opacity-80 text-white flex flex-col items-center justify-center p-6 space-y-4 rounded-lg transition-all duration-500 ease-in-out ${
+          isHovered ? "opacity-95 translate-y-0" : "opacity-0 translate-y-full"
+        }`}
+      >
+        <h2 className="text-xl font-bold">{product.name}</h2>
+       <ul className="space-y-2">
+  {["category", "shape", "material", "color", "pattern"].map((key) =>
+    product.details && product.details[key] ? (
+      <li key={key} className="text-lg flex">
+        <span className="font-medium capitalize mr-2">{key}:</span>
+        <span className="text-blue-100">{product.details[key]}</span>
+      </li>
+    ) : null
+  )}
+</ul>
+
+        <button
+          onClick={(e) => { 
+            e.stopPropagation();
+            handleProductClick(product.id);
+          }}
+          className="mt-3 bg-white text-blue-700 hover:bg-blue-100 py-2 px-6 rounded-full flex items-center justify-center space-x-2 transition-colors duration-300"
+        >
+          <FiEye className="mr-1" size={18} />
+          <span>View Details</span>
+        </button>
+      </div>
+
+      {/* Enhanced Bottom Gradient & Icon */}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600" />
+      <div
+        className={`absolute top-3 right-3 bg-blue-600 text-white rounded-full p-2 shadow-md transition-all duration-300 ${
+          isHovered ? "transform rotate-90" : "transform rotate-0"
+        }`}
+      >
+        <FiChevronRight size={16} />
       </div>
     </div>
   );

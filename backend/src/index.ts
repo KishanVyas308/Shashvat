@@ -8,6 +8,9 @@ import productRoute from './routes/productRoute';
 import requirementRoute from './routes/requirementRoute';
 import reviewRoute from './routes/reviewRoute';
 import setupSwagger from './swagger';
+import { fileURLToPath } from "url";
+import path from "path";
+
 
 export const prisma = new PrismaClient();
 
@@ -16,12 +19,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static files for uploaded images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 
 // Routers
 const api = '/api/v1';
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+
+
 app.use(api + '/auth', authRoute);
 app.use(api + '/products', productRoute);
 app.use(api + '/requirements', requirementRoute);

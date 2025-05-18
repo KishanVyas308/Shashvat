@@ -40,7 +40,7 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-1/2 mb-12 lg:mb-0">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">Shashvat BRASS INDUSTRIES</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-8">Shashvat EnterPrise</h2>
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
@@ -68,7 +68,7 @@ const Contact = () => {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Call Us</h3>
-                    <p className="text-gray-600">+91 9825049059</p>
+                    <p className="text-gray-600">+91 98250 49059</p>
                   </div>
                 </div>
 
@@ -78,7 +78,7 @@ const Contact = () => {
                   </div>
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Call Us</h3>
-                    <p className="text-gray-600">+91 9426224163</p>
+                    <p className="text-gray-600">+91 90997 57588</p>
                   </div>
                 </div>
                
@@ -150,11 +150,8 @@ const Contact = () => {
         aria-hidden="false"
         tabIndex="0"
       ></iframe>
-      
     </div>
-    <br></br>
     </div>
-   
   )
 }
 

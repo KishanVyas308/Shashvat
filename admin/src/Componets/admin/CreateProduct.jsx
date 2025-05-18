@@ -151,7 +151,7 @@ const CreateProduct = () => {
       await addProduct(formData)
       await setAllProduct()
       resetForm()
-      toast.success("Product added successfully!")
+     
     } catch (error) {
       toast.error("Failed to add product. Please try again.")
     }

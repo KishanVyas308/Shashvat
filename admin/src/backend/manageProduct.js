@@ -2,6 +2,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../globle";
 
+import { convertImageToBase64, uploadImageAndGetUrl } from "./helper";
+
 export async function addProduct(formData) {
   try {
     // Convert FormData to array of key-value objects
@@ -10,20 +12,14 @@ export async function addProduct(formData) {
       simpleDataArray.push({ key, value });
     }
 
-    // Helper function to convert image file to base64
-    async function convertImageToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
+
+
 
     // Update image field to base64 if needed
     for (let item of simpleDataArray) {
       if (item.key === "image" && (item.value instanceof File || item.value instanceof Blob)) {
         const base64Image = await convertImageToBase64(item.value);
+
         item.value = base64Image;
       }
     }
@@ -55,7 +51,7 @@ export async function allProduct() {
   try {
     const response = await axios.get(`${backendUrl}/products/all`);
     const products = response.data;
-
+console.log(products.details);
     // Convert base64 image strings to usable image URLs
     const updatedProducts = products.map((product) => {
       if (product.img && typeof product.img === "string" && product.img.startsWith("data:image")) {
@@ -105,7 +101,7 @@ export async function updateProduct(formData) {
     }
 
     console.log("niwdwhdidhiwhiwdh", simpleDataArray);
-    
+
 
     // Helper to convert File to base64
     async function convertImageToBase64(file) {

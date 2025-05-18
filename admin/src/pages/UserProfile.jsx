@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { auth, db } from "../backend/firebase"; // Import your Firebase configuration
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+// import { auth, db } from "../backend/firebase"; // Import your Firebase configuration
+// import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useRecoilState } from "recoil";
 import { userAtom } from "../Atoms/userAtom";
 import { currentUser } from "../backend/auth";
@@ -108,6 +108,7 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10">
+     /**
       <h1 className="text-2xl font-bold mb-5">Profile</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -192,6 +193,7 @@ const UserProfile = () => {
           Update
         </button>
       </form>
+      */
     </div>
   );
 };

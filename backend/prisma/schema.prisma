@@ -36,9 +36,6 @@ model Review {
   rating      Int
   createdAt   DateTime @default(now())
   isApproved  Boolean  @default(false)
-
-  productId String @unique
-  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Product {
@@ -58,7 +55,6 @@ model Product {
   userId String
 
   user         User          @relation(fields: [userId], references: [id])
-  reviews      Review[]
 }
 
 model Details {

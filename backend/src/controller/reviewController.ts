@@ -77,7 +77,6 @@ export const addReview = async (req: any, res: any) => {
         name,
         img,
         rating,
-        productId,
       },
     });
 

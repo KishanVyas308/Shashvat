@@ -40,7 +40,7 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row">
             <div className="lg:w-1/2 mb-12 lg:mb-0">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">Shashvat BRASS INDUSTRIES</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-8">Shashvat EnterPrise</h2>
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
