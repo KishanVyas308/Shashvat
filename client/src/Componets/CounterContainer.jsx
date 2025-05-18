@@ -1,44 +1,44 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { motion, useAnimation } from 'framer-motion'
-import { FaUsers, FaGlobe, FaBox } from 'react-icons/fa'
+import React, { useEffect, useState, useRef } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { FaUsers, FaGlobe, FaBox } from 'react-icons/fa';
 
-// Remove the TypeScript `Variants` type declaration
 const counterVariants = {
   hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-}
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 const iconVariants = {
   hidden: { scale: 0 },
-  visible: { scale: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } }
-}
+  visible: { scale: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } },
+};
 
 const Counter = ({ icon, title, value, colorClass, startCounting, description }) => {
-  const [count, setCount] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
-  const controls = useAnimation()
+  const [count, setCount] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const controls = useAnimation();
 
   useEffect(() => {
     if (startCounting) {
-      controls.start('visible')
-      const end = parseInt(value, 10)
-      const duration = 2000
-      const increment = end / (duration / 16)
-      let currentCount = 0
+      controls.start('visible');
+      const end = parseInt(value, 10);
+      const hasPlusSign = value.includes('+');
+      const duration = 2000;
+      const increment = end / (duration / 16);
+      let currentCount = 0;
 
       const timer = setInterval(() => {
-        currentCount += increment
+        currentCount += increment;
         if (currentCount >= end) {
-          clearInterval(timer)
-          setCount(end)
+          clearInterval(timer);
+          setCount(end + (hasPlusSign ? '+' : ''));
         } else {
-          setCount(Math.floor(currentCount))
+          setCount(Math.floor(currentCount));
         }
-      }, 16)
+      }, 16);
 
-      return () => clearInterval(timer)
+      return () => clearInterval(timer);
     }
-  }, [value, startCounting, controls])
+  }, [value, startCounting, controls]);
 
   return (
     <motion.div
@@ -78,38 +78,38 @@ const Counter = ({ icon, title, value, colorClass, startCounting, description })
         <p className="text-gray-700 text-center">{description}</p>
       </motion.div>
     </motion.div>
-  )
-}
+  );
+};
 
 const CounterContainer = () => {
   const counters = [
-    { icon: <FaUsers className="text-red-500" />, title: 'Happy Clients', value: '500', colorClass: 'text-red-500', description: 'We have more than 500 satisfied clients across various industries.' },
-    { icon: <FaGlobe className="text-orange-500" />, title: 'Different State Clients', value: '10', colorClass: 'text-orange-500', description: 'Our products are trusted and used in more than 10 different states.' },
-    { icon: <FaBox className="text-blue-500" />, title: 'Products Available', value: '50', colorClass: 'text-blue-500', description: 'We manufacture and supply over 50 high-quality brass products to meet diverse needs.' },
-  ]
+    { icon: <FaUsers className="text-red-500" />, title: 'Happy Clients', value: '250+', colorClass: 'text-red-500', description: 'We have more than 250 satisfied clients across various industries.' },
+    { icon: <FaGlobe className="text-orange-500" />, title: 'Different State Clients', value: '10+', colorClass: 'text-orange-500', description: 'Our products are trusted and used in more than 10 different states.' },
+    { icon: <FaBox className="text-blue-500" />, title: 'Products Available', value: '50+', colorClass: 'text-blue-500', description: 'We manufacture and supply over 50 high-quality brass products to meet diverse needs.' },
+  ];
 
-  const [startCounting, setStartCounting] = useState(false)
-  const containerRef = useRef(null)
+  const [startCounting, setStartCounting] = useState(false);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setStartCounting(true)
-          observer.disconnect()
+          setStartCounting(true);
+          observer.disconnect();
         }
       },
       {
         threshold: 0.2,
       }
-    )
+    );
 
     if (containerRef.current) {
-      observer.observe(containerRef.current)
+      observer.observe(containerRef.current);
     }
 
-    return () => observer.disconnect()
-  }, [])
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white py-16 rounded-3xl" ref={containerRef}>
@@ -137,7 +137,7 @@ const CounterContainer = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CounterContainer
+export default CounterContainer;

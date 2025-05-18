@@ -1,91 +1,53 @@
-import { auth, db, messaging } from "./firebase";
-import { getToken } from "firebase/messaging";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-
-import {
-  collection,
-  doc,
-  getDocs,
-  setDoc,
-  query,
-  where,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
+import axios from "axios";
+import { backendUrl } from "../globle";
+import { authAtom } from "../Atoms/authAtom";
+import { useSetRecoilState } from "recoil";
 
 export async function register(user, navigator) {
-
   const { name, address, contactNo, whatsAppNo, email, password } = user;
 
   try {
-    let cuser = await currentUser(email);
-    if (cuser !== null) {
-      alert("you already have account in SASVAT!! please login");
-      navigator("/login");
-      return null;
-    }
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
- 
-    user = userCredential.user;
-    let isAdmin = false;
-
-    // add admins
-    if (email === "kishanvyas308@gmail.com") {
-      isAdmin = true;
-    }
-
-    const currentTime = new Date().toString();
-
-    await setDoc(doc(db, "Users", user.uid), {
-      id: user.uid,
+    const response = await axios.post(`${backendUrl}/auth/register`, {
       name,
       address,
       contactNo,
       whatsAppNo,
-      email: email,
-      password: password,
-      isAdmin: isAdmin,
-      createdAt: currentTime,
+      email,
+      password,
     });
- 
-    alert("New user created");
-    cuser = await currentUser(email);
-    navigator("/");
-    return cuser;
+
+    if (response.status === 201) {
+      alert("New user created");
+      navigator("/");
+      return response.data.user;
+    }
   } catch (error) {
     console.error("Error during signup:", error);
-    alert("Somthing went wrong, plaease refresh !!");
+    alert(error.response?.data?.message || "Something went wrong, please refresh!");
     return null;
   }
 }
 
 export async function login(email, password, navigator) {
-  try {
-    let user = await currentUser(email);
-    if (user === null) {
-      navigator("/signup");
-      alert("Firest register!!");
-      return null;
-    }
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+ 
 
-    navigator("/");
-    return user;
+  try {
+    const response = await axios.post(`${backendUrl}/auth/login`, {
+      email,
+      password,
+    });
+
+    if (response.status === 200) {
+      const token = response.data.token;
+      localStorage.setItem("authToken", token);
+    
+      alert("Login successful");
+      navigator("/");
+      return {user: response.data.user, token};
+    }
   } catch (error) {
-    const errorCode = error.code || 500;
-    const errorMessage = error.message || "Internal Server Error";
-    alert("invalid password!!");
+    console.error("Error during login:", error);
+    alert(error.response?.data?.message || "Invalid credentials!");
     return null;
   }
 }

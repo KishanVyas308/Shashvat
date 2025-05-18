@@ -45,7 +45,7 @@ function NavBar(props) {
           component="img"
           src={image}
           alt="Logo"
-          sx={{ height: "5em", width: "7em", mt: 1, mb: 1 }}
+          sx={{ height: "4em", width: "7em", mt: 1, mb: 1 }}
         />
       </Link>
       <Divider />

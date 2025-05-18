@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGlobe, faBuilding, faStore, faArrowRight, faPlay, faPause,faIndustry } from '@fortawesome/free-solid-svg-icons'
 import { motion } from 'framer-motion'
-
+import ProductsPage from '../pages/ProductPage'
 const data = [
   { icon: faGlobe, title: 'Nature of Business', description: 'Manufacturers, Trader, Supplier' },
   { icon: faBuilding, title: 'Year of Establishment', description: '2019' },
@@ -77,7 +77,7 @@ export default function Info() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              onClick={() => {} /* Add navigation logic */}
+              onClick={() => {ProductsPage} /* Add navigation logic */}
             >
               View All Products
               <FontAwesomeIcon icon={faArrowRight} className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />

@@ -21,6 +21,7 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
       className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+       onClick={() => handleProductClick(product.id)}
     >
       {/* Image Wrapper */}
       <div className="relative h-80 overflow-hidden bg-white">
@@ -38,13 +39,17 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
           isHovered ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <ul className="space-y-2">
-          {Object.entries(product.details || {}).map(([key, value]) => (
-            <li key={key} className="text-md">
-              <span className="font-medium capitalize">{key}:</span> {value}
-            </li>
-          ))}
-        </ul>
+     <ul className="space-y-2">
+  {["category", "shape", "material", "color", "pattern"].map((key) =>
+    product.details && product.details[key] ? (
+      <li key={key} className="text-lg flex">
+        <span className="font-medium capitalize mr-2">{key}:</span>
+        <span className="text-blue-100">{product.details[key]}</span>
+      </li>
+    ) : null
+  )}
+</ul>
+
         <button
           onClick={() => handleProductClick(product.id)}
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex items-center justify-center space-x-2"

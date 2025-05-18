@@ -10,7 +10,16 @@ import { userAtom } from "../Atoms/userAtom"
 import { storeReview, getAllReviews } from "../backend/manageRewiew"
 import { allReviewsAtom } from "../Atoms/allReviewsAtom"
 import Loading from "./Loading"
-import { ChevronLeft, ChevronRight, Star, Quote, UploadIcon, CheckCircle, ImageIcon } from "lucide-react"
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Star, 
+  Quote, 
+  UploadIcon, 
+  CheckCircle, 
+  ImageIcon,
+  MessageSquare
+} from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 const TestimonialCarousel = () => {
@@ -25,6 +34,7 @@ const TestimonialCarousel = () => {
   const [showSuccess, setShowSuccess] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [form] = Form.useForm()
+  const [hoveringStars, setHoveringStars] = useState(0)
 
   useEffect(() => {
     async function fetchReviews() {
@@ -90,14 +100,15 @@ const TestimonialCarousel = () => {
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className={`absolute z-10 top-1/2 -translate-y-1/2 ${
-        direction === "prev" ? "-left-4 md:left-4" : "-right-4 md:right-4"
-      } bg-white/90 backdrop-blur-sm w-14 h-14 rounded-full shadow-lg transition-all duration-300 
-            hover:shadow-xl border border-gray-100/50 group`}
+        direction === "prev" ? "-left-4 md:left-2" : "-right-4 md:right-2"
+      } bg-white/90 backdrop-blur-sm w-12 h-12 rounded-full shadow-md transition-all duration-300 
+      hover:shadow-lg border border-gray-100/80 group flex items-center justify-center`}
+      aria-label={direction === "prev" ? "Previous testimonial" : "Next testimonial"}
     >
       {direction === "prev" ? (
-        <ChevronLeft className="h-6 w-6 mx-auto text-gray-600 group-hover:text-blue-600 transition-colors" />
+        <ChevronLeft className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
       ) : (
-        <ChevronRight className="h-6 w-6 mx-auto text-gray-600 group-hover:text-blue-600 transition-colors" />
+        <ChevronRight className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
       )}
     </motion.button>
   )
@@ -105,128 +116,181 @@ const TestimonialCarousel = () => {
   const RatingSelector = () => (
     <div className="flex flex-col items-center gap-2">
       <span className="text-gray-700 font-medium">Your Rating</span>
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((rating) => (
           <motion.button
             key={rating}
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.9 }}
             type="button"
             onClick={() => setCurrentRating(rating)}
-            className={`p-2 rounded-full transition-all ${
-              rating <= currentRating ? "text-yellow-400 hover:text-yellow-500" : "text-gray-300 hover:text-gray-400"
-            }`}
+            onMouseEnter={() => setHoveringStars(rating)}
+            onMouseLeave={() => setHoveringStars(0)}
+            className="p-1 rounded-full transition-all focus:outline-none"
+            aria-label={`${rating} star${rating !== 1 ? 's' : ''}`}
           >
-            <Star className="w-8 h-8 fill-current" />
+            <Star 
+              className={`w-7 h-7 ${
+                rating <= (hoveringStars || currentRating) 
+                  ? "text-yellow-400 fill-yellow-400" 
+                  : "text-gray-300"
+              } transition-colors duration-150`} 
+            />
           </motion.button>
         ))}
       </div>
+      <span className="text-sm text-gray-500 mt-1">
+        {hoveringStars > 0 ? getRatingLabel(hoveringStars) : getRatingLabel(currentRating)}
+      </span>
     </div>
   )
 
+  // Helper function to get rating labels
+  const getRatingLabel = (rating) => {
+    const labels = {
+      1: "Poor",
+      2: "Fair",
+      3: "Good",
+      4: "Great",
+      5: "Excellent"
+    }
+    return labels[rating] || ""
+  }
+
+  // Get a quote based on rating to display
+  const getQuoteForRating = (rating) => {
+    const quotes = {
+      1: "Could be better",
+      2: "Satisfactory experience",
+      3: "Good service overall",
+      4: "Really enjoyed working with them",
+      5: "Outstanding experience!"
+    }
+    return quotes[rating] || quotes[5]
+  }
+
+  // Card animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  }
+
+  // Text animation variants for staggered entrance
+  const textVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  }
+
+  // Container for staggered animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-blue-50/50 via-white to-blue-50/30 py-24">
+    <div className="relative bg-gradient-to-b from-blue-50 via-white to-blue-50 py-16 md:py-20">
       {loading ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <Loading />
         </div>
       ) : (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="container mx-auto px-4">
-          <div className="text-center mb-20">
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-blue-600 font-semibold text-sm uppercase tracking-wider mb-4 inline-block"
-            >
-              Testimonials
-            </motion.span>
+        <div className="container mx-auto px-3">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-center mb-5"
+          >
+           
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600"
+              variants={textVariants}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-800 mt-[-40px]"
             >
               What Our Clients Say
             </motion.h2>
+            
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed"
+              variants={textVariants}
+              className="text-gray-600 text-lg max-w-2xl mx-auto"
             >
-              Discover why businesses trust us through their authentic experiences and success stories
+              Real stories from businesses that have partnered with us
             </motion.p>
-          </div>
+          </motion.div>
 
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <Carousel
               showThumbs={false}
               showStatus={false}
               infiniteLoop
               autoPlay
               interval={6000}
-              transitionTime={700}
+              transitionTime={500}
               renderArrowPrev={(clickHandler) => <CustomArrow onClick={clickHandler} direction="prev" />}
               renderArrowNext={(clickHandler) => <CustomArrow onClick={clickHandler} direction="next" />}
               onChange={setCurrentSlide}
               className="testimonial-carousel"
+              swipeable={true}
+              emulateTouch={true}
+              selectedItem={currentSlide}
             >
               {testimonials &&
                 testimonials.map((testimonial, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{
-                      opacity: currentSlide === index ? 1 : 0,
-                      scale: currentSlide === index ? 1 : 0.95,
-                    }}
-                    transition={{ duration: 0.5 }}
-                    className="px-4 py-8"
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate={currentSlide === index ? "visible" : "hidden"}
+                    className="px-4 py-4 md:py-6"
                   >
-                    <div className="bg-white/80 backdrop-blur-sm rounded-[2.5rem] shadow-xl p-8 md:p-12 transition-all duration-500 hover:shadow-2xl mx-auto max-w-4xl">
-                      <div className="relative">
-                        <Quote className="absolute -top-4 -left-4 h-16 w-16 text-blue-500/10" />
-                        <div className="grid md:grid-cols-[auto,1fr] gap-8 md:gap-12 items-center">
-                          <div className="flex flex-col items-center space-y-4">
-                            <motion.div
-                              whileHover={{ scale: 1.05, rotate: 3 }}
-                              className="relative group cursor-pointer"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-[2rem] rotate-6 transform transition-transform group-hover:rotate-12 opacity-10"></div>
-                              <div className="relative w-48 h-48 rounded-[2rem] overflow-hidden border-8 border-white shadow-lg">
-                                <img
-                                  src={testimonial.photoUrl || "/placeholder.svg"}
-                                  alt={testimonial.name}
-                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                              </div>
-                            </motion.div>
-                            <div className="text-center">
-                              <h4 className="text-xl font-bold text-gray-800 mb-1">{testimonial.name}</h4>
-                              <p className="text-blue-600 font-medium">{testimonial.companyName}</p>
-                              <div className="flex justify-center gap-1 mt-3">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-10 transition-all duration-300 hover:shadow-xl mx-auto">
+                      <div className="flex flex-col md:flex-row gap-6 md:gap-8 relative">
+                        <Quote className="absolute -top-3 -left-3 h-12 w-12 text-blue-100" strokeWidth={1} />
+                        
+                        <div className="flex flex-col items-center space-y-4 md:w-1/3">
+                          <div className="relative group">
+                            <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-md border-4 border-white">
+                              <img
+                                src={testimonial.img || "/placeholder.svg"}
+                                alt={testimonial.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            
+                            <div className="mt-4 text-center">
+                              <h4 className="text-xl font-bold text-gray-800">{testimonial.name}</h4>
+                              <p className="text-blue-600 text-sm font-medium">{testimonial.companyName}</p>
+                              
+                              <div className="flex justify-center gap-0.5 mt-2">
                                 {[...Array(5)].map((_, i) => (
                                   <Star
                                     key={i}
-                                    className={`h-5 w-5 ${
-                                      i < (testimonial.rating || 5) ? "text-yellow-400 fill-current" : "text-gray-200"
+                                    size={16}
+                                    className={`${
+                                      i < (testimonial.rating || 5) ? "text-yellow-400 fill-yellow-400" : "text-gray-200"
                                     }`}
                                   />
                                 ))}
                               </div>
                             </div>
                           </div>
-                          <div className="relative">
-                            <Quote className="absolute -top-4 left-0 h-8 w-8 text-blue-500/20 rotate-180" />
-                            <motion.blockquote
-                              initial={{ opacity: 0, x: 20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.3 }}
-                              className="text-gray-600 text-lg md:text-xl leading-relaxed italic pl-6 md:pl-8"
-                            >
-                              {testimonial.description}
-                            </motion.blockquote>
-                          </div>
+                        </div>
+                        
+                        <div className="md:w-2/3 flex flex-col justify-center">
+                          <motion.blockquote
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-gray-600 text-lg leading-relaxed italic"
+                          >
+                            <Quote className="inline-block h-5 w-5 text-blue-200 mr-1 -mt-2" strokeWidth={1.5} />
+                            {testimonial.description}
+                            <Quote className="inline-block h-5 w-5 text-blue-200 ml-1 -mt-2 rotate-180" strokeWidth={1.5} />
+                          </motion.blockquote>
                         </div>
                       </div>
                     </div>
@@ -234,209 +298,224 @@ const TestimonialCarousel = () => {
                 ))}
             </Carousel>
 
-            <div className="text-center mt-16">
+            <div className="flex justify-center mt-8">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={handleModalOpen}
-                className="group inline-flex items-center px-8 py-4 text-lg font-semibold text-white 
-                                bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg 
-                                hover:shadow-xl transition-all duration-300
-                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="flex items-center gap-2 px-3 py-3 bg-blue-600 hover:bg-blue-700 
+                text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Share your testimonial"
               >
-                <span className="relative">
-                  Share Your Story
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-white/40 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
-                </span>
+                <MessageSquare size={18} />
+                Share Your Experience
               </motion.button>
             </div>
+
+           
           </div>
-        </motion.div>
+        </div>
       )}
 
       <Modal
-        title={
-          <AnimatePresence mode="wait">
-            {showSuccess ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="text-center pt-6 pb-4"
-              >
-                <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-                <h3 className="text-2xl font-bold text-green-600">Thank You!</h3>
-                <p className="text-gray-500 text-sm mt-2">Your review has been submitted successfully</p>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="text-center pt-6 pb-4"
-              >
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Share Your Experience
-                </h3>
-                <p className="text-gray-500 text-sm mt-2">Your feedback helps us grow and improve</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        }
-        visible={modalVisible}
+        title={null}
+        open={modalVisible}
         onCancel={handleModalClose}
         footer={null}
-        className="max-w-lg"
+        width={480}
         centered
+        className="testimonial-modal"
+        closeIcon={<span className="text-gray-500 hover:text-gray-700">×</span>}
       >
-        <Form form={form} name="review-form" onFinish={handleSubmit} layout="vertical" className="space-y-6 pt-4">
-          <Form.Item
-            label={<span className="text-gray-700 font-medium">Your Name</span>}
-            name="name"
-            rules={[{ required: true, message: "Please input your name!" }]}
-          >
-            <Input
-              className="rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 py-2.5"
-              placeholder="Enter your full name"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-gray-700 font-medium">Company</span>}
-            name="companyName"
-            rules={[{ required: true, message: "Please input your company name!" }]}
-          >
-            <Input
-              className="rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 py-2.5"
-              placeholder="Enter your company name"
-            />
-          </Form.Item>
-
-          <RatingSelector />
-
-          <Form.Item
-            label={<span className="text-gray-700 font-medium">Your Experience</span>}
-            name="description"
-            rules={[{ required: true, message: "Please share your experience!" }]}
-          >
-            <Input.TextArea
-              rows={4}
-              className="rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-              placeholder="Tell us about your experience..."
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={<span className="text-gray-700 font-medium">Profile Photo</span>}
-            name="photo"
-            rules={[{ required: true, message: "Please upload your photo!" }]}
-          >
-            <div className="space-y-4">
-              <Upload beforeUpload={() => false} onChange={handleUpload} showUploadList={false} className="w-full">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 px-6 border-2 border-dashed border-gray-200 rounded-xl
-                                    text-gray-600 hover:border-blue-500 hover:text-blue-500 transition-colors duration-200
-                                    flex items-center justify-center gap-2 group"
-                >
-                  {previewImage ? (
-                    <>
-                      <ImageIcon className="w-5 h-5" />
-                      Change Photo
-                    </>
-                  ) : (
-                    <>
-                      <UploadIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
-                      Upload Your Photo
-                    </>
-                  )}
-                </motion.button>
-              </Upload>
-
-              {previewImage && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="relative w-20 h-20 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg"
-                >
-                  <img src={previewImage || "/placeholder.svg"} alt="Preview" className="w-full h-full object-cover" />
-                </motion.div>
-              )}
-            </div>
-          </Form.Item>
-
-          <div className="flex justify-end gap-4 pt-4">
-            <Button
-              onClick={handleModalClose}
-              className="px-6 py-2 rounded-xl border border-gray-200 hover:border-gray-300 
-                            text-gray-600 hover:text-gray-800 transition-colors"
-              disabled={submitting}
+        <AnimatePresence mode="wait">
+         
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 
-                            text-white rounded-xl hover:opacity-90 transition-opacity"
-              loading={submitting}
-            >
-              {submitting ? "Submitting..." : "Submit Review"}
-            </Button>
-          </div>
-        </Form>
+              <div className="text-center pt-6 pb-4">
+                <MessageSquare className="w-12 h-12 mx-auto text-blue-500 mb-3" />
+                <h3 className="text-2xl font-bold text-gray-800">Share Your Experience</h3>
+                <p className="text-gray-500 text-sm mt-1">Help others by sharing your feedback</p>
+              </div>
+
+              <Form form={form} name="review-form" onFinish={handleSubmit} layout="vertical" className="mt-6">
+                <div className="space-y-4">
+                  <Form.Item
+                    label={<span className="text-gray-700">Your Name</span>}
+                    name="name"
+                    rules={[{ required: true, message: "Please enter your name" }]}
+                  >
+                    <Input
+                      className="rounded-lg border-gray-200 py-2"
+                      placeholder="Enter your full name"
+                      prefix={<span className="text-gray-400 mr-2">👤</span>}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span className="text-gray-700">Company</span>}
+                    name="companyName"
+                    rules={[{ required: true, message: "Please enter your company name" }]}
+                  >
+                    <Input
+                      className="rounded-lg border-gray-200 py-2"
+                      placeholder="Enter your company name"
+                      prefix={<span className="text-gray-400 mr-2">🏢</span>}
+                    />
+                  </Form.Item>
+
+                  <div className="py-2">
+                    <RatingSelector />
+                  </div>
+
+                  <Form.Item
+                    label={<span className="text-gray-700">Your Experience</span>}
+                    name="description"
+                    rules={[{ required: true, message: "Please share your experience" }]}
+                  >
+                    <Input.TextArea
+                      rows={3}
+                      className="rounded-lg border-gray-200"
+                      placeholder={getQuoteForRating(currentRating)}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span className="text-gray-700">Your Photo</span>}
+                    name="photo"
+                    rules={[{ required: false, message: "Please upload your photo" }]}
+                  >
+                    <div className="space-y-3">
+                      {previewImage ? (
+                        <div className="flex items-center space-x-4">
+                          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-100">
+                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                          </div>
+                          <Upload 
+                            beforeUpload={() => false} 
+                            onChange={handleUpload} 
+                            showUploadList={false}
+                          >
+                            <Button 
+                              type="default"
+                              icon={<ImageIcon className="h-4 w-4 mr-1" />}
+                              className="flex items-center"
+                            >
+                              Change
+                            </Button>
+                          </Upload>
+                        </div>
+                      ) : (
+                        <Upload
+                          beforeUpload={() => false}
+                          onChange={handleUpload}
+                          showUploadList={false}
+                          className="w-full"
+                        >
+                          <motion.div
+                            whileHover={{ scale: 1.01, borderColor: "#3b82f6" }}
+                            className="p-4 border-2 border-dashed border-gray-200 rounded-lg
+                            flex flex-col items-center justify-center gap-2 cursor-pointer
+                            hover:border-blue-500 transition-colors"
+                          >
+                            <div className="p-2 bg-blue-50 rounded-full">
+                              <UploadIcon className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div className="text-sm text-gray-600">Upload your photo</div>
+                            <div className="text-xs text-gray-400">(Optional)</div>
+                          </motion.div>
+                        </Upload>
+                      )}
+                    </div>
+                  </Form.Item>
+                </div>
+
+                <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
+                  <Button
+                    onClick={handleModalClose}
+                    className="flex-1 py-2 px-4 border border-gray-200 rounded-lg
+                    text-gray-600 hover:text-gray-800 hover:border-gray-300 transition-colors"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700
+                    text-white rounded-lg transition-colors"
+                    loading={submitting}
+                  >
+                    {submitting ? "Submitting..." : "Submit Review"}
+                  </Button>
+                </div>
+              </Form>
+            </motion.div>
+          )
+        </AnimatePresence>
       </Modal>
 
       <style jsx global>{`
-                .testimonial-carousel .carousel.carousel-slider {
-                    overflow: visible;
-                }
-                .testimonial-carousel .carousel .control-dots {
-                    bottom: -50px;
-                }
-                .testimonial-carousel .carousel .control-dots .dot {
-                    width: 12px;
-                    height: 12px;
-                    background: #e2e8f0;
-                    box-shadow: none;
-                    opacity: 1;
-                    transition: all 0.3s ease;
-                }
-                .testimonial-carousel .carousel .control-dots .dot.selected {
-                    background: #2563eb;
-                    transform: scale(1.2);
-                }
-                
-                /* Enhanced Modal Styles */
-                .ant-modal-content {
-                    border-radius: 24px;
-                    overflow: hidden;
-                }
-                .ant-modal-header {
-                    border-bottom: none;
-                }
-                .ant-modal-footer {
-                    border-top: none;
-                }
-                .ant-form-item-label > label {
-                    font-weight: 500;
-                }
-                .ant-input-textarea {
-                    transition: all 0.3s ease;
-                }
-                .ant-input-textarea:hover {
-                    border-color: #3b82f6;
-                }
-                .ant-form-item-explain-error {
-                    font-size: 0.875rem;
-                    margin-top: 0.25rem;
-                    color: #ef4444;
-                }
-            `}</style>
+        .testimonial-carousel .carousel.carousel-slider {
+          overflow: visible;
+        }
+        .testimonial-carousel .carousel .control-dots {
+          bottom: -40px;
+        }
+        .testimonial-carousel .carousel .control-dots .dot {
+          width: 8px;
+          height: 8px;
+          background: #cbd5e1;
+          box-shadow: none;
+          opacity: 1;
+          transition: all 0.3s ease;
+        }
+        .testimonial-carousel .carousel .control-dots .dot.selected {
+          background: #3b82f6;
+          transform: scale(1.2);
+        }
+        
+        /* Modal Styles */
+        .testimonial-modal .ant-modal-content {
+          border-radius: 16px;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .testimonial-modal .ant-modal-close {
+          top: 16px;
+          right: 16px;
+        }
+        .testimonial-modal .ant-modal-close-x {
+          font-size: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 28px;
+          width: 28px;
+        }
+        .testimonial-modal .ant-form-item-label > label {
+          font-weight: 500;
+        }
+        .testimonial-modal .ant-form-item-explain-error {
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+          color: #ef4444;
+        }
+        .testimonial-modal .ant-input:hover, 
+        .testimonial-modal .ant-input:focus,
+        .testimonial-modal .ant-input-affix-wrapper:hover,
+        .testimonial-modal .ant-input-affix-wrapper:focus {
+          border-color: #3b82f6;
+        }
+        .testimonial-modal .ant-input-affix-wrapper:focus,
+        .testimonial-modal .ant-input-affix-wrapper-focused {
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+      `}</style>
     </div>
   )
 }
 
 export default TestimonialCarousel
-
