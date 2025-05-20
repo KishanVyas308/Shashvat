@@ -72,27 +72,26 @@ const ProductDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
             {/* Product Image */}
             <div className="bg-white rounded-lg overflow-hidden">
-              <div className="hidden lg:block">
+              <div className=" lg:block">
                 <ReactImageMagnify
-                  smallImage={{
-                    alt: product.name,
-                    isFluidWidth: true,
-                    src: product.imageUrl || "/placeholder.svg",
+                  {...{
+                    smallImage: {
+                      alt: product.name,
+                      isFluidWidth: true,
+                      src: product.imageUrl,
+                    },
+                    largeImage: {
+                      src: product.imageUrl,
+                      width: 800,
+                      height: 800,
+                    },
+                    enlargedImageContainerDimensions: {
+                      width: "50%",
+                      height: "50%",
+                    },
+                    isHintEnabled: true,
+                    shouldUsePositiveSpaceLens: true,
                   }}
-                  largeImage={{
-                    src: product.imageUrl || "/placeholder.svg",
-                    width: 1200,
-                    height: 1200,
-                  }}
-                  enlargedImageContainerDimensions={{
-                    width: "200%",
-                    height: "100%",
-                  }}
-                  enlargedImagePosition="beside"
-                  isHintEnabled={true}
-                  hintTextMouse="Hover to zoom"
-                  hintTextTouch="Long-touch to zoom"
-                  shouldUsePositiveSpaceLens={true}
                 />
               </div>
               <div className="lg:hidden">
@@ -251,12 +250,13 @@ const ProductDetail = () => {
                   <h3 className="font-medium text-gray-900 mb-3">Physical Properties</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Shape:</span>
+                      <span className="text-gray-600">Shape:</span
                       <span className="font-medium">{product.details?.shape || "----"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Color:</span>
                       <span className="font-medium">{product.details?.color || "----"}</span>
+
                     </div>
                   </div>
                 </div>
@@ -265,6 +265,7 @@ const ProductDetail = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Pattern:</span>
+
                       <span className="font-medium">{product.details?.pattern || "----"}</span>
                     </div>
                     <div className="flex justify-between">
@@ -294,3 +295,4 @@ const ProductDetail = () => {
 }
 
 export default ProductDetail
+

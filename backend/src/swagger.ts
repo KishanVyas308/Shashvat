@@ -1,6 +1,7 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
+import { url } from 'inspector';
 
 const options = {
   definition: {
@@ -13,6 +14,9 @@ const options = {
     servers: [
       {
         url: 'http://localhost:3000/api/v1',
+      },
+      {
+        url: 'https://api.shashvatenterprise.com/api/v1'
       },
     ],
   },
