@@ -46,7 +46,7 @@ const Home = () => {
     <div>
       <SEO title={title} description={description} keywords={keywords}  />
       
-      <main className="p-0  m-0">
+      <main className="px-3  m-0">
         <HeroSlider />
       </main>
       <Info />

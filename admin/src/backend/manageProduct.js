@@ -51,7 +51,6 @@ export async function allProduct() {
   try {
     const response = await axios.get(`${backendUrl}/products/all`);
     const products = response.data;
-console.log(products.details);
     // Convert base64 image strings to usable image URLs
     const updatedProducts = products.map((product) => {
       if (product.img && typeof product.img === "string" && product.img.startsWith("data:image")) {
