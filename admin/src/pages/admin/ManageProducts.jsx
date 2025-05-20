@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import CreateProduct from "../../Componets/admin/CreateProduct"
 import UpdateProduct from "../../Componets/admin/UpdateProduct"
 import DeleteProduct from "../../Componets/admin/DeleteProduct"
+import ManageCategories from "../../Componets/admin/ManageCategories"
 
 const ManageProducts = () => {
   const [selectedTab, setSelectedTab] = useState("create")
@@ -73,6 +74,23 @@ const ManageProducts = () => {
         </svg>
       ),
     },
+    {
+      id: "categories",
+      label: "Categories",
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <motion.path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16M4 18h7"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1, type: "spring" }}
+          />
+        </svg>
+      ),
+    },
   ]
 
   return (
@@ -94,7 +112,7 @@ const ManageProducts = () => {
           </div>
         </motion.div>
 
-        <div className="backdrop-blur-xl bg-white/70 rounded-2xl shadow-xl border border-white/20 p-2 inline-flex mb-6">
+        <div className="backdrop-blur-xl bg-white/70 rounded-2xl shadow-xl border border-white/20 p-2 inline-flex mb-6 flex-wrap">
           {tabs.map((tab) => (
             <motion.button
               key={tab.id}
@@ -102,7 +120,7 @@ const ManageProducts = () => {
               className={`
                 relative px-6 py-3 rounded-xl font-medium text-sm
                 transition-all duration-300 ease-out
-                flex items-center gap-2
+                flex items-center gap-2 m-1
                 ${selectedTab === tab.id ? "text-white bg-gradient-to-r from-blue-500 to-blue-700" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"}
               `}
               whileHover={{ scale: 1.02 }}
@@ -147,6 +165,7 @@ const ManageProducts = () => {
                     {selectedTab === "create" && <CreateProduct />}
                     {selectedTab === "update" && <UpdateProduct />}
                     {selectedTab === "delete" && <DeleteProduct />}
+                    {selectedTab === "categories" && <ManageCategories />}
                   </div>
                 </div>
               </motion.div>

@@ -130,9 +130,9 @@ const ProductsPage = () => {
     scrollToTop()
   }, [])
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredProducts = (products || []).filter((product) =>
+  product.name.toLowerCase().includes(searchTerm.toLowerCase())
+)
 
   return (
     <div className="min-h-screen bg-gray-50">
