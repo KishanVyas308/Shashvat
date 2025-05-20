@@ -41,11 +41,14 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
     >
       <h2 className="text-lg font-semibold">{product.name}</h2>
       <ul className="space-y-2">
-        {Object.entries(product.details || {}).map(([key, value]) => (
-          <li key={key} className="text-md">
-            <span className="font-medium capitalize">{key}:</span> {value}
-          </li>
-        ))}
+               {Object.entries(product.details)
+  .filter(([key]) => ["category", "shape", "material", "color", "size","pattern"].includes(key.toLowerCase()))
+  .map(([key, value]) => (
+    <li key={key} className="text-lg flex">
+      <span className="font-medium capitalize mr-2">{key}:</span>
+      <span className="text-blue-100">{value}</span>
+    </li>
+))}
       </ul>
       <button
         onClick={(e) => {

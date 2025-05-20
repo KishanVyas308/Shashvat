@@ -1,96 +1,70 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { db } from "./firebase";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { backendUrl } from "../globle";
 
-export async function addProductRequirementRequest(
-  user,
-  product,
-  specificDetail
-) {
-  const currentTime = new Date().toString();
-  const id = currentTime.replace(/\s+/g, "");
+export async function addProductRequirementRequest(user, product, specificDetail) {
   try {
-    await setDoc(doc(db, "Requirements", id), {
-      id,
-      user,
-      product,
-      specificDetail,
-      isViewd: false,
+    const response = await axios.post(`${backendUrl}/requirements/add`, {
+      name: user.name,
+      email: user.email,
+      contactNo: user.contactNo,
+      whatsAppNo: user.whatsAppNo,
+      companyName: user.companyName,
+      description: specificDetail,
+      isNewProductRequest: true,
+      productId: product.id,
+      productName: product.name,
     });
 
-    alert("Requirement request sended!!");
+    if (response.status === 201) {
+      toast.success("Requirement request sent!");
+    }
   } catch (error) {
-    alert("Something gose wrong!!");
+    console.error("Error adding requirement request:", error);
+    toast.error("Something went wrong!");
   }
 }
 
 export async function allRequirementRequest() {
   try {
-    const Requirements = await getDocs(collection(db, "Requirements"));
-   
-    const RequirementsData = []; // Array to store the product data
-    Requirements.forEach(async (doc) => {
-      // Access the document data
-      const data = doc.data();
-      RequirementsData.push(data);
-    });
-
-    return RequirementsData;
+    const response = await axios.get(`${backendUrl}/requirements/all`);
+    return response.data;
   } catch (error) {
-    console.error("Error geting all Request:", error); // Log specific error for debugging
-    return null; // Generic error message for user
+    console.error("Error fetching all requests:", error);
+    return null;
   }
 }
 
 export async function markAsReadAllRequest() {
   try {
-    const q = query(
-      collection(db, "Requirements"),
-      where("isViewd", "==", false)
-    );
-    const querySnapshot = await getDocs(q);
-   
-    for (const document of querySnapshot.docs) {
-      // Access the document data
-      const data = document.data();
-
-      // Create a reference to the document
-      const docRef = doc(db, "Requirements", document.id);
-
-      // Update the document
-      await updateDoc(docRef, {
-        isViewd: true,
-      });
-    
+    const response = await axios.put(`${backendUrl}/requirements/mark-as-read`);
+    if (response.status === 200) {
+      toast.success("All requests marked as read.");
     }
   } catch (error) {
-    console.error("Error:", error); // Log specific error for debugging
-    // Generic error message for user
+    console.error("Error marking requests as read:", error);
+    toast.error("Something went wrong!");
   }
 }
 
 export async function sendReplayToRequest(product, user, specificDetail) {
-  const number = user.whatsAppNo; // recipient number in international format
-  const message = `Dear *${user.name}* \n\nWe(Sasvat) recived your request on *${product.name}* \nhttp://shashvatenterprise/productdetail/${product.id}  \n\nWhere your reques is \n_${specificDetail}_ \n\n `;
+  const number = user.whatsAppNo;
+  const message = `Dear *${user.name}* \n\nWe (Shasvat) received your request on *${product.name}* \nhttp://shashvatenterprise/productdetail/${product.id}  \n\nWhere your request is \n_${specificDetail}_ \n\n `;
   const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank");
 }
 
 export async function deleteRequirementRequest(id) {
   try {
-    console.log(id);
-    await deleteDoc(doc(db, "Requirements", id));
+    const response = await axios.delete(`${backendUrl}/requirements/delete`, {
+      data: { id },
+    });
 
-    alert("Request deleted..");
+    if (response.status === 200) {
+      toast.success("Request deleted.");
+    }
   } catch (error) {
-    alert("Something went wrong");
+    console.error("Error deleting requirement request:", error);
+    toast.error("Something went wrong!");
   }
 }

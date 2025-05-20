@@ -2,33 +2,31 @@ import axios from "axios";
 import { backendUrl } from "../globle";
 import { toast } from "react-toastify";
 
+import { convertImageToBase64 } from "./helper";
+
 export async function storeReview(review, imageFile) {
   try {
-    let imageUrl = "";
+    let imageBase64 = "";
 
     if (imageFile) {
-      const formData = new FormData();
-      formData.append("file", imageFile);
-
-      const uploadResponse = await axios.post(`${backendUrl}/upload`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      imageUrl = uploadResponse.data.url;
+      // Convert image file to base64 string
+      imageBase64 = await convertImageToBase64(imageFile, 800, 0.7);
     }
 
     const response = await axios.post(`${backendUrl}/reviews/add`, {
       ...review,
-      img: imageUrl,
+      img: imageBase64, // Send base64 string instead of file
     });
 
     if (response.status === 201) {
       toast.success("Review added successfully!");
     }
   } catch (error) {
+    console.error("Error storing review:", error);
     toast.error("Something went wrong, Please refresh!!");
   }
 }
+
 
 export async function getAllReviews() {
   try {

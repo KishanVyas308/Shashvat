@@ -53,6 +53,9 @@ const Home = () => {
       
       <ProductList />
       <InfoSection />
+        <h2 className="text-center text-4xl font-bold mb-8">
+        <span className="text-blue-600">Popular</span> Products
+      </h2>
       <PopularProduct />
       <CounterContainer />
       <Testinomialcaresoul />

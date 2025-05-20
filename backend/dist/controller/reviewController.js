@@ -86,7 +86,6 @@ const addReview = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 name,
                 img,
                 rating,
-                productId,
             },
         });
         return res.status(201).json({ message: 'Review added successfully!', review: newReview });

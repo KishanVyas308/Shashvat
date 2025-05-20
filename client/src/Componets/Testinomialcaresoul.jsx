@@ -1,285 +1,521 @@
-import React, { useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { ChevronLeft, ChevronRight, Camera, X, Loader2 } from 'lucide-react';
-import { userAtom } from '../Atoms/userAtom';
-import { allReviewsAtom } from '../Atoms/allReviewsAtom';
-import { storeReview, getAllReviews } from '../backend/manageRewiew';
+"use client"
+
+import { useEffect, useState } from "react"
+import { Carousel } from "react-responsive-carousel"
+import "react-responsive-carousel/lib/styles/carousel.min.css"
+import "tailwindcss/tailwind.css"
+import { Modal, Button, Form, Input, Upload, message } from "antd"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { userAtom } from "../Atoms/userAtom"
+import { storeReview, getAllReviews } from "../backend/manageRewiew"
+import { allReviewsAtom } from "../Atoms/allReviewsAtom"
+import Loading from "./Loading"
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Star, 
+  Quote, 
+  UploadIcon, 
+  CheckCircle, 
+  ImageIcon,
+  MessageSquare
+} from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 const TestimonialCarousel = () => {
-  const [testimonials, setTestimonials] = useRecoilState(allReviewsAtom);
-  const user = useRecoilValue(userAtom);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    companyName: '',
-    description: '',
-    photo: null
-  });
-  const [previewUrl, setPreviewUrl] = useState('');
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [testimonials, setTestimonials] = useRecoilState(allReviewsAtom)
+  const user = useRecoilValue(userAtom)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [file, setFile] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [currentRating, setCurrentRating] = useState(5)
+  const [previewImage, setPreviewImage] = useState(null)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [form] = Form.useForm()
+  const [hoveringStars, setHoveringStars] = useState(0)
 
   useEffect(() => {
-    fetchTestimonials();
-  }, []);
+    async function fetchReviews() {
+      setLoading(true)
+      try {
+        const reviews = await getAllReviews()
+        setTestimonials(reviews)
+      } catch (error) {
+        console.error("Error fetching reviews:", error)
+        message.error("Failed to load testimonials")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchReviews()
+  }, [setTestimonials])
 
-  const fetchTestimonials = async () => {
-    setLoading(true);
+  const handleModalOpen = () => {
+    setModalVisible(true)
+    setCurrentRating(5)
+    setFile(null)
+    setPreviewImage(null)
+    form.resetFields()
+  }
+
+  const handleModalClose = () => {
+    setModalVisible(false)
+    setShowSuccess(false)
+  }
+
+  const handleUpload = ({ file }) => {
+    setFile(file)
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        setPreviewImage(e.target?.result)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleSubmit = async (values) => {
+    setSubmitting(true)
     try {
-      const reviews = await getAllReviews();
-      setTestimonials(reviews);
+      await storeReview({ ...values, rating: currentRating }, file)
+      const updatedReviews = await getAllReviews()
+      setTestimonials(updatedReviews)
+      setShowSuccess(true)
+      setTimeout(() => {
+        handleModalClose()
+        setShowSuccess(false)
+      }, 2000)
+      message.success("Thank you for your review!")
     } catch (error) {
-      console.error('Error fetching reviews:', error);
+      console.error("Error submitting review:", error)
+      message.error("Failed to submit review. Please try again.")
     } finally {
-      setLoading(false);
+      setSubmitting(false)
     }
-  };
+  }
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
+  const CustomArrow = ({ onClick, direction }) => (
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onClick}
+      className={`absolute z-10 top-1/2 -translate-y-1/2 ${
+        direction === "prev" ? "-left-4 md:left-2" : "-right-4 md:right-2"
+      } bg-white/90 backdrop-blur-sm w-12 h-12 rounded-full shadow-md transition-all duration-300 
+      hover:shadow-lg border border-gray-100/80 group flex items-center justify-center`}
+      aria-label={direction === "prev" ? "Previous testimonial" : "Next testimonial"}
+    >
+      {direction === "prev" ? (
+        <ChevronLeft className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+      ) : (
+        <ChevronRight className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+      )}
+    </motion.button>
+  )
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  const handleTouchStart = (e) => {
-    setTouchStart(e.touches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) {
-      handleNext();
-    }
-    if (touchStart - touchEnd < -75) {
-      handlePrev();
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({
-        ...prev,
-        photo: file
-      }));
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await storeReview(formData);
-      await fetchTestimonials();
-      setIsModalOpen(false);
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000);
-      setFormData({
-        name: '',
-        companyName: '',
-        description: '',
-        photo: null
-      });
-      setPreviewUrl('');
-    } catch (error) {
-      console.error('Error submitting review:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading && !testimonials.length) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+  const RatingSelector = () => (
+    <div className="flex flex-col items-center gap-2">
+      <span className="text-gray-700 font-medium">Your Rating</span>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((rating) => (
+          <motion.button
+            key={rating}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            type="button"
+            onClick={() => setCurrentRating(rating)}
+            onMouseEnter={() => setHoveringStars(rating)}
+            onMouseLeave={() => setHoveringStars(0)}
+            className="p-1 rounded-full transition-all focus:outline-none"
+            aria-label={`${rating} star${rating !== 1 ? 's' : ''}`}
+          >
+            <Star 
+              className={`w-7 h-7 ${
+                rating <= (hoveringStars || currentRating) 
+                  ? "text-yellow-400 fill-yellow-400" 
+                  : "text-gray-300"
+              } transition-colors duration-150`} 
+            />
+          </motion.button>
+        ))}
       </div>
-    );
+      <span className="text-sm text-gray-500 mt-1">
+        {hoveringStars > 0 ? getRatingLabel(hoveringStars) : getRatingLabel(currentRating)}
+      </span>
+    </div>
+  )
+
+  // Helper function to get rating labels
+  const getRatingLabel = (rating) => {
+    const labels = {
+      1: "Poor",
+      2: "Fair",
+      3: "Good",
+      4: "Great",
+      5: "Excellent"
+    }
+    return labels[rating] || ""
+  }
+
+  // Get a quote based on rating to display
+  const getQuoteForRating = (rating) => {
+    const quotes = {
+      1: "Could be better",
+      2: "Satisfactory experience",
+      3: "Good service overall",
+      4: "Really enjoyed working with them",
+      5: "Outstanding experience!"
+    }
+    return quotes[rating] || quotes[5]
+  }
+
+  // Card animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  }
+
+  // Text animation variants for staggered entrance
+  const textVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  }
+
+  // Container for staggered animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
   }
 
   return (
-    <div className="relative max-w-6xl mx-auto px-4 py-16">
-      <h2 className="text-4xl font-bold text-center mb-12">
-        What Our <span className="text-blue-500">Clients</span> Say
-      </h2>
-
-      <div 
-        className="relative overflow-hidden bg-white rounded-2xl shadow-xl"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className="p-8">
-          {testimonials && testimonials.length > 0 && (
-            <div className="flex flex-col md:flex-row items-center gap-8 transition-opacity duration-300">
-              <div className="w-32 h-32 flex-shrink-0">
-                <img
-                  src={testimonials[currentIndex].photoUrl}
-                  alt={testimonials[currentIndex].name}
-                  className="w-full h-full object-cover rounded-full border-4 border-blue-500 shadow-lg"
-                />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <p className="text-gray-600 italic text-lg mb-4">"{testimonials[currentIndex].description}"</p>
-                <h4 className="text-xl font-semibold text-blue-500">{testimonials[currentIndex].name}</h4>
-                <p className="text-gray-500">{testimonials[currentIndex].companyName}</p>
-              </div>
-            </div>
-          )}
+    <div className="relative bg-gradient-to-b from-blue-50 via-white to-blue-50 py-16 md:py-20">
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loading />
         </div>
-
-        {testimonials && testimonials.length > 1 && (
-          <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-4">
-            <button
-              onClick={handlePrev}
-              className="p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-colors"
+      ) : (
+        <div className="container mx-auto px-3">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-center mb-5"
+          >
+           
+            <motion.h2
+              variants={textVariants}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-800 mt-[-40px]"
             >
-              <ChevronLeft className="w-6 h-6 text-blue-500" />
-            </button>
-            <button
-              onClick={handleNext}
-              className="p-2 rounded-full bg-white shadow-lg hover:bg-gray-50 transition-colors"
+              What Our Clients Say
+            </motion.h2>
+            
+            <motion.p
+              variants={textVariants}
+              className="text-gray-600 text-lg max-w-2xl mx-auto"
             >
-              <ChevronRight className="w-6 h-6 text-blue-500" />
-            </button>
-          </div>
-        )}
-      </div>
+              Real stories from businesses that have partnered with us
+            </motion.p>
+          </motion.div>
 
-      <div className="text-center mt-8">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105"
-        >
-          Share Your Experience
-        </button>
-      </div>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-semibold">Share Your Experience</h3>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="p-1 hover:bg-gray-100 rounded-full"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Company
-                </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Your Experience
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32 resize-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Photo
-                </label>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors">
-                    <Camera className="w-5 h-5" />
-                    <span>Choose Photo</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      required
-                    />
-                  </label>
-                  {previewUrl && (
-                    <div className="w-12 h-12 rounded-full overflow-hidden">
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
+          <div className="max-w-6xl mx-auto">
+            <Carousel
+              showThumbs={false}
+              showStatus={false}
+              infiniteLoop
+              autoPlay
+              interval={6000}
+              transitionTime={500}
+              renderArrowPrev={(clickHandler) => <CustomArrow onClick={clickHandler} direction="prev" />}
+              renderArrowNext={(clickHandler) => <CustomArrow onClick={clickHandler} direction="next" />}
+              onChange={setCurrentSlide}
+              className="testimonial-carousel"
+              swipeable={true}
+              emulateTouch={true}
+              selectedItem={currentSlide}
+            >
+              {testimonials &&
+                testimonials.map((testimonial, index) => (
+                  <motion.div
+                    key={index}
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate={currentSlide === index ? "visible" : "hidden"}
+                    className="px-4 py-4 md:py-6"
+                  >
+                    <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-10 transition-all duration-300 hover:shadow-xl mx-auto">
+                      <div className="flex flex-col md:flex-row gap-6 md:gap-8 relative">
+                        <Quote className="absolute -top-3 -left-3 h-12 w-12 text-blue-100" strokeWidth={1} />
+                        
+                        <div className="flex flex-col items-center space-y-4 md:w-1/3">
+                          <div className="relative group">
+                            <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-md border-4 border-white">
+                              <img
+                                src={testimonial.img || "/placeholder.svg"}
+                                alt={testimonial.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            
+                            <div className="mt-4 text-center">
+                              <h4 className="text-xl font-bold text-gray-800">{testimonial.name}</h4>
+                              <p className="text-blue-600 text-sm font-medium">{testimonial.companyName}</p>
+                              
+                              <div className="flex justify-center gap-0.5 mt-2">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    size={16}
+                                    className={`${
+                                      i < (testimonial.rating || 5) ? "text-yellow-400 fill-yellow-400" : "text-gray-200"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="md:w-2/3 flex flex-col justify-center">
+                          <motion.blockquote
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-gray-600 text-lg leading-relaxed italic"
+                          >
+                            <Quote className="inline-block h-5 w-5 text-blue-200 mr-1 -mt-2" strokeWidth={1.5} />
+                            {testimonial.description}
+                            <Quote className="inline-block h-5 w-5 text-blue-200 ml-1 -mt-2 rotate-180" strokeWidth={1.5} />
+                          </motion.blockquote>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </motion.div>
+                ))}
+            </Carousel>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold shadow-md hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            <div className="flex justify-center mt-8">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleModalOpen}
+                className="flex items-center gap-2 px-3 py-3 bg-blue-600 hover:bg-blue-700 
+                text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Share your testimonial"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  'Submit Review'
-                )}
-              </button>
-            </form>
+                <MessageSquare size={18} />
+                Share Your Experience
+              </motion.button>
+            </div>
+
+           
           </div>
         </div>
       )}
 
-      {showNotification && (
-        <div className="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in-up">
-          Review submitted successfully!
-        </div>
-      )}
-    </div>
-  );
-};
+      <Modal
+        title={null}
+        open={modalVisible}
+        onCancel={handleModalClose}
+        footer={null}
+        width={480}
+        centered
+        className="testimonial-modal"
+        closeIcon={<span className="text-gray-500 hover:text-gray-700">×</span>}
+      >
+        <AnimatePresence mode="wait">
+         
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="text-center pt-6 pb-4">
+                <MessageSquare className="w-12 h-12 mx-auto text-blue-500 mb-3" />
+                <h3 className="text-2xl font-bold text-gray-800">Share Your Experience</h3>
+                <p className="text-gray-500 text-sm mt-1">Help others by sharing your feedback</p>
+              </div>
 
-export default TestimonialCarousel;
+              <Form form={form} name="review-form" onFinish={handleSubmit} layout="vertical" className="mt-6">
+                <div className="space-y-4">
+                  <Form.Item
+                    label={<span className="text-gray-700">Your Name</span>}
+                    name="name"
+                    rules={[{ required: true, message: "Please enter your name" }]}
+                  >
+                    <Input
+                      className="rounded-lg border-gray-200 py-2"
+                      placeholder="Enter your full name"
+                      prefix={<span className="text-gray-400 mr-2">👤</span>}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span className="text-gray-700">Company</span>}
+                    name="companyName"
+                    rules={[{ required: true, message: "Please enter your company name" }]}
+                  >
+                    <Input
+                      className="rounded-lg border-gray-200 py-2"
+                      placeholder="Enter your company name"
+                      prefix={<span className="text-gray-400 mr-2">🏢</span>}
+                    />
+                  </Form.Item>
+
+                  <div className="py-2">
+                    <RatingSelector />
+                  </div>
+
+                  <Form.Item
+                    label={<span className="text-gray-700">Your Experience</span>}
+                    name="description"
+                    rules={[{ required: true, message: "Please share your experience" }]}
+                  >
+                    <Input.TextArea
+                      rows={3}
+                      className="rounded-lg border-gray-200"
+                      placeholder={getQuoteForRating(currentRating)}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span className="text-gray-700">Your Photo</span>}
+                    name="photo"
+                    rules={[{ required: false, message: "Please upload your photo" }]}
+                  >
+                    <div className="space-y-3">
+                      {previewImage ? (
+                        <div className="flex items-center space-x-4">
+                          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-100">
+                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                          </div>
+                          <Upload 
+                            beforeUpload={() => false} 
+                            onChange={handleUpload} 
+                            showUploadList={false}
+                          >
+                            <Button 
+                              type="default"
+                              icon={<ImageIcon className="h-4 w-4 mr-1" />}
+                              className="flex items-center"
+                            >
+                              Change
+                            </Button>
+                          </Upload>
+                        </div>
+                      ) : (
+                        <Upload
+                          beforeUpload={() => false}
+                          onChange={handleUpload}
+                          showUploadList={false}
+                          className="w-full"
+                        >
+                          <motion.div
+                            whileHover={{ scale: 1.01, borderColor: "#3b82f6" }}
+                            className="p-4 border-2 border-dashed border-gray-200 rounded-lg
+                            flex flex-col items-center justify-center gap-2 cursor-pointer
+                            hover:border-blue-500 transition-colors"
+                          >
+                            <div className="p-2 bg-blue-50 rounded-full">
+                              <UploadIcon className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div className="text-sm text-gray-600">Upload your photo</div>
+                            <div className="text-xs text-gray-400">(Optional)</div>
+                          </motion.div>
+                        </Upload>
+                      )}
+                    </div>
+                  </Form.Item>
+                </div>
+
+                <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
+                  <Button
+                    onClick={handleModalClose}
+                    className="flex-1 py-2 px-4 border border-gray-200 rounded-lg
+                    text-gray-600 hover:text-gray-800 hover:border-gray-300 transition-colors"
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700
+                    text-white rounded-lg transition-colors"
+                    loading={submitting}
+                  >
+                    {submitting ? "Submitting..." : "Submit Review"}
+                  </Button>
+                </div>
+              </Form>
+            </motion.div>
+          )
+        </AnimatePresence>
+      </Modal>
+
+      <style jsx global>{`
+        .testimonial-carousel .carousel.carousel-slider {
+          overflow: visible;
+        }
+        .testimonial-carousel .carousel .control-dots {
+          bottom: -40px;
+        }
+        .testimonial-carousel .carousel .control-dots .dot {
+          width: 8px;
+          height: 8px;
+          background: #cbd5e1;
+          box-shadow: none;
+          opacity: 1;
+          transition: all 0.3s ease;
+        }
+        .testimonial-carousel .carousel .control-dots .dot.selected {
+          background: #3b82f6;
+          transform: scale(1.2);
+        }
+        
+        /* Modal Styles */
+        .testimonial-modal .ant-modal-content {
+          border-radius: 16px;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .testimonial-modal .ant-modal-close {
+          top: 16px;
+          right: 16px;
+        }
+        .testimonial-modal .ant-modal-close-x {
+          font-size: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 28px;
+          width: 28px;
+        }
+        .testimonial-modal .ant-form-item-label > label {
+          font-weight: 500;
+        }
+        .testimonial-modal .ant-form-item-explain-error {
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+          color: #ef4444;
+        }
+        .testimonial-modal .ant-input:hover, 
+        .testimonial-modal .ant-input:focus,
+        .testimonial-modal .ant-input-affix-wrapper:hover,
+        .testimonial-modal .ant-input-affix-wrapper:focus {
+          border-color: #3b82f6;
+        }
+        .testimonial-modal .ant-input-affix-wrapper:focus,
+        .testimonial-modal .ant-input-affix-wrapper-focused {
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+      `}</style>
+    </div>
+  )
+}
+
+export default TestimonialCarousel
