@@ -107,8 +107,10 @@ function NavBar(props) {
                   key={item.label}
                   variant="text"
                   sx={{
-                    color: "black",
+                    color: location.pathname === item.path ? "#1976d2" : "black",
                     margin: "5px",
+                
+                   
                     fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
                     whiteSpace: "nowrap",
                     position: "relative",

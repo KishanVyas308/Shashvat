@@ -250,12 +250,13 @@ const ProductDetail = () => {
                   <h3 className="font-medium text-gray-900 mb-3">Physical Properties</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Shape:</span>
-                      <span className="font-medium">{product.details.shape ? product.details.shape : "----"}</span>
+                      <span className="text-gray-600">Shape:</span
+                      <span className="font-medium">{product.details?.shape || "----"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Color:</span>
-                      <span className="font-medium">{product.details.color ? product.details.color : "----"}</span>
+                      <span className="font-medium">{product.details?.color || "----"}</span>
+
                     </div>
                   </div>
                 </div>
@@ -264,11 +265,12 @@ const ProductDetail = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Pattern:</span>
-                      <span className="font-medium">{product.details.pattern ? product.details.pattern : "----"}</span>
+
+                      <span className="font-medium">{product.details?.pattern || "----"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Finish:</span>
-                      <span className="font-medium">{product.details.finish ? product.details.finish : "----"}</span>
+                      <span className="font-medium">{product.details?.finish || "----"}</span>
                     </div>
                   </div>
                 </div>
@@ -293,3 +295,4 @@ const ProductDetail = () => {
 }
 
 export default ProductDetail
+

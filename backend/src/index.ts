@@ -21,7 +21,6 @@ app.use(cors());
 
 
 
-
 // Routers
 const api = '/api/v1';
 
