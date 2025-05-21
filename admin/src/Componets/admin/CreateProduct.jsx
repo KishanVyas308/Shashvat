@@ -295,7 +295,7 @@ const ImageUploadStep = ({ product, handleDrag, handleDrop, previewUrl, setPrevi
             Browse Files
             <input
               type="file"
-              name="image"
+              name="img"
               onChange={(e) => {
                 const file = e.target.files[0]
                 if (file) {

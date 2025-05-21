@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../globle";
 
-import { convertImageToBase64, uploadImageAndGetUrl } from "./helper";
+import { uploadImageAndGetUrl } from "./helper";
 
 export async function addProduct(formData) {
   try {
@@ -13,14 +13,12 @@ export async function addProduct(formData) {
     }
 
 
-
-
     // Update image field to base64 if needed
     for (let item of simpleDataArray) {
       if (item.key === "image" && (item.value instanceof File || item.value instanceof Blob)) {
-        const base64Image = await convertImageToBase64(item.value);
+        const imageurl = await uploadImageAndGetUrl(item.value);
 
-        item.value = base64Image;
+        item.value = imageurl;
       }
     }
 
