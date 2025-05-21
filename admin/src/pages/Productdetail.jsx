@@ -250,7 +250,7 @@ const ProductDetail = () => {
                   <h3 className="font-medium text-gray-900 mb-3">Physical Properties</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Shape:</span
+                      <span className="text-gray-600">Shape:</span>
                       <span className="font-medium">{product.details?.shape || "----"}</span>
                     </div>
                     <div className="flex justify-between">
