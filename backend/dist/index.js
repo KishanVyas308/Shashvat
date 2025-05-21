@@ -13,6 +13,7 @@ const productRoute_1 = __importDefault(require("./routes/productRoute"));
 const requirementRoute_1 = __importDefault(require("./routes/requirementRoute"));
 const reviewRoute_1 = __importDefault(require("./routes/reviewRoute"));
 const multerRoute_1 = __importDefault(require("./routes/multerRoute"));
+const categoriesRoute_1 = __importDefault(require("./routes/categoriesRoute"));
 const swagger_1 = __importDefault(require("./swagger"));
 exports.prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
@@ -28,6 +29,7 @@ app.use(api + '/auth', authRoute_1.default);
 app.use(api + '/products', productRoute_1.default);
 app.use(api + '/requirements', requirementRoute_1.default);
 app.use(api + '/reviews', reviewRoute_1.default);
+app.use(api + '/categories', categoriesRoute_1.default);
 // Setup Swagger
 (0, swagger_1.default)(app);
 app.listen(3000, () => {

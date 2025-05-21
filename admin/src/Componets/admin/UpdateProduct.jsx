@@ -14,7 +14,6 @@ const UpdateProduct = () => {
   const [product, setProduct] = useState({
     id: "",
     image: null,
-    imageUrl: "",
     name: "",
     moq: "",
     category: "",
@@ -44,12 +43,11 @@ const UpdateProduct = () => {
 
     if (productId) {
       const selectedProduct = await getProductById(productId)
+      console.log("Selected Product:", selectedProduct);
+      
       if (selectedProduct !== null) {
-        setProduct({
-          ...selectedProduct,
-          image: null,
-        })
-        setPreviewUrl(selectedProduct.imageUrl)
+        setProduct(selectedProduct)
+        setPreviewUrl(selectedProduct.img)
       }
     }
 
@@ -109,9 +107,11 @@ const UpdateProduct = () => {
       formData.append("moq", product.moq)
       formData.append("size", product.size)
       formData.append("details", JSON.stringify(product.details))
-      if (product.image) {
-        formData.append("image", product.image)
+      formData.append(" ", product.img)
+      if (previewUrl) {
+        formData.append("image", previewUrl)
       }
+      console.log("image:", product.img);
 
       await updateProduct(formData)
       setProducts(await allProduct())

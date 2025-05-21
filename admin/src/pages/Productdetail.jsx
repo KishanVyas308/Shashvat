@@ -1,58 +1,58 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { useParams } from "react-router-dom"
-import { productAtom } from "../Atoms/productsAtom"
-import { allProduct } from "../backend/manageProduct"
-import { loadingAtom } from "../Atoms/loadingAtom"
-import { userAtom } from "../Atoms/userAtom"
-import PopularProduct from "../Componets/PopularProduct"
-import WhatsappContectButton from "../Componets/WhatsappContectButton"
-import SendRequirementButton from "../Componets/SendRequirementButton"
-import Loading from "../Componets/Loading"
-import ReactImageMagnify from "react-image-magnify"
-import { ChevronRight, Home, Info, Package, Star, Truck } from "lucide-react"
+import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useParams } from "react-router-dom";
+import { productAtom } from "../Atoms/productsAtom";
+import { allProduct } from "../backend/manageProduct";
+import { loadingAtom } from "../Atoms/loadingAtom";
+import { userAtom } from "../Atoms/userAtom";
+import PopularProduct from "../Componets/PopularProduct";
+import WhatsappContectButton from "../Componets/WhatsappContectButton";
+import SendRequirementButton from "../Componets/SendRequirementButton";
+import Loading from "../Componets/Loading";
+import ReactImageMagnify from "react-image-magnify";
+import { ChevronRight, Home, Info, Package, Star, Truck } from "lucide-react";
 
 const ProductDetail = () => {
-  const params = useParams()
-  const userAtm = useRecoilValue(userAtom)
-  const [products, setProducts] = useRecoilState(productAtom)
-  const [isLoading, setIsLoading] = useRecoilState(loadingAtom)
-  const [product, setProduct] = useState()
-  const [activeTab, setActiveTab] = useState("specifications")
+  const params = useParams();
+  const userAtm = useRecoilValue(userAtom);
+  const [products, setProducts] = useRecoilState(productAtom);
+  const [isLoading, setIsLoading] = useRecoilState(loadingAtom);
+  const [product, setProduct] = useState();
+  const [activeTab, setActiveTab] = useState("specifications");
 
   useEffect(() => {
-    scrollToTop()
-    setUp()
-  }, [params, products])
+    scrollToTop();
+    setUp();
+  }, [params, products]);
 
   const setUp = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (products === null) {
-      setProducts(await allProduct())
+      setProducts(await allProduct());
     }
 
-    let prod = null
+    let prod = null;
 
     if (products !== null) {
       products.map((p) => {
         if (p.id == params.id) {
-          prod = p
+          prod = p;
         }
-      })
-      setProduct(prod)
+      });
+      setProduct(prod);
     }
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  if (isLoading) return <Loading />
-  if (!product) return null
+  if (isLoading) return <Loading />;
+  if (!product) return null;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
@@ -63,7 +63,9 @@ const ProductDetail = () => {
         <ChevronRight size={16} className="mx-1" />
         <span>{product.category}</span>
         <ChevronRight size={16} className="mx-1" />
-        <span className="text-gray-900 font-medium truncate">{product.name}</span>
+        <span className="text-gray-900 font-medium truncate">
+          {product.name}
+        </span>
       </div>
 
       {/* Product Main Section */}
@@ -71,49 +73,52 @@ const ProductDetail = () => {
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
             {/* Product Image */}
-            <div className="bg-white rounded-lg overflow-hidden">
-              <div className=" lg:block">
+            <div className="bg-white rounded-lg overflow-hidden flex flex-col items-center">
+              <div className="hidden lg:block w-full max-w-md mx-auto">
                 <ReactImageMagnify
                   {...{
                     smallImage: {
-                      alt: product.name,
+                      alt: product.name || "Product Image",
                       isFluidWidth: true,
-                      src: product.imageUrl,
+                      src: product.img,
                     },
                     largeImage: {
-                      src: product.imageUrl,
-                      width: 800,
-                      height: 800,
+                      src: product.img,
+                      width: 1600,
+                      height: 2400,
                     },
+                    enlargedImagePosition: "over",
+                    hoverDelayInMs: 100,
+                    hoverOffDelayInMs: 150,
+                    isActivatedOnTouch: true,
                     enlargedImageContainerDimensions: {
-                      width: "50%",
-                      height: "50%",
+                      width: "150%",
+                      height: "150%"
                     },
-                    isHintEnabled: true,
-                    shouldUsePositiveSpaceLens: true,
+                    shouldHideHintAfterFirstActivation: false,
+                    hintTextMouse: "Hover to zoom",
                   }}
                 />
               </div>
-              <div className="lg:hidden">
-                <img
-                  src={product.imageUrl || "/placeholder.svg"}
-                  alt={product.name}
-                  className="w-full h-auto rounded-lg"
-                />
-              </div>
             </div>
-
-            {/* Product Info */}
             <div className="flex flex-col">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                {product.name}
+              </h1>
 
               <div className="flex items-center mb-4">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} className="fill-amber-400 text-amber-400" />
+                    <Star
+                      key={i}
+                      size={16}
+                      className="fill-amber-400 text-amber-400"
+                    />
                   ))}
                 </div>
-                <span className="ml-2 text-sm text-gray-500">Premium Quality</span>
+                <span className="ml-2 text-sm text-gray-500">
+                  Premium Quality
+                </span>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
@@ -125,13 +130,15 @@ const ProductDetail = () => {
                   <li className="flex items-center">
                     <span className="w-3 h-3 bg-amber-500 rounded-full mr-2"></span>
                     <span>
-                      Category: <span className="font-medium">{product.category}</span>
+                      Category:{" "}
+                      <span className="font-medium">{product.category}</span>
                     </span>
                   </li>
                   <li className="flex items-center">
                     <span className="w-3 h-3 bg-amber-500 rounded-full mr-2"></span>
                     <span>
-                      MOQ: <span className="font-medium">{product.moq} Piece</span>
+                      MOQ:{" "}
+                      <span className="font-medium">{product.moq} Piece</span>
                     </span>
                   </li>
                   <li className="flex items-center">
@@ -143,7 +150,8 @@ const ProductDetail = () => {
                   <li className="flex items-center">
                     <span className="w-3 h-3 bg-amber-500 rounded-full mr-2"></span>
                     <span>
-                      Material: <span className="font-medium">{product.material}</span>
+                      Material:{" "}
+                      <span className="font-medium">{product.material}</span>
                     </span>
                   </li>
                 </ul>
@@ -152,7 +160,8 @@ const ProductDetail = () => {
               <div className="flex items-center mb-6">
                 <Truck size={18} className="text-gray-500 mr-2" />
                 <span className="text-sm">
-                  <span className="font-medium">Business Type:</span> Manufacturers, Trader, Supplier
+                  <span className="font-medium">Business Type:</span>{" "}
+                  Manufacturers, Trader, Supplier
                 </span>
               </div>
 
@@ -209,11 +218,17 @@ const ProductDetail = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50 w-1/3">
                         Category
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.category}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {product.category}
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">MOQ</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.moq} Piece</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
+                        MOQ
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {product.moq} Piece
+                      </td>
                     </tr>
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
@@ -227,17 +242,25 @@ const ProductDetail = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
                         Country of Origin
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">India</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        India
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">Size</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.size}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
+                        Size
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {product.size}
+                      </td>
                     </tr>
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
                         Material
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.material}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {product.material}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -247,16 +270,21 @@ const ProductDetail = () => {
             {activeTab === "details" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-gray-900 mb-3">Physical Properties</h3>
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    Physical Properties
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Shape:</span>
-                      <span className="font-medium">{product.details?.shape || "----"}</span>
+                      <span className="font-medium">
+                        {product.details?.shape || "----"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Color:</span>
-                      <span className="font-medium">{product.details?.color || "----"}</span>
-
+                      <span className="font-medium">
+                        {product.details?.color || "----"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -266,11 +294,15 @@ const ProductDetail = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Pattern:</span>
 
-                      <span className="font-medium">{product.details?.pattern || "----"}</span>
+                      <span className="font-medium">
+                        {product.details?.pattern || "----"}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Finish:</span>
-                      <span className="font-medium">{product.details?.finish || "----"}</span>
+                      <span className="font-medium">
+                        {product.details?.finish || "----"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -284,15 +316,21 @@ const ProductDetail = () => {
       <div className="max-w-7xl mx-auto px-4 mt-12">
         <div className="flex items-center justify-center mb-8">
           <div className="h-0.5 bg-gray-200 flex-1"></div>
-          <h2 className="px-6 text-2xl font-bold text-gray-900">Similar Products</h2>
+          <h2 className="px-6 text-2xl font-bold text-gray-900">
+            Similar Products
+          </h2>
           <div className="h-0.5 bg-gray-200 flex-1"></div>
         </div>
 
-        {product && <PopularProduct productId={product.id} category={product.details?.category || product.category} />}
+        {product && (
+          <PopularProduct
+            productId={product.id}
+            category={product.details?.category || product.category}
+          />
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductDetail
-
+export default ProductDetail;

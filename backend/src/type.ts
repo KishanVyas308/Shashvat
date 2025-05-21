@@ -1,32 +1,25 @@
 export interface ProductInterface {
     id: string;
-    name: string;
-    category: string;
     image: string;
+    name: string;
+    moq: string;
+    category: string;
+    size: string;
+    material?: string;
+    shape?: string;
+    color?: string;
+    pattern?: string;
+    finish?: string;
+    weight?: string;
+    
     isPopular: boolean;
     latest: boolean;
-    material: string;
-    moq: string;
-    size: string;
     createdAt: Date;
     lastUpdatedAt: Date;
-    details: string;
     userId: string;
-    reviews: ReviewInterface[];
-    requirements: RequirementInterface[];
 }
 
-export interface DetailsInterface {
-    id: string;
-    color?: string;
-    finish?: string;
-    pattern?: string;
-    shape?: string;
-    weight?: string;
-    height?: string;
-    width?: string;
-    productId: string;
-}
+
 
 export interface ReviewInterface {
     id: string;

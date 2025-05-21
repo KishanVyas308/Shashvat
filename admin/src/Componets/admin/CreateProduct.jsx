@@ -11,21 +11,19 @@ import { toast } from "react-toastify"
 
 const CreateProduct = () => {
   const [product, setProduct] = useState({
-    image: null,
-    imageUrl: "",
+    img: null, // file object
     name: "",
     moq: "",
     category: "",
     size: "",
     material: "",
+    shape: "",
+    color: "",
+    pattern: "",
+    finish: "",
+    weight: "",
     isPopular: false,
     latest: false,
-    details: {
-      shape: "",
-      color: "",
-      pattern: "",
-      finish: "",
-    },
   })
 
   const [previewUrl, setPreviewUrl] = useState("")
@@ -43,20 +41,10 @@ const CreateProduct = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    if (name in product.details) {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        details: {
-          ...prevProduct.details,
-          [name]: value,
-        },
-      }))
-    } else {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        [name]: type === "checkbox" ? checked : value,
-      }))
-    }
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: type === "checkbox" ? checked : value,
+    }))
   }
 
   const handleImageChange = (e) => {
@@ -64,7 +52,7 @@ const CreateProduct = () => {
     if (file) {
       setProduct((prevProduct) => ({
         ...prevProduct,
-        image: file,
+        img: file,
       }))
       setPreviewUrl(URL.createObjectURL(file))
     }
@@ -89,7 +77,7 @@ const CreateProduct = () => {
       const file = e.dataTransfer.files[0]
       setProduct((prevProduct) => ({
         ...prevProduct,
-        image: file,
+        img: file,
       }))
       setPreviewUrl(URL.createObjectURL(file))
     }
@@ -101,21 +89,19 @@ const CreateProduct = () => {
 
   const resetForm = () => {
     setProduct({
-      image: null,
-      imageUrl: "",
+      img: null,
       name: "",
       moq: "",
       category: "",
       size: "",
       material: "",
+      shape: "",
+      color: "",
+      pattern: "",
+      finish: "",
+      weight: "",
       isPopular: false,
       latest: false,
-      details: {
-        shape: "",
-        color: "",
-        pattern: "",
-        finish: "",
-      },
     })
     setPreviewUrl("")
     setCurrentStep(0)
@@ -125,7 +111,7 @@ const CreateProduct = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    const requiredFields = ["image", "name", "moq", "category", "size", "material"]
+    const requiredFields = ["img", "name", "moq", "category", "size"]
     for (const field of requiredFields) {
       if (!product[field]) {
         toast.error(`Please fill all required fields (${field})`)
@@ -136,7 +122,7 @@ const CreateProduct = () => {
 
     try {
       const formData = new FormData()
-      formData.append("image", product.image)
+      formData.append("image", product.img)
       formData.append("name", product.name)
       formData.append("category", product.category)
       formData.append("isPopular", product.isPopular)
@@ -144,14 +130,17 @@ const CreateProduct = () => {
       formData.append("material", product.material)
       formData.append("moq", product.moq)
       formData.append("size", product.size)
-      formData.append("details", JSON.stringify(product.details))
+      formData.append("shape", product.shape)
+      formData.append("color", product.color)
+      formData.append("pattern", product.pattern)
+      formData.append("finish", product.finish)
+      formData.append("weight", product.weight)
 
-    
+      
 
       await addProduct(formData)
       await setAllProduct()
       resetForm()
-     
     } catch (error) {
       toast.error("Failed to add product. Please try again.")
     }
@@ -279,7 +268,7 @@ const ImageUploadStep = ({ product, handleDrag, handleDrop, previewUrl, setPrevi
             type="button"
             onClick={() => {
               setPreviewUrl("")
-              setProduct((prev) => ({ ...prev, image: null }))
+              setProduct((prev) => ({ ...prev, img: null }))
             }}
             className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
           >
@@ -301,7 +290,7 @@ const ImageUploadStep = ({ product, handleDrag, handleDrop, previewUrl, setPrevi
                 if (file) {
                   setProduct((prevProduct) => ({
                     ...prevProduct,
-                    image: file,
+                    img: file,
                   }))
                   setPreviewUrl(URL.createObjectURL(file))
                 }
@@ -397,7 +386,7 @@ const ProductDetailsStep = ({ product, handleChange }) => (
         <input
           type="text"
           name="shape"
-          value={product.details.shape}
+          value={product.shape}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Product shape"
@@ -409,7 +398,7 @@ const ProductDetailsStep = ({ product, handleChange }) => (
         <input
           type="text"
           name="color"
-          value={product.details.color}
+          value={product.color}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Product color"
@@ -421,7 +410,7 @@ const ProductDetailsStep = ({ product, handleChange }) => (
         <input
           type="text"
           name="pattern"
-          value={product.details.pattern}
+          value={product.pattern}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Pattern design"
@@ -433,10 +422,22 @@ const ProductDetailsStep = ({ product, handleChange }) => (
         <input
           type="text"
           name="finish"
-          value={product.details.finish}
+          value={product.finish}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="Surface finish"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+        <input
+          type="text"
+          name="weight"
+          value={product.weight}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Product weight"
         />
       </div>
     </div>
@@ -474,4 +475,3 @@ const ProductStatusStep = ({ product, handleChange }) => (
 )
 
 export default CreateProduct
-

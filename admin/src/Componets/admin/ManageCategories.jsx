@@ -1,7 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import { useRecoilState } from "recoil"
 import { motion, AnimatePresence } from "framer-motion"
+import axios from "axios"
+import { allCategoriesAtom } from "../../Atoms/categories"
+import { backendUrl } from "../../globle"
 import { 
   TextField, 
   Button, 
@@ -15,7 +19,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Autocomplete,
   Alert,
   Collapse,
   Tooltip
@@ -27,55 +30,18 @@ import SaveIcon from "@mui/icons-material/Save"
 import CloseIcon from "@mui/icons-material/Close"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ExpandLessIcon from "@mui/icons-material/ExpandLess"
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
+
+const API_BASE = `${backendUrl}/categories`
 
 const ManageCategories = () => {
-  // Initial categories structure
-  const initialCategories = [
-    { 
-      id: "cat1", 
-      name: "Pression Parts", 
-      path: "/products/pression-parts",
-      expanded: false,
-      subcategories: [] 
-    },
-    { 
-      id: "cat2", 
-      name: "Sanitaire Bath Parts", 
-      path: "/products/sanitaire-bath-parts",
-      expanded: false,
-      subcategories: [] 
-    },
-    { 
-      id: "cat3", 
-      name: "Hardware Parts", 
-      path: "/products/hardware-parts",
-      expanded: false,
-      subcategories: [
-        { id: "subcat1", name: "Asses Parts", path: "/products/hardware-parts/asses-parts" },
-        { id: "subcat2", name: "Aluminium Parts", path: "/products/hardware-parts/aluminium-parts" },
-        { id: "subcat3", name: "Brass Parts", path: "/products/hardware-parts/brass-parts" }
-      ] 
-    },
-    { 
-      id: "cat4", 
-      name: "Other Parts", 
-      path: "/products/other-parts",
-      expanded: false,
-      subcategories: [] 
-    }
-  ]
-
-  // State
-  const [categories, setCategories] = useState(initialCategories)
+  // Use Recoil for categories
+  const [categories, setCategories] = useRecoilState(allCategoriesAtom)
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [dialogType, setDialogType] = useState("category") // "category" or "subcategory"
   const [dialogMode, setDialogMode] = useState("add") // "add" or "edit"
   const [categoryName, setCategoryName] = useState("")
-  const [categoryPath, setCategoryPath] = useState("")
   const [subcategoryName, setSubcategoryName] = useState("")
-  const [subcategoryPath, setSubcategoryPath] = useState("")
   const [parentCategory, setParentCategory] = useState(null)
   const [selectedSubcategory, setSelectedSubcategory] = useState(null)
   const [alert, setAlert] = useState({ show: false, type: "success", message: "" })
@@ -83,22 +49,30 @@ const ManageCategories = () => {
   const [draggedItem, setDraggedItem] = useState(null)
   const [dragOverItem, setDragOverItem] = useState(null)
 
-  // Load categories from localStorage on component mount
-  useEffect(() => {
-    const savedCategories = localStorage.getItem("productCategories")
-    if (savedCategories) {
-      try {
-        setCategories(JSON.parse(savedCategories))
-      } catch (error) {
-        console.error("Error parsing saved categories:", error)
-      }
+  // Fetch categories from backend
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(API_BASE)
+      // Transform backend structure to frontend structure if needed
+      setCategories(
+        res.data.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          subcategories: (cat.subCategory || []).map((sub, idx) => ({
+            id: `${cat.id}-sub-${idx}`,
+            name: sub,
+          })),
+        }))
+      )
+    } catch (error) {
+      showAlert("error", "Failed to fetch categories")
     }
-  }, [])
+  }
 
-  // Save categories to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("productCategories", JSON.stringify(categories))
-  }, [categories])
+    fetchCategories()
+    // eslint-disable-next-line
+  }, [])
 
   const showAlert = (type, message) => {
     setAlert({ show: true, type, message })
@@ -110,179 +84,96 @@ const ManageCategories = () => {
   const handleOpenDialog = (type, mode, category = null, subcategory = null) => {
     setDialogType(type)
     setDialogMode(mode)
-    
     if (type === "category") {
       if (mode === "edit" && category) {
         setCategoryName(category.name)
-        setCategoryPath(category.path)
         setSelectedCategory(category)
       } else {
         setCategoryName("")
-        setCategoryPath("/products/")
         setSelectedCategory(null)
       }
     } else {
       setParentCategory(category)
       if (mode === "edit" && subcategory) {
         setSubcategoryName(subcategory.name)
-        setSubcategoryPath(subcategory.path)
         setSelectedSubcategory(subcategory)
       } else {
         setSubcategoryName("")
-        setSubcategoryPath(category ? `${category.path}/` : "/products/")
+        setParentCategory(category)
         setSelectedSubcategory(null)
       }
     }
-    
     setOpenDialog(true)
   }
 
   const handleCloseDialog = () => {
     setOpenDialog(false)
     setCategoryName("")
-    setCategoryPath("")
     setSubcategoryName("")
-    setSubcategoryPath("")
     setParentCategory(null)
     setSelectedCategory(null)
     setSelectedSubcategory(null)
   }
 
-  const generateId = () => {
-    return Math.random().toString(36).substr(2, 9)
-  }
-
-  const createSlug = (name) => {
-    return name.toLowerCase().replace(/\s+/g, "-")
-  }
-
-  const handleAddCategory = () => {
+  // Add category
+  const handleAddCategory = async () => {
     if (!categoryName.trim()) {
       showAlert("error", "Category name cannot be empty")
       return
     }
-    
-    const slug = createSlug(categoryName)
-    const path = categoryPath || `/products/${slug}`
-    
-    const newCategory = {
-      id: generateId(),
-      name: categoryName,
-      path,
-      expanded: false,
-      subcategories: []
+    try {
+      await axios.post(API_BASE, { name: categoryName })
+      showAlert("success", `Category "${categoryName}" added successfully`)
+      setOpenDialog(false)
+      setCategoryName("")
+      fetchCategories()
+    } catch {
+      showAlert("error", "Failed to add category")
     }
-    
-    setCategories([...categories, newCategory])
-    handleCloseDialog()
-    showAlert("success", `Category "${categoryName}" added successfully`)
   }
 
-  const handleEditCategory = () => {
-    if (!categoryName.trim() || !selectedCategory) {
-      showAlert("error", "Category name cannot be empty")
-      return
-    }
-    
-    const updatedCategories = categories.map(cat => {
-      if (cat.id === selectedCategory.id) {
-        return {
-          ...cat,
-          name: categoryName,
-          path: categoryPath
-        }
-      }
-      return cat
-    })
-    
-    setCategories(updatedCategories)
-    handleCloseDialog()
-    showAlert("success", `Category "${categoryName}" updated successfully`)
-  }
-
-  const handleDeleteCategory = (category) => {
-    if (window.confirm(`Are you sure you want to delete "${category.name}" and all its subcategories?`)) {
-      const updatedCategories = categories.filter(cat => cat.id !== category.id)
-      setCategories(updatedCategories)
+  // Delete category
+  const handleDeleteCategory = async (category) => {
+    if (!window.confirm(`Are you sure you want to delete "${category.name}" and all its subcategories?`)) return
+    try {
+      await axios.delete(`${API_BASE}/${category.id}`)
       showAlert("success", `Category "${category.name}" deleted successfully`)
+      fetchCategories()
+    } catch {
+      showAlert("error", "Failed to delete category")
     }
   }
 
-  const handleAddSubcategory = () => {
+  // Add subcategory
+  const handleAddSubcategory = async () => {
     if (!subcategoryName.trim() || !parentCategory) {
       showAlert("error", "Subcategory name cannot be empty")
       return
     }
-    
-    const slug = createSlug(subcategoryName)
-    const path = subcategoryPath || `${parentCategory.path}/${slug}`
-    
-    const newSubcategory = {
-      id: generateId(),
-      name: subcategoryName,
-      path
-    }
-    
-    const updatedCategories = categories.map(cat => {
-      if (cat.id === parentCategory.id) {
-        return {
-          ...cat,
-          subcategories: [...cat.subcategories, newSubcategory],
-          expanded: true
-        }
-      }
-      return cat
-    })
-    
-    setCategories(updatedCategories)
-    handleCloseDialog()
-    showAlert("success", `Subcategory "${subcategoryName}" added successfully`)
-  }
-
-  const handleEditSubcategory = () => {
-    if (!subcategoryName.trim() || !parentCategory || !selectedSubcategory) {
-      showAlert("error", "Subcategory name cannot be empty")
-      return
-    }
-    
-    const updatedCategories = categories.map(cat => {
-      if (cat.id === parentCategory.id) {
-        return {
-          ...cat,
-          subcategories: cat.subcategories.map(subcat => {
-            if (subcat.id === selectedSubcategory.id) {
-              return {
-                ...subcat,
-                name: subcategoryName,
-                path: subcategoryPath
-              }
-            }
-            return subcat
-          })
-        }
-      }
-      return cat
-    })
-    
-    setCategories(updatedCategories)
-    handleCloseDialog()
-    showAlert("success", `Subcategory "${subcategoryName}" updated successfully`)
-  }
-
-  const handleDeleteSubcategory = (category, subcategory) => {
-    if (window.confirm(`Are you sure you want to delete "${subcategory.name}"?`)) {
-      const updatedCategories = categories.map(cat => {
-        if (cat.id === category.id) {
-          return {
-            ...cat,
-            subcategories: cat.subcategories.filter(subcat => subcat.id !== subcategory.id)
-          }
-        }
-        return cat
+    try {
+      await axios.post(`${API_BASE}/${parentCategory.id}/subcategory`, {
+        subCategory: subcategoryName,
       })
-      
-      setCategories(updatedCategories)
+      showAlert("success", `Subcategory "${subcategoryName}" added successfully`)
+      setOpenDialog(false)
+      setSubcategoryName("")
+      fetchCategories()
+    } catch {
+      showAlert("error", "Failed to add subcategory")
+    }
+  }
+
+  // Delete subcategory
+  const handleDeleteSubcategory = async (category, subcategory) => {
+    if (!window.confirm(`Are you sure you want to delete "${subcategory.name}"?`)) return
+    try {
+      await axios.delete(`${API_BASE}/${category.id}/subcategory`, {
+        data: { subCategory: subcategory.name },
+      })
       showAlert("success", `Subcategory "${subcategory.name}" deleted successfully`)
+      fetchCategories()
+    } catch {
+      showAlert("error", "Failed to delete subcategory")
     }
   }
 
@@ -522,17 +413,6 @@ const ManageCategories = () => {
                       <AddIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
-                  
-                  <Tooltip title="Edit Category">
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => handleOpenDialog("category", "edit", category)}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  
                   <Tooltip title="Delete Category">
                     <IconButton
                       size="small"
@@ -542,7 +422,6 @@ const ManageCategories = () => {
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
-                  
                   {category.subcategories.length > 0 && (
                     <Tooltip title={category.expanded ? "Collapse" : "Expand"}>
                       <IconButton
@@ -588,16 +467,6 @@ const ManageCategories = () => {
                               </Box>
                               
                               <Box className="flex">
-                                <Tooltip title="Edit Subcategory">
-                                  <IconButton
-                                    size="small"
-                                    color="info"
-                                    onClick={() => handleOpenDialog("subcategory", "edit", category, subcategory)}
-                                  >
-                                    <EditIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                                
                                 <Tooltip title="Delete Subcategory">
                                   <IconButton
                                     size="small"
@@ -621,7 +490,7 @@ const ManageCategories = () => {
         )}
       </Box>
 
-      {/* Dialog for adding/editing categories and subcategories */}
+      {/* Dialog for adding categories and subcategories only */}
       <Dialog 
         open={openDialog} 
         onClose={handleCloseDialog}
@@ -630,36 +499,22 @@ const ManageCategories = () => {
       >
         <DialogTitle className="bg-gray-50">
           {dialogType === "category" 
-            ? (dialogMode === "add" ? "Add New Category" : "Edit Category") 
-            : (dialogMode === "add" ? "Add New Subcategory" : "Edit Subcategory")}
+            ? "Add New Category"
+            : "Add New Subcategory"}
         </DialogTitle>
-        
         <DialogContent className="pt-4">
           {dialogType === "category" ? (
-            <>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Category Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
-                className="mb-4"
-              />
-              
-              <TextField
-                margin="dense"
-                label="Category Path"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={categoryPath}
-                onChange={(e) => setCategoryPath(e.target.value)}
-                helperText="URL path for this category (e.g., /products/category-name)"
-              />
-            </>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Category Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+              className="mb-4"
+            />
           ) : (
             <>
               {parentCategory && (
@@ -667,7 +522,6 @@ const ManageCategories = () => {
                   Parent Category: <strong>{parentCategory.name}</strong>
                 </Typography>
               )}
-              
               <TextField
                 autoFocus
                 margin="dense"
@@ -679,37 +533,24 @@ const ManageCategories = () => {
                 onChange={(e) => setSubcategoryName(e.target.value)}
                 className="mb-4"
               />
-              
-              <TextField
-                margin="dense"
-                label="Subcategory Path"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={subcategoryPath}
-                onChange={(e) => setSubcategoryPath(e.target.value)}
-                helperText="URL path for this subcategory (e.g., /products/category/subcategory)"
-              />
             </>
           )}
         </DialogContent>
-        
         <DialogActions className="p-4">
           <Button onClick={handleCloseDialog} color="inherit">
             Cancel
           </Button>
-          
           <Button 
             onClick={
               dialogType === "category"
-                ? (dialogMode === "add" ? handleAddCategory : handleEditCategory)
-                : (dialogMode === "add" ? handleAddSubcategory : handleEditSubcategory)
+                ? handleAddCategory
+                : handleAddSubcategory
             }
             variant="contained" 
             color="primary"
-            startIcon={dialogMode === "add" ? <AddIcon /> : <SaveIcon />}
+            startIcon={<AddIcon />}
           >
-            {dialogMode === "add" ? "Add" : "Save"}
+            Add
           </Button>
         </DialogActions>
       </Dialog>

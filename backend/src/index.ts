@@ -8,6 +8,7 @@ import productRoute from './routes/productRoute';
 import requirementRoute from './routes/requirementRoute';
 import reviewRoute from './routes/reviewRoute';
 import multerRoute from './routes/multerRoute';
+import categoriesRoute from './routes/categoriesRoute';
 import setupSwagger from './swagger';
 
 
@@ -34,7 +35,8 @@ app.use(api + '/multer', multerRoute);
 app.use(api + '/auth', authRoute);
 app.use(api + '/products', productRoute);
 app.use(api + '/requirements', requirementRoute);
-app.use(api + '/reviews', reviewRoute); 
+app.use(api + '/reviews', reviewRoute);
+app.use(api + '/categories', categoriesRoute);
 
 // Setup Swagger
 setupSwagger(app);
