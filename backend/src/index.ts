@@ -7,9 +7,9 @@ import authRoute from './routes/authRoute';
 import productRoute from './routes/productRoute';
 import requirementRoute from './routes/requirementRoute';
 import reviewRoute from './routes/reviewRoute';
+import multerRoute from './routes/multerRoute';
 import setupSwagger from './swagger';
-import { fileURLToPath } from "url";
-import path from "path";
+
 
 
 export const prisma = new PrismaClient();
@@ -29,6 +29,7 @@ app.use(cors());
 app.use(express.json());
 
 
+app.use(api + '/multer', multerRoute);
 
 app.use(api + '/auth', authRoute);
 app.use(api + '/products', productRoute);
