@@ -22,7 +22,13 @@ const DeleteProduct = () => {
 
   const confirmDelete = async () => {
     setIsLoading(true)
-    await deleteProduct(selectedProductId)
+    console.log("Selected Product ID:", selectedProductId);
+    
+    const selectedProduct = Products.find((product) => product.id === selectedProductId)
+    console.log("Selected Product:", selectedProduct);
+    
+    const selectedProductImg = selectedProduct.img; // Assuming img is the field name for the image URL
+    await deleteProduct(selectedProductId, selectedProductImg)
     await setAllProduct()
     setIsLoading(false)
     dialogRef.current.close(); // Close the dialog after confirming
@@ -39,7 +45,7 @@ const DeleteProduct = () => {
         <div className="mb-4">
           <label className="block text-gray-700">Category</label>
           <select
-            name="category"
+            name="category" 
             value={selectedProductId}
             onChange={(e) => {
               setSelectedProductId(e.target.value);

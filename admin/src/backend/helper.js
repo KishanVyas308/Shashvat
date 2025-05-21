@@ -28,3 +28,40 @@ export async function uploadImageAndGetUrl(imageFile) {
     return null;
   }
 }
+
+
+export async function updateImage(imageFile) {
+  try {
+    const response = await axios.put(`${backendUrl}/multer/image/${imageFile.name}`, imageFile);
+    if (response.status === 204) {
+      console.log("Image updated successfully");
+      return true
+    } else {
+      console.error("Failed to update image");
+      return false
+    }
+  } catch (error) {
+    console.error("Image update error:", error);
+    return false
+  }
+}
+
+export async function deleteImage(selectedProductImg) {
+  try {
+    //  devide selectedProductImg to get image name at the end
+    const imageName = selectedProductImg.split("/").pop();
+    console.log("Image Name:", imageName); // Debugging line
+
+    const response = await axios.delete(`${backendUrl}/multer/image/${imageName}`);
+    if (response.status === 204) {
+      console.log("Image deleted successfully");
+      return true
+    } else {
+      console.error("Failed to delete image");
+      return false
+    }
+  } catch (error) {
+    console.error("Image delete error:", error);
+    return false
+  }
+}

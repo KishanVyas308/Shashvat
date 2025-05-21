@@ -24,7 +24,7 @@ model User {
   whatsAppNo String
   createdAt  DateTime @default(now())
 
-  products     Product[]
+  products Product[]
 }
 
 model Review {
@@ -39,50 +39,48 @@ model Review {
 }
 
 model Product {
-  id            String    @id @default(uuid())
-  name          String
-  category      String
-  img           String
-  isPopular     Boolean   @default(false)
-  latest        Boolean   @default(false)
-  material      String
-  moq           String
-  size          String
-  createdAt     DateTime  @default(now())
-  lastUpdatedAt DateTime  @updatedAt
-  details       Details?
+  id       String  @id @default(uuid())
+  img      String
+  name     String
+  moq      String
+  category String
+  size     String
+  material String?
+  shape    String?
+  color    String?
+  pattern  String?
+  finish   String?
+  weight   String?
+
+  isPopular     Boolean  @default(false)
+  latest        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
 
   userId String
 
-  user         User          @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
-model Details {
-  id      String  @id @default(uuid())
-  color   String?
-  finish  String?
-  pattern String?
-  shape   String?
-  weight  String?
-  height  String?
-  width   String?
-
-  productId String @unique
-  product   Product @relation(fields: [productId], references: [id])
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  subCategory String[]
+  createdAt   DateTime @default(now())
 }
 
 model Requests {
   id       String  @id @default(uuid())
   isViewed Boolean @default(false)
-  
-  name                String
-  email               String
-  contactNo           String
-  whatsAppNo          String?
-  companyName         String
-  description         String
 
-  isNewProductRequest Boolean  @default(false)
-  productId   String?
-  productName String?
+  name        String
+  email       String
+  contactNo   String
+  whatsAppNo  String?
+  companyName String
+  description String
+
+  isNewProductRequest Boolean @default(false)
+  productId           String?
+  productName         String?
 }

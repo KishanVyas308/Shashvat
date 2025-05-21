@@ -22,7 +22,7 @@ const ProductCard = ({ product }) => {
       {/* Image Wrapper with improved animation */}
       <div className="relative h-80 overflow-hidden bg-white">
         <img
-          src={product.imageUrl}
+          src={product.img}
           alt={product.name}
           className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
         />

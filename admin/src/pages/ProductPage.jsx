@@ -41,15 +41,16 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
     >
       <h2 className="text-lg font-semibold">{product.name}</h2>
       <ul className="space-y-2">
-               {Object.entries(product.details)
-  .filter(([key]) => ["category", "shape", "material", "color", "size","pattern"].includes(key.toLowerCase()))
-  .map(([key, value]) => (
-    <li key={key} className="text-lg flex">
-      <span className="font-medium capitalize mr-2">{key}:</span>
-      <span className="text-blue-100">{value}</span>
-    </li>
-))}
-      </ul>
+  <li className="text-lg flex"><span className="font-medium capitalize mr-2">MOQ:</span><span className="text-blue-100">{product.moq}</span></li>
+  <li className="text-lg flex"><span className="font-medium capitalize mr-2">Category:</span><span className="text-blue-100">{product.category}</span></li>
+  <li className="text-lg flex"><span className="font-medium capitalize mr-2">Size:</span><span className="text-blue-100">{product.size}</span></li>
+  {product.material && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Material:</span><span className="text-blue-100">{product.material}</span></li>}
+  {product.shape && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Shape:</span><span className="text-blue-100">{product.shape}</span></li>}
+  {product.color && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Color:</span><span className="text-blue-100">{product.color}</span></li>}
+  {product.pattern && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Pattern:</span><span className="text-blue-100">{product.pattern}</span></li>}
+  {product.finish && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Finish:</span><span className="text-blue-100">{product.finish}</span></li>}
+  {product.weight && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Weight:</span><span className="text-blue-100">{product.weight}</span></li>}
+</ul>
       <button
         onClick={(e) => {
           e.stopPropagation()
@@ -89,6 +90,9 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
         <DeleteProductButton productId={product.id} />
       </div>
     )}
+
+    {/* Badges for Popular and Latest */}
+ 
   </div>
   )
 }
