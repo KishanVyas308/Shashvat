@@ -41,4 +41,25 @@ router.get("/image/:name", (req, res) => {
         res.sendFile(filePath);
     });
 });
+// Delete image by name
+router.delete("/image/:name", (req, res) => {
+    const filePath = path_1.default.join(imagesDir, req.params.name);
+    fs_1.default.unlink(filePath, (err) => {
+        if (err) {
+            return res.status(404).json({ error: "Image not found" });
+        }
+        res.status(204).send();
+    });
+});
+// update image by name
+router.put("/image/:name", upload.single("image"), (req, res) => {
+    const oldFilePath = path_1.default.join(imagesDir, req.params.name);
+    const newFilePath = path_1.default.join(imagesDir, req.file.filename);
+    fs_1.default.rename(oldFilePath, newFilePath, (err) => {
+        if (err) {
+            return res.status(404).json({ error: "Image not found" });
+        }
+        res.status(204).send();
+    });
+});
 exports.default = router;
