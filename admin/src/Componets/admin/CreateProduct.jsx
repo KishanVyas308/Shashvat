@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { addProduct, allProduct } from "../../backend/manageProduct"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { productAtom } from "../../Atoms/productsAtom"
 import { loadingAtom } from "../../Atoms/loadingAtom"
+import { allCategoriesAtom } from "../../Atoms/categories" // Import the categories atom
 import Loading from "../Loading"
 import { Package, Upload, Check, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { toast } from "react-toastify"
@@ -15,6 +16,7 @@ const CreateProduct = () => {
     name: "",
     moq: "",
     category: "",
+    subCategory: "", // Added sub-category field
     size: "",
     material: "",
     shape: "",
@@ -29,8 +31,10 @@ const CreateProduct = () => {
   const [previewUrl, setPreviewUrl] = useState("")
   const [Products, setProducts] = useRecoilState(productAtom)
   const [isLoading, setIsLoading] = useRecoilState(loadingAtom)
+  const categories = useRecoilValue(allCategoriesAtom) // Get categories from atom
   const [dragActive, setDragActive] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [availableSubCategories, setAvailableSubCategories] = useState([])
 
   const steps = [
     { title: "Image Upload", component: ImageUploadStep },
@@ -38,6 +42,29 @@ const CreateProduct = () => {
     { title: "Product Details", component: ProductDetailsStep },
     { title: "Product Status", component: ProductStatusStep },
   ]
+
+  // Update sub-categories when category changes
+  useEffect(() => {
+    if (product.category && categories.length > 0) {
+      const selectedCategory = categories.find(cat => 
+        cat.name === product.category || 
+        cat._id === product.category ||
+        cat.id === product.category
+      )
+      
+      if (selectedCategory && selectedCategory.subCategories && selectedCategory.subCategories.length > 0) {
+        setAvailableSubCategories(selectedCategory.subCategories)
+      } else {
+        setAvailableSubCategories([])
+      }
+      
+      // Reset sub-category when category changes
+      setProduct(prev => ({ ...prev, subCategory: "" }))
+    } else {
+      setAvailableSubCategories([])
+      setProduct(prev => ({ ...prev, subCategory: "" }))
+    }
+  }, [product.category, categories])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -93,6 +120,7 @@ const CreateProduct = () => {
       name: "",
       moq: "",
       category: "",
+      subCategory: "",
       size: "",
       material: "",
       shape: "",
@@ -105,6 +133,7 @@ const CreateProduct = () => {
     })
     setPreviewUrl("")
     setCurrentStep(0)
+    setAvailableSubCategories([])
   }
 
   const handleSubmit = async (e) => {
@@ -125,6 +154,12 @@ const CreateProduct = () => {
       formData.append("image", product.img)
       formData.append("name", product.name)
       formData.append("category", product.category)
+      
+      // Only append subcategory if it exists and has a value
+      if (product.subCategory && product.subCategory.trim() !== "") {
+        formData.append("subCategory", product.subCategory)
+      }
+      
       formData.append("isPopular", product.isPopular)
       formData.append("latest", product.latest)
       formData.append("material", product.material)
@@ -136,11 +171,10 @@ const CreateProduct = () => {
       formData.append("finish", product.finish)
       formData.append("weight", product.weight)
 
-      
-
       await addProduct(formData)
       await setAllProduct()
       resetForm()
+      toast.success("Product added successfully!")
     } catch (error) {
       toast.error("Failed to add product. Please try again.")
     }
@@ -212,6 +246,8 @@ const CreateProduct = () => {
           setPreviewUrl,
           setProduct,
           dragActive,
+          categories, // Pass categories to components
+          availableSubCategories, // Pass available sub-categories
         })}
 
         <div className="flex justify-between">
@@ -305,64 +341,128 @@ const ImageUploadStep = ({ product, handleDrag, handleDrop, previewUrl, setPrevi
   </div>
 )
 
-const BasicInfoStep = ({ product, handleChange }) => (
-  <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
-    <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
+const BasicInfoStep = ({ product, handleChange, categories, availableSubCategories }) => {
+  // Check if subcategory field should be shown
+  const shouldShowSubCategory = product.category && availableSubCategories && availableSubCategories.length > 0;
+  
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-        <input
-          type="text"
-          name="name"
-          value={product.name}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Product name"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Product Name *
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={product.name}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            placeholder="Enter product name"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            MOQ (Minimum Order Quantity) *
+          </label>
+          <input
+            type="text"
+            name="moq"
+            value={product.moq}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            placeholder="e.g., 100 pieces"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Category *
+          </label>
+          <select
+            name="category"
+            value={product.category}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            required
+          >
+            <option value="">-- Select Category --</option>
+            {categories && categories.length > 0 ? (
+              categories.map((category) => (
+                <option key={category._id || category.id} value={category._id || category.name}>
+                  {category.name}
+                </option>
+              ))
+            ) : (
+              <>
+                <option value="Sanitary part">Sanitary part</option>
+                <option value="HardWare Parts">HardWare Parts</option>
+                <option value="Components Parts">Components Parts</option>
+              </>
+            )}
+          </select>
+        </div>
+
+        {/* Sub-Category Field - Only show if category is selected and has sub-categories */}
+        {shouldShowSubCategory && (
+          <div className="transition-all duration-300 ease-in-out">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Sub Category
+              <span className="text-xs text-blue-600 ml-1">
+                ({availableSubCategories.length} available)
+              </span>
+            </label>
+            <select
+              name="subCategory"
+              value={product.subCategory}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            >
+              <option value="">-- Select Sub Category --</option>
+              {availableSubCategories.map((subCategory, index) => (
+                <option 
+                  key={index} 
+                  value={subCategory.name || subCategory._id || subCategory}
+                >
+                  {subCategory.name || subCategory}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Size *
+          </label>
+          <input
+            type="text"
+            name="size"
+            value={product.size}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            placeholder="e.g., 10x5x2 cm"
+            required
+          />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">MOQ</label>
-        <input
-          type="text"
-          name="moq"
-          value={product.moq}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Minimum order quantity"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-        <select
-          name="category"
-          value={product.category}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="">Select Category</option>
-          <option value="Sanitary part">Sanitary part</option>
-          <option value="HardWare Parts">HardWare Parts</option>
-          <option value="Components Parts">Components Parts</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
-        <input
-          type="text"
-          name="size"
-          value={product.size}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Product size"
-        />
-      </div>
+      {/* Show a note about subcategory if category is selected but no subcategories available */}
+      {product.category && (!availableSubCategories || availableSubCategories.length === 0) && (
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+          <p className="text-sm text-blue-700">
+            📝 No subcategories available for the selected category.
+          </p>
+        </div>
+      )}
     </div>
-  </div>
-)
+  )
+}
 
 const ProductDetailsStep = ({ product, handleChange }) => (
   <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
