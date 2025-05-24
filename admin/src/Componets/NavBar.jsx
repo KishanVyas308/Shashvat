@@ -34,6 +34,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useRecoilState } from "recoil";
 import { userAtom } from "../Atoms/userAtom";
+import { allCategoriesAtom } from "../Atoms/categories";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { isNewRequrimentRequestAtom } from "../Atoms/isNewRequrimentRequestAtom";
 import logo from "../img/image.png";
@@ -51,16 +52,19 @@ function NavBar(props) {
 
   const [user, setUser] = useRecoilState(userAtom);
   const [isNewRequrimentRequest] = useRecoilState(isNewRequrimentRequestAtom);
+  const [allCategories] = useRecoilState(allCategoriesAtom);
   
   // State for product dropdown menu
   const [productMenuOpen, setProductMenuOpen] = React.useState(false);
   const [hardwareMenuOpen, setHardwareMenuOpen] = React.useState(false);
+  const [submenuStates, setSubmenuStates] = React.useState({});
   const productButtonRef = React.useRef(null);
   const hardwareButtonRef = React.useRef(null);
+  const submenuRefs = React.useRef({});
   
   // State for mobile product dropdown
   const [mobileProductOpen, setMobileProductOpen] = React.useState(false);
-  const [mobileHardwareOpen, setMobileHardwareOpen] = React.useState(false);
+  const [mobileSubmenuStates, setMobileSubmenuStates] = React.useState({});
   
   // Lazy loading state for categories
   const [categoriesLoaded, setCategoriesLoaded] = React.useState(false);
@@ -79,19 +83,19 @@ function NavBar(props) {
 
   const handleProductMenuClose = () => {
     setProductMenuOpen(false);
-    // Keep hardware menu closed when product menu closes
-    setHardwareMenuOpen(false);
+    // Close all submenus when main menu closes
+    setSubmenuStates({});
   };
 
-  const handleHardwareMouseEnter = (event) => {
-    hardwareButtonRef.current = event.currentTarget;
-    setHardwareMenuOpen(true);
+  const handleSubmenuMouseEnter = (categoryId, event) => {
+    submenuRefs.current[categoryId] = event.currentTarget;
+    setSubmenuStates(prev => ({ ...prev, [categoryId]: true }));
   };
 
-  const handleHardwareMouseLeave = () => {
+  const handleSubmenuMouseLeave = (categoryId) => {
     // Small delay to allow moving mouse to submenu
     setTimeout(() => {
-      setHardwareMenuOpen(false);
+      setSubmenuStates(prev => ({ ...prev, [categoryId]: false }));
     }, 100);
   };
 
@@ -99,9 +103,12 @@ function NavBar(props) {
     setMobileProductOpen(!mobileProductOpen);
   };
 
-  const handleMobileHardwareToggle = (event) => {
+  const handleMobileSubmenuToggle = (categoryId, event) => {
     event.stopPropagation();
-    setMobileHardwareOpen(!mobileHardwareOpen);
+    setMobileSubmenuStates(prev => ({ 
+      ...prev, 
+      [categoryId]: !prev[categoryId] 
+    }));
   };
 
   const navigateToCategory = (path) => {
@@ -110,21 +117,49 @@ function NavBar(props) {
     setMobileOpen(false);
   };
 
-  const productCategories = [
-    { label: "Pression Parts", path: "/products/pression-parts" },
-    { label: "Sanitaire Bath Parts", path: "/products/sanitaire-bath-parts" },
-    { 
-      label: "Hardware Parts", 
-      path: "/products/hardware-parts",
-      isSubmenu: true,
-      subCategories: [
-        { label: "Asses Parts", path: "/products/hardware-parts/asses-parts" },
-        { label: "Aluminium Parts", path: "/products/hardware-parts/aluminium-parts" },
-        { label: "Brass Parts", path: "/products/hardware-parts/brass-parts" },
-      ]
-    },
-    { label: "Other Parts", path: "/products/other-parts" },
-  ];
+  // Helper function to generate category path
+  const generateCategoryPath = (category) => {
+    return `/products/${category.name.toLowerCase().replace(/\s+/g, '-')}`;
+  };
+
+  // Helper function to generate subcategory path
+  const generateSubcategoryPath = (category, subcategory) => {
+    const categorySlug = category.name.toLowerCase().replace(/\s+/g, '-');
+    const subcategorySlug = subcategory.name.toLowerCase().replace(/\s+/g, '-');
+    return `/products/${categorySlug}/${subcategorySlug}`;
+  };
+
+  // Convert dynamic categories to the format expected by the navbar
+  const productCategories = React.useMemo(() => {
+    // Only show categories if they exist in the atom
+    if (!allCategories || allCategories.length === 0) {
+      return []; // Return empty array - no categories to show
+    }
+
+    return allCategories.map(category => {
+      const categoryPath = generateCategoryPath(category);
+      
+      if (category.subcategories && category.subcategories.length > 0) {
+        return {
+          id: category.id || category._id,
+          label: category.name,
+          path: categoryPath,
+          isSubmenu: true,
+          subCategories: category.subcategories.map(subcategory => ({
+            id: subcategory.id || subcategory._id,
+            label: subcategory.name,
+            path: generateSubcategoryPath(category, subcategory)
+          }))
+        };
+      } else {
+        return {
+          id: category.id || category._id,
+          label: category.name,
+          path: categoryPath
+        };
+      }
+    });
+  }, [allCategories]);
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -173,29 +208,29 @@ function NavBar(props) {
                 </ListItemButton>
               </ListItem>
               <Collapse in={mobileProductOpen} timeout="auto" unmountOnExit>
-                {categoriesLoaded && (
+                {categoriesLoaded && productCategories.length > 0 && (
                 <List component="div" disablePadding>
                   {productCategories.map((category) => (
                     category.isSubmenu ? (
-                      <React.Fragment key={category.label}>
+                      <React.Fragment key={category.id || category.label}>
                         <ListItem disablePadding>
                           <ListItemButton 
-                            onClick={handleMobileHardwareToggle}
+                            onClick={(e) => handleMobileSubmenuToggle(category.id || category.label, e)}
                             sx={{ 
                               pl: 4, 
                               textAlign: "center",
                               justifyContent: "space-between",
-                              color: mobileHardwareOpen ? "#1976d2" : "black",
+                              color: mobileSubmenuStates[category.id || category.label] ? "#1976d2" : "black",
                             }}
                           >
                             <ListItemText primary={category.label} />
-                            {mobileHardwareOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                            {mobileSubmenuStates[category.id || category.label] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                           </ListItemButton>
                         </ListItem>
-                        <Collapse in={mobileHardwareOpen} timeout="auto" unmountOnExit>
+                        <Collapse in={mobileSubmenuStates[category.id || category.label]} timeout="auto" unmountOnExit>
                           <List component="div" disablePadding>
                             {category.subCategories.map((subCategory) => (
-                              <ListItem key={subCategory.label} disablePadding>
+                              <ListItem key={subCategory.id || subCategory.label} disablePadding>
                                 <ListItemButton 
                                   sx={{ pl: 8, textAlign: "center" }}
                                   onClick={() => navigateToCategory(subCategory.path)}
@@ -208,7 +243,7 @@ function NavBar(props) {
                         </Collapse>
                       </React.Fragment>
                     ) : (
-                      <ListItem key={category.label} disablePadding>
+                      <ListItem key={category.id || category.label} disablePadding>
                         <ListItemButton 
                           sx={{ pl: 4, textAlign: "center" }}
                           onClick={() => navigateToCategory(category.path)}
@@ -219,6 +254,18 @@ function NavBar(props) {
                     )
                   ))}
                 </List>
+                )}
+                {categoriesLoaded && productCategories.length === 0 && (
+                  <List component="div" disablePadding>
+                    <ListItem disablePadding>
+                      <ListItemButton sx={{ pl: 4, textAlign: "center" }} disabled>
+                        <ListItemText 
+                          primary="No categories available" 
+                          sx={{ color: 'text.secondary', fontStyle: 'italic' }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
                 )}
               </Collapse>
             </React.Fragment>
@@ -340,78 +387,84 @@ function NavBar(props) {
                           >
                             <ClickAwayListener onClickAway={handleProductMenuClose}>
                               <MenuList autoFocusItem={productMenuOpen} id="product-menu">
-                                {productCategories.map((category) => (
-                                  category.isSubmenu ? (
-                                    <div key={category.label} 
-                                  onMouseEnter={handleHardwareMouseEnter}
-                                  onMouseLeave={handleHardwareMouseLeave}
-                                >
+                                {productCategories.length > 0 ? (
+                                  productCategories.map((category) => (
+                                    category.isSubmenu ? (
+                                      <div key={category.id || category.label} 
+                                    onMouseEnter={(e) => handleSubmenuMouseEnter(category.id || category.label, e)}
+                                    onMouseLeave={() => handleSubmenuMouseLeave(category.id || category.label)}
+                                  >
+                                        <MenuItem 
+                                          onClick={() => navigateToCategory(category.path)}
+                                          sx={{
+                                            color: location.pathname.includes(category.path) ? "#1976d2" : "black",
+                                            position: 'relative',
+                                            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            padding: '8px 16px',
+                                          }}
+                                        >
+                                          {category.label}
+                                          <ExpandMoreIcon fontSize="small" />
+                                        </MenuItem>
+                                        <Popper
+                                          open={submenuStates[category.id || category.label] || false}
+                                          anchorEl={submenuRefs.current[category.id || category.label]}
+                                          role={undefined}
+                                          placement="right-start"
+                                          transition
+                                          style={{ zIndex: 1400 }}
+                                        >
+                                          {({ TransitionProps }) => (
+                                            <Grow {...TransitionProps} style={{ transformOrigin: 'left center' }}>
+                                              <Paper
+                                                sx={{
+                                                  backgroundColor: "#f6f3e7",
+                                                  boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                                                  minWidth: '180px',
+                                                  marginLeft: '8px',
+                                                }}
+                                              >
+                                                <MenuList>
+                                                  {category.subCategories.map((subCategory) => (
+                                                    <MenuItem 
+                                                      key={subCategory.id || subCategory.label} 
+                                                      onClick={() => navigateToCategory(subCategory.path)}
+                                                      sx={{
+                                                        color: location.pathname === subCategory.path ? "#1976d2" : "black",
+                                                        padding: '8px 16px',
+                                                        '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                                                      }}
+                                                    >
+                                                      {subCategory.label}
+                                                    </MenuItem>
+                                                  ))}
+                                                </MenuList>
+                                              </Paper>
+                                            </Grow>
+                                          )}
+                                        </Popper>
+                                      </div>
+                                    ) : (
                                       <MenuItem 
+                                        key={category.id || category.label} 
                                         onClick={() => navigateToCategory(category.path)}
                                         sx={{
-                                          color: location.pathname.includes(category.path) ? "#1976d2" : "black",
-                                          position: 'relative',
+                                          color: location.pathname === category.path ? "#1976d2" : "black",
                                           '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-                                          display: 'flex',
-                                          justifyContent: 'space-between',
                                           padding: '8px 16px',
                                         }}
                                       >
                                         {category.label}
-                                        <ExpandMoreIcon fontSize="small" />
                                       </MenuItem>
-                                      <Popper
-                                        open={hardwareMenuOpen}
-                                        anchorEl={productButtonRef.current}
-                                        role={undefined}
-                                        placement="right-start"
-                                        transition
-                                        style={{ zIndex: 1400 }}
-                                      >
-                                        {({ TransitionProps }) => (
-                                          <Grow {...TransitionProps} style={{ transformOrigin: 'left center' }}>
-                                            <Paper
-                                              sx={{
-                                                backgroundColor: "#f6f3e7",
-                                                boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-                                                minWidth: '180px',
-                                                marginLeft: '8px',
-                                              }}
-                                            >
-                                              <MenuList>
-                                                {category.subCategories.map((subCategory) => (
-                                                  <MenuItem 
-                                                    key={subCategory.label} 
-                                                    onClick={() => navigateToCategory(subCategory.path)}
-                                                    sx={{
-                                                      color: location.pathname === subCategory.path ? "#1976d2" : "black",
-                                                      padding: '8px 16px',
-                                                      '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-                                                    }}
-                                                  >
-                                                    {subCategory.label}
-                                                  </MenuItem>
-                                                ))}
-                                              </MenuList>
-                                            </Paper>
-                                          </Grow>
-                                        )}
-                                      </Popper>
-                                    </div>
-                                  ) : (
-                                    <MenuItem 
-                                      key={category.label} 
-                                      onClick={() => navigateToCategory(category.path)}
-                                      sx={{
-                                        color: location.pathname === category.path ? "#1976d2" : "black",
-                                        '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-                                        padding: '8px 16px',
-                                      }}
-                                    >
-                                      {category.label}
-                                    </MenuItem>
-                                  )
-                                ))}
+                                    )
+                                  ))
+                                ) : (
+                                  <MenuItem disabled sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                                    No categories available
+                                  </MenuItem>
+                                )}
                               </MenuList>
                             </ClickAwayListener>
                           </Paper>
