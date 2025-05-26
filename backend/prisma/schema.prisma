@@ -44,6 +44,7 @@ model Product {
   name     String
   moq      String
   category String
+  subCategory String?
   size     String
   material String?
   shape    String?

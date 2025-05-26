@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateProduct = exports.deleteProduct = exports.getProductById = exports.getAllProducts = exports.addProduct = void 0;
 const index_1 = require("../index");
 const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, category, isPopular, latest, material, moq, size, image, shape, color, pattern, finish, weight, } = req.body;
+    const { name, category, subCategory, isPopular, latest, material, moq, size, image, shape, color, pattern, finish, weight, } = req.body;
     const missingFields = [];
     if (!name)
         missingFields.push("name");
@@ -38,6 +38,7 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             data: {
                 name,
                 category,
+                subCategory,
                 img: image,
                 isPopular: isPopularBool,
                 latest: latestBool,
@@ -114,7 +115,7 @@ const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.deleteProduct = deleteProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, name, category, image, isPopular, latest, material, moq, size, shape, color, pattern, finish, weight, } = req.body;
+    const { id, name, category, subCategory, image, isPopular, latest, material, moq, size, shape, color, pattern, finish, weight, } = req.body;
     if (!image) {
         return res
             .status(400)
@@ -132,6 +133,7 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             data: {
                 name,
                 category,
+                subCategory,
                 img: image,
                 isPopular,
                 latest,

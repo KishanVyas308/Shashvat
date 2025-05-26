@@ -14,6 +14,8 @@ export async function addProduct(formData) {
 
 
     // Update image field to base64 if needed
+    console.log('sub category:', formData.get("subcategory"));
+    
     for (let item of simpleDataArray) {
       if (item.key === "image" && (item.value instanceof File || item.value instanceof Blob)) {
         const imageurl = await uploadImageAndGetUrl(item.value);
