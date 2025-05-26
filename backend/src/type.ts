@@ -4,6 +4,7 @@ export interface ProductInterface {
     name: string;
     moq: string;
     category: string;
+    subCategory?: string;
     size: string;
     material?: string;
     shape?: string;

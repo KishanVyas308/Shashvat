@@ -52,8 +52,10 @@ const CreateProduct = () => {
         cat.id === product.category
       )
       
-      if (selectedCategory && selectedCategory.subCategories && selectedCategory.subCategories.length > 0) {
-        setAvailableSubCategories(selectedCategory.subCategories)
+      if (selectedCategory && selectedCategory.subcategories && selectedCategory.subcategories.length > 0) {
+
+        
+        setAvailableSubCategories(selectedCategory.subcategories)
       } else {
         setAvailableSubCategories([])
       }
@@ -392,19 +394,13 @@ const BasicInfoStep = ({ product, handleChange, categories, availableSubCategori
             required
           >
             <option value="">-- Select Category --</option>
-            {categories && categories.length > 0 ? (
+            {
               categories.map((category) => (
                 <option key={category._id || category.id} value={category._id || category.name}>
                   {category.name}
                 </option>
               ))
-            ) : (
-              <>
-                <option value="Sanitary part">Sanitary part</option>
-                <option value="HardWare Parts">HardWare Parts</option>
-                <option value="Components Parts">Components Parts</option>
-              </>
-            )}
+           }
           </select>
         </div>
 

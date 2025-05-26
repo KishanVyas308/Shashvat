@@ -30,6 +30,7 @@ import SaveIcon from "@mui/icons-material/Save"
 import CloseIcon from "@mui/icons-material/Close"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ExpandLessIcon from "@mui/icons-material/ExpandLess"
+import { fetchCategories } from "../../backend/init"
 
 const API_BASE = `${backendUrl}/categories`
 
@@ -50,27 +51,9 @@ const ManageCategories = () => {
   const [dragOverItem, setDragOverItem] = useState(null)
 
   // Fetch categories from backend
-  const fetchCategories = async () => {
-    try {
-      const res = await axios.get(API_BASE)
-      // Transform backend structure to frontend structure if needed
-      setCategories(
-        res.data.map((cat) => ({
-          id: cat.id,
-          name: cat.name,
-          subcategories: (cat.subCategory || []).map((sub, idx) => ({
-            id: `${cat.id}-sub-${idx}`,
-            name: sub,
-          })),
-        }))
-      )
-    } catch (error) {
-      showAlert("error", "Failed to fetch categories")
-    }
-  }
 
   useEffect(() => {
-    fetchCategories()
+    fetchCategories(setCategories, API_BASE)
     // eslint-disable-next-line
   }, [])
 

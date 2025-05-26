@@ -6,6 +6,7 @@ export const addProduct = async (req: any, res: any) => {
   const {
     name,
     category,
+    subCategory,
     isPopular,
     latest,
     material,
@@ -44,6 +45,7 @@ export const addProduct = async (req: any, res: any) => {
       data: {
         name,
         category,
+        subCategory,
         img: image,
         isPopular: isPopularBool,
         latest: latestBool,
@@ -125,6 +127,7 @@ export const updateProduct = async (req: any, res: any) => {
     id,
     name,
     category,
+    subCategory,
     image,
     isPopular,
     latest,
@@ -159,6 +162,7 @@ export const updateProduct = async (req: any, res: any) => {
       data: {
         name,
         category,
+        subCategory,
         img: image,
         isPopular,
         latest,
