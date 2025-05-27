@@ -342,47 +342,47 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {activeTab === "details" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-gray-900 mb-3">
-                    Physical Properties
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Shape:</span>
-                      <span className="font-medium">
-                        {product.details?.shape || "----"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Color:</span>
-                      <span className="font-medium">
-                        {product.details?.color || "----"}
-                      </span>
+              {activeTab === "details" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-medium text-gray-900 mb-3">
+                      Physical Properties
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Shape:</span>
+                        <span className="font-medium">
+                          {product.details?.shape || "----"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Color:</span>
+                        <span className="font-medium">
+                          {product.details?.color || "----"}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-gray-900 mb-3">Appearance</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Pattern:</span>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-medium text-gray-900 mb-3">Appearance</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Pattern:</span>
 
-                      <span className="font-medium">
-                        {product.details?.pattern || "----"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Finish:</span>
-                      <span className="font-medium">
-                        {product.details?.finish || "----"}
-                      </span>
+                        <span className="font-medium">
+                          {product.details?.pattern || "----"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Finish:</span>
+                        <span className="font-medium">
+                          {product.details?.finish || "----"}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </div>

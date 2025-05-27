@@ -66,11 +66,15 @@ exports.addSubCategory = addSubCategory;
 const deleteCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
+        const category = yield index_1.prisma.category.findUnique({ where: { id } });
+        if (!category) {
+            return res.status(404).json({ error: "Category not found" });
+        }
         yield index_1.prisma.category.delete({ where: { id } });
         res.json({ message: "Category deleted successfully" });
     }
     catch (error) {
-        res.status(400).json({ error: "Failed to delete category" });
+        res.status(500).json({ error: "Server error during deletion" });
     }
 });
 exports.deleteCategory = deleteCategory;

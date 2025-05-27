@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import ProductPage from "./pages/ProductPage";
+
 import Productdetail from "./pages/Productdetail";
 import NavBar from "./Componets/NavBar";
 import Fotter from "./Componets/Fotter";
@@ -27,11 +28,14 @@ function App() {
             <NavBar />
             {isLoading ? <Loading /> : <></>}
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/products" element={<ProductPage />} />
-              <Route path="/productdetail/:id" element={<Productdetail />} />
+             <Route path="/" element={<Home />} />
+                          
+                            <Route path="/about" element={<About />} />
+                            <Route path="/contact" element={<Contact />} />
+                            <Route path="/products" element={<ProductPage />} />
+                            <Route path="/productdetail/:id" element={<Productdetail />} />
+                    <Route path="/products/:category" element={<ProductPage />} />
+                    <Route path="/products/:category/:subcategory" element={<ProductPage />} />
               
             
             </Routes>
