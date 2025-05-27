@@ -1,13 +1,14 @@
 'use client'
 
 import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useRecoilValue } from "recoil"
 import { FiChevronRight, FiEye, FiSearch, FiTrash2 } from "react-icons/fi"
-import { Box, Grid, Typography, Container, Divider } from "@mui/material"
+import { Box, Grid, Typography, Container, Divider, Breadcrumbs, Link } from "@mui/material"
 import DeleteProductButton from "../Componets/admin/DeleteProductButton"
 import { userAtom } from "../Atoms/userAtom"
 import { productAtom } from "../Atoms/productsAtom"
+import { allCategoriesAtom } from "../Atoms/categories"
 
 const ProductCard = ({ product, isAdmin, onDelete }) => {
   const navigate = useNavigate()
@@ -19,85 +20,80 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
 
   return (
     <div
-    className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer"
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}
-    onClick={() => handleProductClick(product.id)}
-  >
-    {/* Image Wrapper */}
-    <div className="relative h-80 overflow-hidden bg-white">
-      <img
-        src={product.img}
-        alt={product.name}
-        className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
-      />
-    </div>
-
-    {/* Product Details with Hover Effect */}
-    <div
-      className={`absolute inset-0 bg-blue-800 bg-opacity-80 text-white flex flex-col items-center justify-center p-6 space-y-4 rounded-lg transition-transform duration-500 ease-in-out ${
-        isHovered ? "translate-y-0" : "translate-y-full"
-      }`}
+      className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => handleProductClick(product.id)}
     >
-      <h2 className="text-lg font-semibold">{product.name}</h2>
-      <ul className="space-y-2">
-  <li className="text-lg flex"><span className="font-medium capitalize mr-2">MOQ:</span><span className="text-blue-100">{product.moq}</span></li>
-  <li className="text-lg flex"><span className="font-medium capitalize mr-2">Category:</span><span className="text-blue-100">{product.category}</span></li>
-  <li className="text-lg flex"><span className="font-medium capitalize mr-2">Size:</span><span className="text-blue-100">{product.size}</span></li>
-  {product.material && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Material:</span><span className="text-blue-100">{product.material}</span></li>}
-  {product.shape && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Shape:</span><span className="text-blue-100">{product.shape}</span></li>}
-  {product.color && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Color:</span><span className="text-blue-100">{product.color}</span></li>}
-  {product.pattern && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Pattern:</span><span className="text-blue-100">{product.pattern}</span></li>}
-  {product.finish && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Finish:</span><span className="text-blue-100">{product.finish}</span></li>}
-  {product.weight && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Weight:</span><span className="text-blue-100">{product.weight}</span></li>}
-</ul>
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          handleProductClick(product.id)
-        }}
-        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex items-center justify-center space-x-2"
-      >
-        <FiEye size={20} />
-        <span>View Details</span>
-      </button>
-    </div>
-
-
-    {/* Product Name Always Visible at Bottom, Moves Up on Hover */}
-    <div
-      className={`absolute bottom-0 left-0 w-full bg-blue-700 bg-opacity-80 text-white text-center py-2 font-semibold text-lg sm:text-base md:text-lg transition-all duration-500 ${
-        isHovered ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
-      }`}
-    >
-      {product.name}
-    </div>
-
-    {/* Bottom Gradient & Icon */}
-    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600" />
-    <div
-      className={`absolute top-2 right-2 bg-blue-500 text-white rounded-full p-2 transition-transform duration-300 ${
-        isHovered ? "rotate-90" : "rotate-0"
-      }`}
-    >
-      <FiChevronRight size={20} />
-
-    </div>
-
-    {/* Admin Delete Button */}
-    {isAdmin && (
-      <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
-        <DeleteProductButton productId={product.id} />
+      {/* Image Wrapper */}
+      <div className="relative h-80 overflow-hidden bg-white">
+        <img
+          src={product.img}
+          alt={product.name}
+          className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
+        />
       </div>
-    )}
 
-    {/* Badges for Popular and Latest */}
- 
-  </div>
+      {/* Product Details with Hover Effect */}
+      <div
+        className={`absolute inset-0 bg-blue-800 bg-opacity-80 text-white flex flex-col items-center justify-center p-6 space-y-4 rounded-lg transition-transform duration-500 ease-in-out ${
+          isHovered ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        <h2 className="text-lg font-semibold">{product.name}</h2>
+        <ul className="space-y-2">
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">MOQ:</span><span className="text-blue-100">{product.moq}</span></li>
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">Category:</span><span className="text-blue-100">{product.category}</span></li>
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">Size:</span><span className="text-blue-100">{product.size}</span></li>
+          {product.material && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Material:</span><span className="text-blue-100">{product.material}</span></li>}
+          {product.shape && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Shape:</span><span className="text-blue-100">{product.shape}</span></li>}
+          {product.color && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Color:</span><span className="text-blue-100">{product.color}</span></li>}
+          {product.pattern && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Pattern:</span><span className="text-blue-100">{product.pattern}</span></li>}
+          {product.finish && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Finish:</span><span className="text-blue-100">{product.finish}</span></li>}
+          {product.weight && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Weight:</span><span className="text-blue-100">{product.weight}</span></li>}
+        </ul>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleProductClick(product.id)
+          }}
+          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex items-center justify-center space-x-2"
+        >
+          <FiEye size={20} />
+          <span>View Details</span>
+        </button>
+      </div>
+
+      {/* Product Name Always Visible at Bottom, Moves Up on Hover */}
+      <div
+        className={`absolute bottom-0 left-0 w-full bg-blue-700 bg-opacity-80 text-white text-center py-2 font-semibold text-lg sm:text-base md:text-lg transition-all duration-500 ${
+          isHovered ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
+        }`}
+      >
+        {product.name}
+      </div>
+
+      {/* Bottom Gradient & Icon */}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600" />
+      <div
+        className={`absolute top-2 right-2 bg-blue-500 text-white rounded-full p-2 transition-transform duration-300 ${
+          isHovered ? "rotate-90" : "rotate-0"
+        }`}
+      >
+        <FiChevronRight size={20} />
+      </div>
+
+      {/* Admin Delete Button */}
+      {isAdmin && (
+        <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
+          <DeleteProductButton productId={product.id} />
+        </div>
+      )}
+    </div>
   )
 }
 
-const ProductType = ({ type, products }) => {
+const ProductType = ({ type, products, showTitle = true }) => {
   const user = useRecoilValue(userAtom)
   const [showAll, setShowAll] = useState(false)
 
@@ -108,11 +104,17 @@ const ProductType = ({ type, products }) => {
   const filteredProducts = products.filter((product) => product.category === type)
   const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, 8)
 
+  if (filteredProducts.length === 0) {
+    return null
+  }
+
   return (
     <Box>
-      <Typography variant="h4" style={{ marginBottom: "1em", fontWeight: "bold" }}>
-        {type}
-      </Typography>
+      {showTitle && (
+        <Typography variant="h4" style={{ marginBottom: "1em", fontWeight: "bold" }}>
+          {type}
+        </Typography>
+      )}
       <Grid container spacing={3}>
         {displayedProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
@@ -124,7 +126,7 @@ const ProductType = ({ type, products }) => {
           </Grid>
         ))}
       </Grid>
-      {filteredProducts.length > 6 && (
+      {filteredProducts.length > 8 && (
         <div className="text-center mt-4">
           <button
             onClick={() => setShowAll((prev) => !prev)}
@@ -140,7 +142,10 @@ const ProductType = ({ type, products }) => {
 
 const ProductsPage = () => {
   const products = useRecoilValue(productAtom)
+  const allCategories = useRecoilValue(allCategoriesAtom)
   const [searchTerm, setSearchTerm] = useState("")
+  const { category, subcategory } = useParams()
+  const navigate = useNavigate()
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -148,11 +153,82 @@ const ProductsPage = () => {
 
   useEffect(() => {
     scrollToTop()
-  }, [])
+  }, [category, subcategory])
 
-  const filteredProducts = (products || []).filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Helper function to convert URL slug back to category name
+  const slugToName = (slug) => {
+    return slug?.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ')
+  }
+
+  // Helper function to convert name to URL slug
+  const nameToSlug = (name) => {
+    return name?.toLowerCase().replace(/\s+/g, '-')
+  }
+
+  // Find the current category and subcategory objects
+  const currentCategory = allCategories?.find(cat => 
+    nameToSlug(cat.name) === category
   )
+  
+  const currentSubcategory = currentCategory?.subcategories?.find(subcat => 
+    nameToSlug(subcat.name) === subcategory
+  )
+
+  // Filter products based on URL parameters
+  const getFilteredProducts = () => {
+    let filtered = (products || []).filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    if (category && !subcategory) {
+      // Show products from the specific category
+      const categoryName = slugToName(category)
+      filtered = filtered.filter(product => 
+        product.category?.toLowerCase() === categoryName?.toLowerCase()
+      )
+    } else if (category && subcategory) {
+      // Show products from the specific subcategory
+      const subcategoryName = slugToName(subcategory)
+      filtered = filtered.filter(product => 
+        product.subcategory?.toLowerCase() === subcategoryName?.toLowerCase() ||
+        product.category?.toLowerCase() === subcategoryName?.toLowerCase()
+      )
+    }
+    // If no category is specified, show all products (existing behavior)
+
+    return filtered
+  }
+
+  const filteredProducts = getFilteredProducts()
+
+  // Get unique categories from filtered products for display
+  const getUniqueCategories = () => {
+    const categories = [...new Set(filteredProducts.map(product => product.category))]
+    return categories.filter(cat => cat) // Remove undefined/null categories
+  }
+
+  const uniqueCategories = getUniqueCategories()
+
+  // Generate page title and description
+  const getPageTitle = () => {
+    if (subcategory && currentSubcategory) {
+      return currentSubcategory.name
+    } else if (category && currentCategory) {
+      return currentCategory.name
+    }
+    return "All Products"
+  }
+
+  const getPageDescription = () => {
+    if (subcategory && currentSubcategory) {
+      return `Browse our ${currentSubcategory.name} collection`
+    } else if (category && currentCategory) {
+      return `Browse our ${currentCategory.name} products`
+    }
+    return "Discover our high-quality brass components, hardware, and sanitary parts"
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -163,8 +239,8 @@ const ProductsPage = () => {
         ></div>
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative container mx-auto px-4 py-24">
-          <h1 className="text-5xl font-bold mb-4">Premium Brass Solutions</h1>
-          <p className="text-xl mb-8">Discover our high-quality brass components, hardware, and sanitary parts</p>
+          <h1 className="text-5xl font-bold mb-4">{getPageTitle()}</h1>
+          <p className="text-xl mb-8">{getPageDescription()}</p>
           <div className="relative max-w-md">
             <input
               type="text"
@@ -179,17 +255,81 @@ const ProductsPage = () => {
       </div>
 
       <Container className="container mx-auto p-4">
-        <Box my="20px">
-          <ProductType type={"Sanitary part"} products={filteredProducts} />
+        {/* Breadcrumbs */}
+        <Box my={2}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link 
+              color="inherit" 
+              onClick={() => navigate('/')} 
+              style={{ cursor: 'pointer' }}
+            >
+              Home
+            </Link>
+            <Link 
+              color="inherit" 
+              onClick={() => navigate('/products')} 
+              style={{ cursor: 'pointer' }}
+            >
+              Products
+            </Link>
+            {category && currentCategory && (
+              <Link 
+                color="inherit" 
+                onClick={() => navigate(`/products/${category}`)} 
+                style={{ cursor: 'pointer' }}
+              >
+                {currentCategory.name}
+              </Link>
+            )}
+            {subcategory && currentSubcategory && (
+              <Typography color="text.primary">{currentSubcategory.name}</Typography>
+            )}
+          </Breadcrumbs>
         </Box>
-        <Divider />
-        <Box my="20px">
-          <ProductType type={"HardWare Parts"} products={filteredProducts} />
-        </Box>
-        <Divider />
-        <Box my="20px">
-          <ProductType type={"Components Parts"} products={filteredProducts} />
-        </Box>
+
+        {/* Products Display */}
+        {filteredProducts.length === 0 ? (
+          <Box textAlign="center" py={8}>
+            <Typography variant="h5" color="textSecondary">
+              No products found
+            </Typography>
+            <Typography variant="body1" color="textSecondary" mt={2}>
+              {searchTerm ? `No products match "${searchTerm}"` : "No products available in this category"}
+            </Typography>
+          </Box>
+        ) : category && subcategory ? (
+          // Show products directly for subcategory (no grouping by category)
+          <Box my="20px">
+            <Grid container spacing={3}>
+              {filteredProducts.map((product, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                  <ProductCard
+                    product={product}
+                    isAdmin={useRecoilValue(userAtom)?.isAdmin === true}
+                    onDelete={(productId) => console.log(`Delete product with ID: ${productId}`)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        ) : category ? (
+          // Show products grouped by category for main category page
+          <Box my="20px">
+            <ProductType type={slugToName(category)} products={filteredProducts} showTitle={false} />
+          </Box>
+        ) : (
+          // Show all products grouped by categories (original behavior)
+          <>
+            {uniqueCategories.map((categoryType, index) => (
+              <React.Fragment key={categoryType}>
+                <Box my="20px">
+                  <ProductType type={categoryType} products={filteredProducts} />
+                </Box>
+                {index < uniqueCategories.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </>
+        )}
       </Container>
     </div>
   )

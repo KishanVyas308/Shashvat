@@ -24,7 +24,7 @@ import Fotter from "./Componets/Fotter";
 import Loading from "./Componets/Loading";
 import { loadingAtom } from "./Atoms/loadingAtom";
 import { authAtom } from "./Atoms/authAtom";
-
+import ProductsPage from "./pages/ProductPage";
 function App() {
   const [isLoading, setIsLoading] = useRecoilState(loadingAtom);
   const [auth, setAuth] = useRecoilState(authAtom);
@@ -64,6 +64,8 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/products" element={<ProductPage />} />
                 <Route path="/productdetail/:id" element={<Productdetail />} />
+        <Route path="/products/:category" element={<ProductsPage />} />
+        <Route path="/products/:category/:subcategory" element={<ProductsPage />} />
                 {/* user */}
                 <Route element={<CheckIsUser />}>
                   <Route path="/profile" element={<UserProfile />} />
