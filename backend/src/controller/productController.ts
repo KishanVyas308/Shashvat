@@ -36,10 +36,9 @@ export const addProduct = async (req: any, res: any) => {
   try {
     const currentTime = new Date();
 
-   
     // Convert boolean values to true/false
-    const isPopularBool = isPopular ? true : false;
-    const latestBool = latest ? true : false;
+    const isPopularBool = isPopular === "true" ? true : false;
+    const latestBool = latest === "true" ? true : false;
 
     const newProduct = await prisma.product.create({
       data: {
@@ -142,12 +141,10 @@ export const updateProduct = async (req: any, res: any) => {
   }: ProductInterface = req.body;
 
   if (!image) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Image is uploading! Please click the button after a few seconds.",
-      });
+    return res.status(400).json({
+      message:
+        "Image is uploading! Please click the button after a few seconds.",
+    });
   }
 
   if (!name || !moq || !category || !size) {
@@ -157,6 +154,10 @@ export const updateProduct = async (req: any, res: any) => {
   try {
     const currentTime = new Date();
 
+    // Convert boolean values to true/false
+    const isPopularBool = isPopular === "true" ? true : false;
+    const latestBool = latest === "true" ? true : false;
+
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
@@ -164,8 +165,8 @@ export const updateProduct = async (req: any, res: any) => {
         category,
         subCategory,
         img: image,
-        isPopular,
-        latest,
+        isPopular : isPopularBool,
+        latest : latestBool,
         material,
         moq,
         size,
@@ -178,12 +179,10 @@ export const updateProduct = async (req: any, res: any) => {
       },
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Product updated successfully!",
-        product: updatedProduct,
-      });
+    return res.status(200).json({
+      message: "Product updated successfully!",
+      product: updatedProduct,
+    });
   } catch (error) {
     console.error("Error updating product:", error);
     return res

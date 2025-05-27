@@ -13,8 +13,8 @@ export interface ProductInterface {
     finish?: string;
     weight?: string;
     
-    isPopular: boolean;
-    latest: boolean;
+    isPopular: string;
+    latest: string;
     createdAt: Date;
     lastUpdatedAt: Date;
     userId: string;

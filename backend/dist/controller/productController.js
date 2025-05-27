@@ -32,8 +32,8 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const currentTime = new Date();
         // Convert boolean values to true/false
-        const isPopularBool = isPopular ? true : false;
-        const latestBool = latest ? true : false;
+        const isPopularBool = isPopular === "true" ? true : false;
+        const latestBool = latest === "true" ? true : false;
         const newProduct = yield index_1.prisma.product.create({
             data: {
                 name,
@@ -117,9 +117,7 @@ exports.deleteProduct = deleteProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, name, category, subCategory, image, isPopular, latest, material, moq, size, shape, color, pattern, finish, weight, } = req.body;
     if (!image) {
-        return res
-            .status(400)
-            .json({
+        return res.status(400).json({
             message: "Image is uploading! Please click the button after a few seconds.",
         });
     }
@@ -128,6 +126,9 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     try {
         const currentTime = new Date();
+        // Convert boolean values to true/false
+        const isPopularBool = isPopular === "true" ? true : false;
+        const latestBool = latest === "true" ? true : false;
         const updatedProduct = yield index_1.prisma.product.update({
             where: { id },
             data: {
@@ -135,8 +136,8 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 category,
                 subCategory,
                 img: image,
-                isPopular,
-                latest,
+                isPopular: isPopularBool,
+                latest: latestBool,
                 material,
                 moq,
                 size,
@@ -148,9 +149,7 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 lastUpdatedAt: currentTime,
             },
         });
-        return res
-            .status(200)
-            .json({
+        return res.status(200).json({
             message: "Product updated successfully!",
             product: updatedProduct,
         });

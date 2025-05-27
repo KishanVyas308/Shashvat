@@ -160,6 +160,8 @@ const CreateProduct = () => {
       // Only append subcategory if it exists and has a value
       if (product.subCategory && product.subCategory.trim() !== "") {
         formData.append("subCategory", product.subCategory)
+        console.log("Subcategory added:", product.subCategory);
+        
       }
       
       formData.append("isPopular", product.isPopular)
