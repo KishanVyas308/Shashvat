@@ -137,7 +137,7 @@ const ProductDetail = () => {
             <div className="flex flex-col">
               {/* Zoom View */}
               {isHovering && (
-                <div className="mb-6 bg-gray-50 rounded-lg p-4">
+                <div className="mb-6 bg-gray-50 rounded-lg p-4 absolute">
                   <div className="text-sm text-gray-600 mb-2 font-medium">Zoomed View</div>
                   <div 
                     ref={zoomRef}
@@ -186,6 +186,19 @@ const ProductDetail = () => {
                       <span className="font-medium">{product.category}</span>
                     </span>
                   </li>
+                  {
+                    product.subCategory && (
+                      <li className="flex items-center">
+                        <span className="w-3 h-3 bg-amber-500 rounded-full mr-2"></span>
+                        <span>
+                          Subcategory:{" "}
+                          <span className="font-medium">
+                            {product.subCategory}
+                          </span>
+                        </span>
+                      </li>
+                    )
+                  }
                   <li className="flex items-center">
                     <span className="w-3 h-3 bg-amber-500 rounded-full mr-2"></span>
                     <span>
@@ -274,6 +287,16 @@ const ProductDetail = () => {
                         {product.category}
                       </td>
                     </tr>
+                    {product.subCategory && (
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
+                          Subcategory
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {product.subCategory}
+                        </td>
+                      </tr>
+                    )}
                     <tr>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 bg-gray-50">
                         MOQ

@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useRecoilValue } from "recoil"
@@ -101,7 +99,16 @@ const ProductType = ({ type, products, showTitle = true }) => {
     console.log(`Delete product with ID: ${productId}`)
   }
 
-  const filteredProducts = products.filter((product) => product.category === type)
+
+
+
+  console.log("type:", type);
+  
+  
+const nameToSlug = (name) => name?.toLowerCase().replace(/\s+/g, '-')
+
+
+  const filteredProducts = products.filter(product => nameToSlug(product.category) == nameToSlug(type) || nameToSlug(product.subCategory) == nameToSlug(type))
   const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, 8)
 
   if (filteredProducts.length === 0) {
@@ -126,7 +133,7 @@ const ProductType = ({ type, products, showTitle = true }) => {
           </Grid>
         ))}
       </Grid>
-      {filteredProducts.length > 8 && (
+      {products.length > 8 && (
         <div className="text-center mt-4">
           <button
             onClick={() => setShowAll((prev) => !prev)}
@@ -155,78 +162,69 @@ const ProductsPage = () => {
     scrollToTop()
   }, [category, subcategory])
 
-  // Helper function to convert URL slug back to category name
-  const slugToName = (slug) => {
-    return slug?.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ')
-  }
+  // Helper: slug <-> name
+  const slugToName = (slug) => slug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  const nameToSlug = (name) => name?.toLowerCase().replace(/\s+/g, '-')
 
-  // Helper function to convert name to URL slug
-  const nameToSlug = (name) => {
-    return name?.toLowerCase().replace(/\s+/g, '-')
-  }
-
-  // Find the current category and subcategory objects
-  const currentCategory = allCategories?.find(cat => 
-    nameToSlug(cat.name) === category
-  )
-  
-  const currentSubcategory = currentCategory?.subcategories?.find(subcat => 
-    nameToSlug(subcat.name) === subcategory
-  )
-
-  // Filter products based on URL parameters
+  // Filtering logic
   const getFilteredProducts = () => {
     let filtered = (products || []).filter((product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      product.name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     if (category && !subcategory) {
-      // Show products from the specific category
-      const categoryName = slugToName(category)
-      filtered = filtered.filter(product => 
-        product.category?.toLowerCase() === categoryName?.toLowerCase()
+
+      // Filter by category slug
+      filtered = filtered.filter(product =>
+       nameToSlug(product.category) == category
       )
     } else if (category && subcategory) {
-      // Show products from the specific subcategory
-      const subcategoryName = slugToName(subcategory)
-      filtered = filtered.filter(product => 
-        product.subcategory?.toLowerCase() === subcategoryName?.toLowerCase() ||
-        product.category?.toLowerCase() === subcategoryName?.toLowerCase()
+      // Filter by subcategory slug (match either category or subcategory)
+      filtered = filtered.filter(product =>
+        nameToSlug(product.subCategory) == subcategory
       )
     }
-    // If no category is specified, show all products (existing behavior)
+    // else: show all products
 
     return filtered
   }
 
   const filteredProducts = getFilteredProducts()
 
-  // Get unique categories from filtered products for display
+  // Unique categories for grouping
   const getUniqueCategories = () => {
     const categories = [...new Set(filteredProducts.map(product => product.category))]
-    return categories.filter(cat => cat) // Remove undefined/null categories
+    return categories.filter(cat => cat)
   }
-
   const uniqueCategories = getUniqueCategories()
+  
+  // Find current category/subcategory objects for breadcrumbs
+  const currentCategory = allCategories?.find(cat =>
+    nameToSlug(cat.name) === category
+  )
 
-  // Generate page title and description
+  const currentSubcategory = currentCategory?.subcategories?.find(subcat =>
+    nameToSlug(subcat.name) === subcategory
+  )
+
+  // Page title/desc
   const getPageTitle = () => {
-    if (subcategory && currentSubcategory) {
-      return currentSubcategory.name
-    } else if (category && currentCategory) {
-      return currentCategory.name
-    }
+
+    console.log("Sub category:", subcategory)
+    console.log("Current sub category:", currentSubcategory);
+    
+    if (subcategory && currentSubcategory) return currentSubcategory.name
+
+    console.log("Category:", category);
+    console.log("Current category:", currentCategory);
+    
+    if (category && currentCategory) return currentCategory.name
+
     return "All Products"
   }
-
   const getPageDescription = () => {
-    if (subcategory && currentSubcategory) {
-      return `Browse our ${currentSubcategory.name} collection`
-    } else if (category && currentCategory) {
-      return `Browse our ${currentCategory.name} products`
-    }
+    if (subcategory && currentSubcategory) return `Browse our ${currentSubcategory.name} collection`
+    if (category && currentCategory) return `Browse our ${currentCategory.name} products`
     return "Discover our high-quality brass components, hardware, and sanitary parts"
   }
 
@@ -258,26 +256,10 @@ const ProductsPage = () => {
         {/* Breadcrumbs */}
         <Box my={2}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link 
-              color="inherit" 
-              onClick={() => navigate('/')} 
-              style={{ cursor: 'pointer' }}
-            >
-              Home
-            </Link>
-            <Link 
-              color="inherit" 
-              onClick={() => navigate('/products')} 
-              style={{ cursor: 'pointer' }}
-            >
-              Products
-            </Link>
+            <Link color="inherit" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Home</Link>
+            <Link color="inherit" onClick={() => navigate('/products')} style={{ cursor: 'pointer' }}>Products</Link>
             {category && currentCategory && (
-              <Link 
-                color="inherit" 
-                onClick={() => navigate(`/products/${category}`)} 
-                style={{ cursor: 'pointer' }}
-              >
+              <Link color="inherit" onClick={() => navigate(`/products/${category}`)} style={{ cursor: 'pointer' }}>
                 {currentCategory.name}
               </Link>
             )}
@@ -297,28 +279,22 @@ const ProductsPage = () => {
               {searchTerm ? `No products match "${searchTerm}"` : "No products available in this category"}
             </Typography>
           </Box>
-        ) : category && subcategory ? (
-          // Show products directly for subcategory (no grouping by category)
-          <Box my="20px">
-            <Grid container spacing={3}>
-              {filteredProducts.map((product, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <ProductCard
-                    product={product}
-                    isAdmin={useRecoilValue(userAtom)?.isAdmin === true}
-                    onDelete={(productId) => console.log(`Delete product with ID: ${productId}`)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        ) : category ? (
+        ) :  category ? (
           // Show products grouped by category for main category page
           <Box my="20px">
-            <ProductType type={slugToName(category)} products={filteredProducts} showTitle={false} />
+            {
+              subcategory ? (
+                <ProductType type={subcategory} products={filteredProducts} showTitle={true} />
+              ) : (
+                category && (
+                  <ProductType type={category} products={filteredProducts} showTitle={true} />
+                )
+              )
+            }
+
           </Box>
         ) : (
-          // Show all products grouped by categories (original behavior)
+          // Show all products grouped by categories
           <>
             {uniqueCategories.map((categoryType, index) => (
               <React.Fragment key={categoryType}>
