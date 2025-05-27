@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
 import { productAtom } from "../Atoms/productsAtom";
@@ -11,7 +11,6 @@ import PopularProduct from "../Componets/PopularProduct";
 import WhatsappContectButton from "../Componets/WhatsappContectButton";
 import SendRequirementButton from "../Componets/SendRequirementButton";
 import Loading from "../Componets/Loading";
-import ReactImageMagnify from "react-image-magnify";
 import { ChevronRight, Home, Info, Package, Star, Truck } from "lucide-react";
 
 const ProductDetail = () => {
@@ -21,6 +20,13 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useRecoilState(loadingAtom);
   const [product, setProduct] = useState();
   const [activeTab, setActiveTab] = useState("specifications");
+  
+  // Zoom functionality states
+  const [isHovering, setIsHovering] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const imageRef = useRef(null);
+  const zoomRef = useRef(null);
 
   useEffect(() => {
     scrollToTop();
@@ -51,6 +57,29 @@ const ProductDetail = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleMouseMove = (e) => {
+    if (!imageRef.current) return;
+    
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate percentage position
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+    
+    setMousePosition({ x: xPercent, y: yPercent });
+    setZoomPosition({ x: xPercent, y: yPercent });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
+
   if (isLoading) return <Loading />;
   if (!product) return null;
 
@@ -72,36 +101,59 @@ const ProductDetail = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-            {/* Product Image */}
+            {/* Product Image with Custom Zoom */}
             <div className="bg-white rounded-lg overflow-hidden flex flex-col items-center">
-              <div className="hidden lg:block w-full max-w-md mx-auto">
-                <ReactImageMagnify
-                  {...{
-                    smallImage: {
-                      alt: product.name || "Product Image",
-                      isFluidWidth: true,
-                      src: product.img,
-                    },
-                    largeImage: {
-                      src: product.img,
-                      width: 1600,
-                      height: 2400,
-                    },
-                    enlargedImagePosition: "over",
-                    hoverDelayInMs: 100,
-                    hoverOffDelayInMs: 150,
-                    isActivatedOnTouch: true,
-                    enlargedImageContainerDimensions: {
-                      width: "150%",
-                      height: "150%"
-                    },
-                    shouldHideHintAfterFirstActivation: false,
-                    hintTextMouse: "Hover to zoom",
-                  }}
-                />
+              <div className="w-full max-w-md mx-auto relative">
+                <div className="relative overflow-hidden rounded-lg border-2 border-gray-100">
+                  <img
+                    ref={imageRef}
+                    src={product.img}
+                    alt={product.name || "Product Image"}
+                    className="w-full h-auto cursor-crosshair transition-transform duration-200"
+                    onMouseMove={handleMouseMove}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                  
+                  {/* Hover indicator */}
+                  {isHovering && (
+                    <div
+                      className="absolute w-20 h-20 border-2 border-amber-500 bg-amber-500/20  pointer-events-none transform -translate-x-1/2 -translate-y-1/2 transition-all duration-100"
+                      style={{
+                        left: `${mousePosition.x}%`,
+                        top: `${mousePosition.y}%`,
+                      }}
+                    />
+                  )}
+                </div>
+                
+                <div className="text-center mt-3 text-sm text-gray-500">
+                  Hover over image to zoom
+                </div>
               </div>
             </div>
+
+            {/* Product Details with Zoom View */}
             <div className="flex flex-col">
+              {/* Zoom View */}
+              {isHovering && (
+                <div className="mb-6 bg-gray-50 rounded-lg p-4">
+                  <div className="text-sm text-gray-600 mb-2 font-medium">Zoomed View</div>
+                  <div 
+                    ref={zoomRef}
+                    className="w-80 h-80 bg-white rounded-lg border overflow-hidden relative"
+                    style={{
+                      backgroundImage: `url(${product.img})`,
+                      backgroundSize: '260%',
+                      backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                      backgroundRepeat: 'no-repeat'
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-amber-100/20 pointer-events-none" />
+                  </div>
+                </div>
+              )}
+
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 {product.name}
               </h1>
@@ -333,4 +385,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default ProductDetail; 
