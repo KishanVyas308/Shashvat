@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -39,19 +40,19 @@ model Review {
 }
 
 model Product {
-  id       String  @id @default(uuid())
-  img      String
-  name     String
-  moq      String
-  category String
+  id          String  @id @default(uuid())
+  img         String
+  name        String
+  moq         String
+  category    String
   subCategory String?
-  size     String
-  material String?
-  shape    String?
-  color    String?
-  pattern  String?
-  finish   String?
-  weight   String?
+  size        String
+  material    String?
+  shape       String?
+  color       String?
+  pattern     String?
+  finish      String?
+  weight      String?
 
   isPopular     Boolean  @default(false)
   latest        Boolean  @default(false)
