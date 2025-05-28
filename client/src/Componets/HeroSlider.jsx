@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { EffectFade, Pagination, Autoplay, Navigation } from 'swiper/modules'
+import { EffectFade, Pagination, Autoplay } from 'swiper/modules'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 import 'swiper/css/pagination'
-import 'swiper/css/navigation'
 
 const slides = [
   {
@@ -35,26 +34,17 @@ export default function HeroSlider() {
   const [showInfo, setShowInfo] = useState(false)
 
   const handlePrev = useCallback(() => {
-    if (swiper) {
-      swiper.slidePrev()
-    }
+    swiper?.slidePrev()
   }, [swiper])
 
   const handleNext = useCallback(() => {
-    if (swiper) {
-      swiper.slideNext()
-    }
+    swiper?.slideNext()
   }, [swiper])
 
   const toggleAutoplay = useCallback(() => {
-    if (swiper) {
-      if (isAutoplay) {
-        swiper.autoplay.stop()
-      } else {
-        swiper.autoplay.start()
-      }
-      setIsAutoplay(!isAutoplay)
-    }
+    if (!swiper) return
+    isAutoplay ? swiper.autoplay.stop() : swiper.autoplay.start()
+    setIsAutoplay(!isAutoplay)
   }, [swiper, isAutoplay])
 
   const toggleInfo = useCallback(() => {
@@ -63,97 +53,84 @@ export default function HeroSlider() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'ArrowLeft') {
-        handlePrev()
-      } else if (event.key === 'ArrowRight') {
-        handleNext()
-      } else if (event.key === 'i' || event.key === 'I') {
-        toggleInfo()
-      }
+      if (event.key === 'ArrowLeft') handlePrev()
+      else if (event.key === 'ArrowRight') handleNext()
+      else if (event.key.toLowerCase() === 'i') toggleInfo()
     }
-
     window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handlePrev, handleNext, toggleInfo])
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full h-[80vh] overflow-hidden bg-black">
       <Swiper
-        effect={'fade'}
-        grabCursor={true}
-        centeredSlides={true}
+        effect="fade"
+        grabCursor
+        centeredSlides
         slidesPerView={1}
-        fadeEffect={{
-          crossFade: true
-        }}
-        pagination={{
-          clickable: true,
-          renderBullet: function (index, className) {
-            return '<span class="' + className + ' w-2 h-2 md:w-3 md:h-3"></span>'
-          }
-        }}
-        navigation={false}
-        modules={[EffectFade, Pagination, Autoplay, Navigation]}
-        className="mySwiper"
-        autoplay={{
-          delay: 5000,
-          disableOnInteraction: false,
-        }}
+        fadeEffect={{ crossFade: true }}
+        pagination={{ clickable: true }}
+        modules={[EffectFade, Pagination, Autoplay]}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
         onSwiper={setSwiper}
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+        className="w-full h-full"
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index} className="relative w-full h-full">
-            <div className="relative w-full h-full">
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-contain"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent"></div>
-              <div className="absolute inset-0 flex items-center justify-center z-10 text-white p-4 md:p-8 text-center">
-                <div>
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">{slide.title}</h2>
-                  <p className={`text-base sm:text-lg md:text-xl lg:text-2xl ${showInfo ? 'block' : 'hidden md:block'}`}>{slide.description}</p>
-                 
-                </div>
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10" />
+            <div className="absolute inset-0 flex items-center justify-center text-white p-4 z-20">
+              <div className="text-center max-w-2xl">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 animate-fadeInUp">
+                  {slide.title}
+                </h2>
+                <p className={`text-base sm:text-lg md:text-xl transition-opacity duration-300 ${showInfo ? 'opacity-100' : 'opacity-0 md:opacity-100'}`}>
+                  {slide.description}
+                </p>
               </div>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
 
-      {/* Buttons */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center justify-center space-x-4 z-20">
+      {/* Controls */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4 z-30">
         <button
-          className="rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 p-3"
+          className="bg-white/20 hover:bg-white/30 rounded-full p-3 backdrop-blur"
           onClick={handlePrev}
         >
-          <ChevronLeft className="h-6 w-6" />
+          <ChevronLeft className="text-white h-5 w-5" />
         </button>
         <button
-          className="rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 p-3"
+          className="bg-white/20 hover:bg-white/30 rounded-full p-3 backdrop-blur"
           onClick={toggleAutoplay}
         >
-          {isAutoplay ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />}
+          {isAutoplay ? (
+            <Pause className="text-white h-5 w-5" />
+          ) : (
+            <Play className="text-white h-5 w-5" />
+          )}
         </button>
         <button
-          className="rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 p-3"
+          className="bg-white/20 hover:bg-white/30 rounded-full p-3 backdrop-blur"
           onClick={handleNext}
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="text-white h-5 w-5" />
         </button>
       </div>
 
-      {/* Pagination */}
-      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20 pb-4">
+      {/* Bullets */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
         {slides.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-all ${index === activeIndex ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/75'}`}
-            onClick={() => swiper && swiper.slideTo(index)}
+            className={`w-3 h-3 rounded-full transition-all ${index === activeIndex ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'}`}
+            onClick={() => swiper?.slideTo(index)}
           />
         ))}
       </div>

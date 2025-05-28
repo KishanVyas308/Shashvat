@@ -89,7 +89,7 @@ const index_1 = require("../index");
  *         description: Some server error
  */
 const addRequirementRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email, contactNo, whatsAppNo, companyName, description, isNewProductRequest, productId, productName } = req.body;
+    const { name, email, contactNo, whatsAppNo, description, isNewProductRequest, productId, productName } = req.body;
     try {
         const newRequirement = yield index_1.prisma.requests.create({
             data: {
@@ -97,7 +97,6 @@ const addRequirementRequest = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 email,
                 contactNo,
                 whatsAppNo,
-                companyName,
                 description,
                 isNewProductRequest,
                 productId,

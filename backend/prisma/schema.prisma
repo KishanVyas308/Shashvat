@@ -78,7 +78,6 @@ model Requests {
   email       String
   contactNo   String
   whatsAppNo  String?
-  companyName String
   description String
 
   isNewProductRequest Boolean @default(false)

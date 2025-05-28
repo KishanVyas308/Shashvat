@@ -1,12 +1,12 @@
-'use client'
-
 import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useRecoilValue } from "recoil"
-import { FiChevronRight, FiEye, FiSearch } from "react-icons/fi"
-import { Box, Grid, Typography, Container, Divider } from "@mui/material"
+import { FiChevronRight, FiEye, FiSearch, FiTrash2 } from "react-icons/fi"
+import { Box, Grid, Typography, Container, Divider, Breadcrumbs, Link } from "@mui/material"
+
 import { userAtom } from "../Atoms/userAtom"
 import { productAtom } from "../Atoms/productsAtom"
+import { allCategoriesAtom } from "../Atoms/categories"
 
 const ProductCard = ({ product, isAdmin, onDelete }) => {
   const navigate = useNavigate()
@@ -18,18 +18,17 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
 
   return (
     <div
-      className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl"
+      className="relative bg-gradient-to-br from-white to-gray-50 rounded-lg overflow-hidden shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-2xl cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-       onClick={() => handleProductClick(product.id)}
+      onClick={() => handleProductClick(product.id)}
     >
       {/* Image Wrapper */}
       <div className="relative h-80 overflow-hidden bg-white">
         <img
-          src={product.imageUrl}
+          src={product.img}
           alt={product.name}
-          className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110 cursor-pointer"
-          onClick={() => handleProductClick(product.id)}
+          className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
         />
       </div>
 
@@ -39,24 +38,37 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
           isHovered ? "translate-y-0" : "translate-y-full"
         }`}
       >
-     <ul className="space-y-2">
-  {["category", "shape", "material", "color", "pattern"].map((key) =>
-    product.details && product.details[key] ? (
-      <li key={key} className="text-lg flex">
-        <span className="font-medium capitalize mr-2">{key}:</span>
-        <span className="text-blue-100">{product.details[key]}</span>
-      </li>
-    ) : null
-  )}
-</ul>
-
+        <h2 className="text-lg font-semibold">{product.name}</h2>
+        <ul className="space-y-2">
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">MOQ:</span><span className="text-blue-100">{product.moq}</span></li>
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">Category:</span><span className="text-blue-100">{product.category}</span></li>
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">Size:</span><span className="text-blue-100">{product.size}</span></li>
+          {product.material && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Material:</span><span className="text-blue-100">{product.material}</span></li>}
+          {product.shape && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Shape:</span><span className="text-blue-100">{product.shape}</span></li>}
+          {product.color && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Color:</span><span className="text-blue-100">{product.color}</span></li>}
+          {product.pattern && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Pattern:</span><span className="text-blue-100">{product.pattern}</span></li>}
+          {product.finish && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Finish:</span><span className="text-blue-100">{product.finish}</span></li>}
+          {product.weight && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Weight:</span><span className="text-blue-100">{product.weight}</span></li>}
+        </ul>
         <button
-          onClick={() => handleProductClick(product.id)}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleProductClick(product.id)
+          }}
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full flex items-center justify-center space-x-2"
         >
           <FiEye size={20} />
           <span>View Details</span>
         </button>
+      </div>
+
+      {/* Product Name Always Visible at Bottom, Moves Up on Hover */}
+      <div
+        className={`absolute bottom-0 left-0 w-full bg-blue-700 bg-opacity-80 text-white text-center py-2 font-semibold text-lg sm:text-base md:text-lg transition-all duration-500 ${
+          isHovered ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"
+        }`}
+      >
+        {product.name}
       </div>
 
       {/* Bottom Gradient & Icon */}
@@ -69,15 +81,17 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
         <FiChevronRight size={20} />
       </div>
 
-      {/* Product Title */}
-      <div className="absolute bottom-0 left-0 w-full bg-blue-500 text-white text-center py-2">
-        <h2 className="text-xl font-bold">{product.name}</h2>
-      </div>
+      {/* Admin Delete Button */}
+      {isAdmin && (
+        <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
+          <DeleteProductButton productId={product.id} />
+        </div>
+      )}
     </div>
   )
 }
 
-const ProductType = ({ type, products }) => {
+const ProductType = ({ type, products, showTitle = true }) => {
   const user = useRecoilValue(userAtom)
   const [showAll, setShowAll] = useState(false)
 
@@ -85,14 +99,29 @@ const ProductType = ({ type, products }) => {
     console.log(`Delete product with ID: ${productId}`)
   }
 
-  const filteredProducts = products.filter((product) => product.category === type)
+
+
+
+  console.log("type:", type);
+  
+  
+const nameToSlug = (name) => name?.toLowerCase().replace(/\s+/g, '-')
+
+
+  const filteredProducts = products.filter(product => nameToSlug(product.category) == nameToSlug(type) || nameToSlug(product.subCategory) == nameToSlug(type))
   const displayedProducts = showAll ? filteredProducts : filteredProducts.slice(0, 8)
+
+  if (filteredProducts.length === 0) {
+    return null
+  }
 
   return (
     <Box>
-      <Typography variant="h4" style={{ marginBottom: "1em", fontWeight: "bold" }}>
-        {type}
-      </Typography>
+      {showTitle && (
+        <Typography variant="h4" style={{ marginBottom: "1em", fontWeight: "bold" }}>
+          {type}
+        </Typography>
+      )}
       <Grid container spacing={3}>
         {displayedProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
@@ -104,7 +133,7 @@ const ProductType = ({ type, products }) => {
           </Grid>
         ))}
       </Grid>
-      {filteredProducts.length > 6 && (
+      {products.length > 8 && (
         <div className="text-center mt-4">
           <button
             onClick={() => setShowAll((prev) => !prev)}
@@ -120,7 +149,10 @@ const ProductType = ({ type, products }) => {
 
 const ProductsPage = () => {
   const products = useRecoilValue(productAtom)
+  const allCategories = useRecoilValue(allCategoriesAtom)
   const [searchTerm, setSearchTerm] = useState("")
+  const { category, subcategory } = useParams()
+  const navigate = useNavigate()
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -128,11 +160,73 @@ const ProductsPage = () => {
 
   useEffect(() => {
     scrollToTop()
-  }, [])
+  }, [category, subcategory])
 
-  const filteredProducts = (products || []).filter((product) =>
-  product.name.toLowerCase().includes(searchTerm.toLowerCase())
-)
+  // Helper: slug <-> name
+  const slugToName = (slug) => slug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  const nameToSlug = (name) => name?.toLowerCase().replace(/\s+/g, '-')
+
+  // Filtering logic
+  const getFilteredProducts = () => {
+    let filtered = (products || []).filter((product) =>
+      product.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    if (category && !subcategory) {
+
+      // Filter by category slug
+      filtered = filtered.filter(product =>
+       nameToSlug(product.category) == category
+      )
+    } else if (category && subcategory) {
+      // Filter by subcategory slug (match either category or subcategory)
+      filtered = filtered.filter(product =>
+        nameToSlug(product.subCategory) == subcategory
+      )
+    }
+    // else: show all products
+
+    return filtered
+  }
+
+  const filteredProducts = getFilteredProducts()
+
+  // Unique categories for grouping
+  const getUniqueCategories = () => {
+    const categories = [...new Set(filteredProducts.map(product => product.category))]
+    return categories.filter(cat => cat)
+  }
+  const uniqueCategories = getUniqueCategories()
+  
+  // Find current category/subcategory objects for breadcrumbs
+  const currentCategory = allCategories?.find(cat =>
+    nameToSlug(cat.name) === category
+  )
+
+  const currentSubcategory = currentCategory?.subcategories?.find(subcat =>
+    nameToSlug(subcat.name) === subcategory
+  )
+
+  // Page title/desc
+  const getPageTitle = () => {
+
+    console.log("Sub category:", subcategory)
+    console.log("Current sub category:", currentSubcategory);
+    
+    if (subcategory && currentSubcategory) return currentSubcategory.name
+
+    console.log("Category:", category);
+    console.log("Current category:", currentCategory);
+    
+    if (category && currentCategory) return currentCategory.name
+
+    return "All Products"
+  }
+  const getPageDescription = () => {
+    if (subcategory && currentSubcategory) return `Browse our ${currentSubcategory.name} collection`
+    if (category && currentCategory) return `Browse our ${currentCategory.name} products`
+    return "Discover our high-quality brass components, hardware, and sanitary parts"
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -143,8 +237,8 @@ const ProductsPage = () => {
         ></div>
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="relative container mx-auto px-4 py-24">
-          <h1 className="text-5xl font-bold mb-4">Premium Brass Solutions</h1>
-          <p className="text-xl mb-8">Discover our high-quality brass components, hardware, and sanitary parts</p>
+          <h1 className="text-5xl font-bold mb-4">{getPageTitle()}</h1>
+          <p className="text-xl mb-8">{getPageDescription()}</p>
           <div className="relative max-w-md">
             <input
               type="text"
@@ -159,17 +253,59 @@ const ProductsPage = () => {
       </div>
 
       <Container className="container mx-auto p-4">
-        <Box my="20px">
-          <ProductType type={"Sanitary part"} products={filteredProducts} />
+        {/* Breadcrumbs */}
+        <Box my={2}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link color="inherit" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>Home</Link>
+            <Link color="inherit" onClick={() => navigate('/products')} style={{ cursor: 'pointer' }}>Products</Link>
+            {category && currentCategory && (
+              <Link color="inherit" onClick={() => navigate(`/products/${category}`)} style={{ cursor: 'pointer' }}>
+                {currentCategory.name}
+              </Link>
+            )}
+            {subcategory && currentSubcategory && (
+              <Typography color="text.primary">{currentSubcategory.name}</Typography>
+            )}
+          </Breadcrumbs>
         </Box>
-        <Divider />
-        <Box my="20px">
-          <ProductType type={"HardWare Parts"} products={filteredProducts} />
-        </Box>
-        <Divider />
-        <Box my="20px">
-          <ProductType type={"Components Parts"} products={filteredProducts} />
-        </Box>
+
+        {/* Products Display */}
+        {filteredProducts.length === 0 ? (
+          <Box textAlign="center" py={8}>
+            <Typography variant="h5" color="textSecondary">
+              No products found
+            </Typography>
+            <Typography variant="body1" color="textSecondary" mt={2}>
+              {searchTerm ? `No products match "${searchTerm}"` : "No products available in this category"}
+            </Typography>
+          </Box>
+        ) :  category ? (
+          // Show products grouped by category for main category page
+          <Box my="20px">
+            {
+              subcategory ? (
+                <ProductType type={subcategory} products={filteredProducts} showTitle={true} />
+              ) : (
+                category && (
+                  <ProductType type={category} products={filteredProducts} showTitle={true} />
+                )
+              )
+            }
+
+          </Box>
+        ) : (
+          // Show all products grouped by categories
+          <>
+            {uniqueCategories.map((categoryType, index) => (
+              <React.Fragment key={categoryType}>
+                <Box my="20px">
+                  <ProductType type={categoryType} products={filteredProducts} />
+                </Box>
+                {index < uniqueCategories.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </>
+        )}
       </Container>
     </div>
   )

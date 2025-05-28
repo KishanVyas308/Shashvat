@@ -22,7 +22,7 @@ const ProductCard = ({ product }) => {
       {/* Image Wrapper with improved animation */}
       <div className="relative h-80 overflow-hidden bg-white">
         <img
-          src={product.imageUrl}
+          src={product.img}
           alt={product.name}
           className="w-full h-full object-contain object-center transition-transform duration-500 ease-in-out transform hover:scale-110"
         />
@@ -44,7 +44,7 @@ const ProductCard = ({ product }) => {
         }`}
       >
         <h2 className="text-xl font-bold">{product.name}</h2>
-       <ul className="space-y-2">
+   <ul className="space-y-2">
   {["category", "shape", "material", "color", "pattern"].map((key) =>
     product.details && product.details[key] ? (
       <li key={key} className="text-lg flex">
@@ -52,6 +52,7 @@ const ProductCard = ({ product }) => {
         <span className="text-blue-100">{product.details[key]}</span>
       </li>
     ) : null
+    
   )}
 </ul>
 

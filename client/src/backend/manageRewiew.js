@@ -2,20 +2,20 @@ import axios from "axios";
 import { backendUrl } from "../globle";
 import { toast } from "react-toastify";
 
-import { convertImageToBase64 } from "./helper";
+import { uploadImageAndGetUrl } from "./helper";
 
 export async function storeReview(review, imageFile) {
   try {
-    let imageBase64 = "";
+    let imageUrl = "";
 
     if (imageFile) {
-      // Convert image file to base64 string
-      imageBase64 = await convertImageToBase64(imageFile, 800, 0.7);
+      // Upload image and get its URL
+      imageUrl = await uploadImageAndGetUrl(imageFile);
     }
 
     const response = await axios.post(`${backendUrl}/reviews/add`, {
       ...review,
-      img: imageBase64, // Send base64 string instead of file
+      img: imageUrl, // Send image URL instead of base64 string
     });
 
     if (response.status === 201) {
