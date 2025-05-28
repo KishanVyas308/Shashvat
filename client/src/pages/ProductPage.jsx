@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { useRecoilValue } from "recoil"
+import { useRecoilValue, useRecoilState } from "recoil"
 import { FiChevronRight, FiEye, FiSearch, FiTrash2 } from "react-icons/fi"
 import { Box, Grid, Typography, Container, Divider, Breadcrumbs, Link } from "@mui/material"
 
 import { userAtom } from "../Atoms/userAtom"
 import { productAtom } from "../Atoms/productsAtom"
 import { allCategoriesAtom } from "../Atoms/categories"
-
+import { allProduct } from "../backend/manageProduct";
+import { fetchCategories } from "../backend/init";
+import { backendUrl } from "../globle";
 const ProductCard = ({ product, isAdmin, onDelete }) => {
   const navigate = useNavigate()
   const [isHovered, setIsHovered] = useState(false)
@@ -41,13 +43,8 @@ const ProductCard = ({ product, isAdmin, onDelete }) => {
         <h2 className="text-lg font-semibold">{product.name}</h2>
         <ul className="space-y-2">
           <li className="text-lg flex"><span className="font-medium capitalize mr-2">MOQ:</span><span className="text-blue-100">{product.moq}</span></li>
-          <li className="text-lg flex"><span className="font-medium capitalize mr-2">Category:</span><span className="text-blue-100">{product.category}</span></li>
           <li className="text-lg flex"><span className="font-medium capitalize mr-2">Size:</span><span className="text-blue-100">{product.size}</span></li>
           {product.material && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Material:</span><span className="text-blue-100">{product.material}</span></li>}
-          {product.shape && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Shape:</span><span className="text-blue-100">{product.shape}</span></li>}
-          {product.color && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Color:</span><span className="text-blue-100">{product.color}</span></li>}
-          {product.pattern && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Pattern:</span><span className="text-blue-100">{product.pattern}</span></li>}
-          {product.finish && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Finish:</span><span className="text-blue-100">{product.finish}</span></li>}
           {product.weight && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Weight:</span><span className="text-blue-100">{product.weight}</span></li>}
         </ul>
         <button
@@ -148,20 +145,31 @@ const nameToSlug = (name) => name?.toLowerCase().replace(/\s+/g, '-')
 }
 
 const ProductsPage = () => {
-  const products = useRecoilValue(productAtom)
+ 
   const allCategories = useRecoilValue(allCategoriesAtom)
+  const [products, setProducts] = useRecoilState(productAtom);
+    const [categories, setCategories] = useRecoilState(allCategoriesAtom)
   const [searchTerm, setSearchTerm] = useState("")
   const { category, subcategory } = useParams()
   const navigate = useNavigate()
 
+
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
-
-  useEffect(() => {
+    async function setUp() {
+      const p = await allProduct();
+      setProducts(p);
+     
+    }
+useEffect(() => {
+    if (!categories || categories.length === 0) {
+      const API_BASE = `${backendUrl}/categories`;
+      fetchCategories(setCategories, API_BASE);
+    }
     scrollToTop()
-  }, [category, subcategory])
-
+    setUp();
+  }, []);
   // Helper: slug <-> name
   const slugToName = (slug) => slug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
   const nameToSlug = (name) => name?.toLowerCase().replace(/\s+/g, '-')

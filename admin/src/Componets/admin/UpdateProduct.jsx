@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { updateProduct, allProduct } from "../../backend/manageProduct"
 import { useRecoilState } from "recoil"
 import { productAtom } from "../../Atoms/productsAtom"
 import { loadingAtom } from "../../Atoms/loadingAtom"
+import { allCategoriesAtom } from "../../Atoms/categories"
 import Loading from "../Loading"
 import { Package, Upload, Check, X, ChevronDown } from "lucide-react"
 import { toast } from "react-toastify"
@@ -14,26 +15,27 @@ const UpdateProduct = () => {
   const [product, setProduct] = useState({
     id: "",
     image: null,
+    img: "",
     name: "",
     moq: "",
     category: "",
+    subCategory: "",
     size: "",
     material: "",
+    shape: "",
+    color: "",
+    pattern: "",
+    finish: "",
+    weight: "",
     isPopular: false,
     latest: false,
-    details: {
-      shape: "",
-      color: "",
-      pattern: "",
-      finish: "",
-    },
   })
   const [products, setProducts] = useRecoilState(productAtom)
   const [isLoading, setIsLoading] = useRecoilState(loadingAtom)
   const [previewUrl, setPreviewUrl] = useState("")
 
   const getProductById = async (productId) => {
-    return products.find((p) => p.id === productId) || null
+    return products?.find((p) => p.id === productId) || null
   }
 
   const handleProductSelect = async (e) => {
@@ -46,9 +48,49 @@ const UpdateProduct = () => {
       console.log("Selected Product:", selectedProduct);
       
       if (selectedProduct !== null) {
-        setProduct(selectedProduct)
-        setPreviewUrl(selectedProduct.img)
+        // Map the selected product to match your schema
+        const productData = {
+          id: selectedProduct.id || "",
+          image: null, // For new image upload
+          img: selectedProduct.img || "",
+          name: selectedProduct.name || "",
+          moq: selectedProduct.moq || "",
+          category: selectedProduct.category || "",
+          subCategory: selectedProduct.subCategory || "",
+          size: selectedProduct.size || "",
+          material: selectedProduct.material || "",
+          shape: selectedProduct.shape || "",
+          color: selectedProduct.color || "",
+          pattern: selectedProduct.pattern || "",
+          finish: selectedProduct.finish || "",
+          weight: selectedProduct.weight || "",
+          isPopular: selectedProduct.isPopular || false,
+          latest: selectedProduct.latest || false,
+        }
+        setProduct(productData)
+        setPreviewUrl(selectedProduct.img || "")
       }
+    } else {
+      // Reset product state when no product is selected
+      setProduct({
+        id: "",
+        image: null,
+        img: "",
+        name: "",
+        moq: "",
+        category: "",
+        subCategory: "",
+        size: "",
+        material: "",
+        shape: "",
+        color: "",
+        pattern: "",
+        finish: "",
+        weight: "",
+        isPopular: false,
+        latest: false,
+      })
+      setPreviewUrl("")
     }
 
     setIsLoading(false)
@@ -56,20 +98,11 @@ const UpdateProduct = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
-    if (name in product.details) {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        details: {
-          ...prevProduct.details,
-          [name]: value,
-        },
-      }))
-    } else {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        [name]: type === "checkbox" ? checked : value,
-      }))
-    }
+    
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: type === "checkbox" ? checked : value,
+    }))
   }
 
   const handleImageChange = (e) => {
@@ -87,7 +120,7 @@ const UpdateProduct = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    const requiredFields = ["name", "moq", "category", "size", "material"]
+    const requiredFields = ["name", "moq", "category", "size"]
     for (const field of requiredFields) {
       if (!product[field]) {
         toast.error(`Please fill all required fields (${field})`)
@@ -100,24 +133,52 @@ const UpdateProduct = () => {
       const formData = new FormData()
       formData.append("id", product.id)
       formData.append("name", product.name)
+      formData.append("moq", product.moq)
       formData.append("category", product.category)
+      formData.append("subCategory", product.subCategory || "")
+      formData.append("size", product.size)
+      formData.append("material", product.material || "")
+      formData.append("shape", product.shape || "")
+      formData.append("color", product.color || "")
+      formData.append("pattern", product.pattern || "")
+      formData.append("finish", product.finish || "")
+      formData.append("weight", product.weight || "")
       formData.append("isPopular", product.isPopular)
       formData.append("latest", product.latest)
-      formData.append("material", product.material)
-      formData.append("moq", product.moq)
-      formData.append("size", product.size)
-      formData.append("details", JSON.stringify(product.details))
-      formData.append(" ", product.img)
-      if (previewUrl) {
-        formData.append("image", previewUrl)
+      
+      // Only append image if a new one was selected
+      if (product.image) {
+        formData.append("image", product.image)
       }
-      console.log("image:", product.img);
+      
+      console.log("Updating product with data:", product);
 
       await updateProduct(formData)
-      setProducts(await allProduct())
+      const updatedProducts = await allProduct()
+      setProducts(updatedProducts)
       setSelectedProductId("")
+      setProduct({
+        id: "",
+        image: null,
+        img: "",
+        name: "",
+        moq: "",
+        category: "",
+        subCategory: "",
+        size: "",
+        material: "",
+        shape: "",
+        color: "",
+        pattern: "",
+        finish: "",
+        weight: "",
+        isPopular: false,
+        latest: false,
+      })
+      setPreviewUrl("")
       toast.success("Product updated successfully!")
     } catch (error) {
+      console.error("Update error:", error)
       toast.error("Failed to update product. Please try again.")
     }
 
@@ -144,10 +205,10 @@ const UpdateProduct = () => {
             onChange={handleProductSelect}
             className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
           >
-            <option value="" disabled>
+            <option value="">
               Select Product
             </option>
-            {products &&
+            {products && Array.isArray(products) &&
               products.map((prod) => (
                 <option key={prod.id} value={prod.id}>
                   {prod.name}
@@ -203,6 +264,7 @@ const UpdateProduct = () => {
                           type="file"
                           className="sr-only"
                           onChange={handleImageChange}
+                          accept="image/*"
                         />
                       </label>
                       <p className="pl-1">or drag and drop</p>
@@ -213,32 +275,38 @@ const UpdateProduct = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="name"
-                  value={product.name}
+                  value={product.name || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">MOQ</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  MOQ <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="moq"
-                  value={product.moq}
+                  value={product.moq || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category <span className="text-red-500">*</span>
+                </label>
                 <select
                   name="category"
-                  value={product.category}
+                  value={product.category || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 >
@@ -250,11 +318,24 @@ const UpdateProduct = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sub Category</label>
+                <input
+                  type="text"
+                  name="subCategory"
+                  value={product.subCategory || ""}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Size <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   name="size"
-                  value={product.size}
+                  value={product.size || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -265,7 +346,18 @@ const UpdateProduct = () => {
                 <input
                   type="text"
                   name="material"
-                  value={product.material}
+                  value={product.material || ""}
+                  onChange={handleChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+                <input
+                  type="text"
+                  name="weight"
+                  value={product.weight || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -282,7 +374,7 @@ const UpdateProduct = () => {
                 <input
                   type="text"
                   name="shape"
-                  value={product.details.shape}
+                  value={product.shape || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -293,7 +385,7 @@ const UpdateProduct = () => {
                 <input
                   type="text"
                   name="color"
-                  value={product.details.color}
+                  value={product.color || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -304,7 +396,7 @@ const UpdateProduct = () => {
                 <input
                   type="text"
                   name="pattern"
-                  value={product.details.pattern}
+                  value={product.pattern || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -315,7 +407,7 @@ const UpdateProduct = () => {
                 <input
                   type="text"
                   name="finish"
-                  value={product.details.finish}
+                  value={product.finish || ""}
                   onChange={handleChange}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -331,7 +423,7 @@ const UpdateProduct = () => {
                 <input
                   type="checkbox"
                   name="isPopular"
-                  checked={product.isPopular}
+                  checked={product.isPopular || false}
                   onChange={handleChange}
                   className="form-checkbox h-5 w-5 text-blue-600"
                 />
@@ -342,7 +434,7 @@ const UpdateProduct = () => {
                 <input
                   type="checkbox"
                   name="latest"
-                  checked={product.latest}
+                  checked={product.latest || false}
                   onChange={handleChange}
                   className="form-checkbox h-5 w-5 text-blue-600"
                 />
@@ -354,10 +446,11 @@ const UpdateProduct = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={isLoading}
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check className="h-5 w-5 mr-2" />
-              Update Product
+              {isLoading ? "Updating..." : "Update Product"}
             </button>
           </div>
         </form>
@@ -367,4 +460,3 @@ const UpdateProduct = () => {
 }
 
 export default UpdateProduct
-

@@ -97,71 +97,90 @@ const ClientRequirements = () => {
               </tr>
             </thead>
 
+ <tbody>
+  {requirements &&
+    requirements.map((requirement, index) => (
+      <tr key={index} className="border-b border-gray-200 align-top">
+        {/* No Column */}
+        <td className="py-4 px-2 border border-gray-200">{index + 1}</td>
+
+        {/* User Column */}
+        <td className="py-4 px-4 border border-gray-200">
+          <table className="text-sm">
             <tbody>
-              {requirements &&
-                requirements.map((requirement, index) => (
-                  <tr key={index} className="border-b border-gray-200">
-                    <td className="py-2 px-2 md:px-4 border border-gray-200">
-                      {requirement.product ? (
-                        <div className="flex">
-                          <div className="w-32 h-32 mr-3">
-                            <img
-                              src={requirement.product.imageUrl}
-                              alt="Product"
-                              className="w-full h-full object-cover rounded"
-                            />
-                          </div>
-                          <div>
-                            <table className="w-full table-auto">
-                              <tbody>
-                                <tr>
-                                  <td className="border px-2 py-1 font-semibold min-w-36">
-                                    Name:
-                                  </td>
-                                  <td className="border px-2 py-1 min-w-72">
-                                    {requirement.product.name}
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="border px-2 py-1 font-semibold min-w-36">
-                                    Category:
-                                  </td>
-                                  <td className="border px-2 py-1 min-w-72">
-                                    {requirement.product.category}
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="border px-2 py-1 font-semibold min-w-36">
-                                    Material:
-                                  </td>
-                                  <td className="border px-2 py-1 min-w-72">
-                                    {requirement.product.material}
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="border px-2 py-1 font-semibold min-w-36">
-                                    Link:
-                                  </td>
-                                  <td className="border px-2 py-1 min-w-72 text-blue-500">
-                                    <Link
-                                      target="_blank"
-                                      to={`https://shashvatenterprise.com/productdetail/${requirement.product.id}`}
-                                    >
-                                      Open Product
-                                    </Link>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-gray-500 italic">No product details</div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+              <tr><td><strong>Name:</strong></td><td className="pl-2">{requirement.name}</td></tr>
+              <tr><td><strong>E-mail:</strong></td><td className="pl-2">{requirement.email}</td></tr>
+              <tr><td><strong>Contact No:</strong></td><td className="pl-2">{requirement.contactNo}</td></tr>
+              <tr><td><strong>WhatsApp No:</strong></td><td className="pl-2">{requirement.whatsappNo}</td></tr>
             </tbody>
+          </table>
+        </td>
+
+        {/* Product Column */}
+        <td className="py-4 px-4 border border-gray-200">
+          <div className="flex gap-4 items-start">
+            {requirement.productImage && (
+              <img
+                src={requirement.productImage}
+                alt="product"
+                className="w-20 h-20 object-contain border rounded"
+              />
+            )}
+            <table className="text-sm">
+              <tbody>
+                <tr><td><strong>Name:</strong></td><td className="pl-2">{requirement.productName}</td></tr>
+                <tr><td><strong>Category:</strong></td><td className="pl-2">{requirement.category}</td></tr>
+                <tr><td><strong>Material:</strong></td><td className="pl-2">{requirement.material}</td></tr>
+                <tr>
+                  <td><strong>Link:</strong></td>
+                  <td className="pl-2">
+                    <a
+                      href={`https://shashvatenterprise.com/productdetail/${requirement.productId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Open Product
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </td>
+
+        {/* Description Column */}
+        <td className="py-4 px-4 border border-gray-200 whitespace-pre-wrap">{requirement.description}</td>
+
+        {/* Actions Column */}
+        <td className="py-4 px-4 border border-gray-200 space-y-2">
+          <a
+            href={`https://wa.me/${requirement.whatsappNo}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded flex items-center gap-1"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M20.52 3.48A11.91 11.91 0 0012 0 11.9 11.9 0 00.01 11.99a11.79 11.79 0 001.63 6.02L0 24l6.19-1.61a11.9 11.9 0 0017.16-10.4 11.88 11.88 0 00-2.83-8.51zM12 22a9.9 9.9 0 01-5.15-1.45l-.37-.23-3.67.95.97-3.58-.24-.37A9.92 9.92 0 1122 12 10 10 0 0112 22zm5.28-7.38c-.29-.15-1.7-.84-1.96-.93s-.45-.15-.64.15-.74.93-.91 1.12-.34.22-.63.07a8.19 8.19 0 01-2.4-1.47 9 9 0 01-1.65-2.05c-.17-.29 0-.45.13-.6.13-.13.29-.34.44-.51a2 2 0 00.29-.49.58.58 0 00-.03-.51c-.08-.14-.64-1.55-.87-2.13s-.46-.5-.64-.51h-.55a1.07 1.07 0 00-.78.37A3.29 3.29 0 006.23 10a5.7 5.7 0 001.21 3.07A13.61 13.61 0 0014 18.3a5.65 5.65 0 003.24 1h.14a3.2 3.2 0 002.15-1.55 2.59 2.59 0 00.19-1.56c-.08-.15-.27-.22-.56-.36z" />
+            </svg>
+            Answer
+          </a>
+          <button
+            onClick={(e) => handleDeleteRequest(e, requirement.id)}
+            className="bg-red-200 hover:bg-red-300 text-red-800 px-3 py-1 rounded flex items-center gap-1"
+          >
+            <MdDeleteOutline size={18} /> Delete
+          </button>
+        </td>
+      </tr>
+    ))}
+</tbody>
+
+
           </table>
         )}
       </div>

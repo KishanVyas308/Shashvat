@@ -45,15 +45,10 @@ const ProductCard = ({ product }) => {
       >
         <h2 className="text-xl font-bold">{product.name}</h2>
    <ul className="space-y-2">
-  {["category", "shape", "material", "color", "pattern"].map((key) =>
-    product.details && product.details[key] ? (
-      <li key={key} className="text-lg flex">
-        <span className="font-medium capitalize mr-2">{key}:</span>
-        <span className="text-blue-100">{product.details[key]}</span>
-      </li>
-    ) : null
-    
-  )}
+  <li className="text-lg flex"><span className="font-medium capitalize mr-2">MOQ:</span><span className="text-blue-100">{product.moq}</span></li>
+          <li className="text-lg flex"><span className="font-medium capitalize mr-2">Size:</span><span className="text-blue-100">{product.size}</span></li>
+          {product.material && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Material:</span><span className="text-blue-100">{product.material}</span></li>}
+          {product.weight && <li className="text-lg flex"><span className="font-medium capitalize mr-2">Weight:</span><span className="text-blue-100">{product.weight}</span></li>}
 </ul>
 
         <button
