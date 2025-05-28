@@ -85,6 +85,8 @@ export async function deleteProduct(productId, selectedProductImg) {
   }
 }
 
+
+
 export async function updateProduct(formData) {
   try {
     // Convert FormData to array of key-value pairs
@@ -101,40 +103,27 @@ export async function updateProduct(formData) {
 
     console.log("isImageChanged:", isImageChanged);
     
+    let updatedImageUrl = false;
+
     if (isImageChanged) {
-      const isUpdated = await updateImage(formData.get("image"));
-      if (!isUpdated) {
+      updatedImageUrl = await updateImage(formData.get("image"));
+      if (!updatedImageUrl) {
         toast.error("Failed to update image. Please try again.");
         return;
       }
     }
 
-
-    // Convert image field to base64 if it's a File
-    for (let item of simpleDataArray) {
-      if (item.key === "image" && (item.value instanceof File || item.value instanceof Blob)) {
-        const base64Image = await convertImageToBase64(item.value);
-        item.value = base64Image;
-      }
-    }
-
-    // Convert array to plain object
-    const simpleDataObject = {};
-    for (let { key, value } of simpleDataArray) {
-      simpleDataObject[key] = value;
-    }
-
-    console.log("Updated product data:", simpleDataObject);
-
-    const response = await axios.put(`${backendUrl}/products/update`, simpleDataObject, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-token": localStorage.getItem("authToken"),
-      },
-    });
+    console.log("simpleDataArray : ", simpleDataArray);
+    
+    // const response = await axios.put(`${backendUrl}/products/update`, simpleDataObject, {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "x-auth-token": localStorage.getItem("authToken"),
+    //   },
+    // });
 
     toast.success("Product updated successfully!");
-    return response.data;
+    return [];
   } catch (error) {
     console.error("Error updating product:", error);
     toast.error("Failed to update product. Please try again.");

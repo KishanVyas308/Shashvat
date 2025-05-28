@@ -29,7 +29,7 @@ router.post("/upload", upload.any(), (req, res) => {
     }
     const file = req.files[0];
     const imageUrl = `http://localhost:3000/api/v1/multer/image/${file.filename}`;
-    res.json({ imageUrl });
+    res.status(200).json({ imageUrl });
 });
 // Serve image by name
 router.get("/image/:name", (req, res) => {

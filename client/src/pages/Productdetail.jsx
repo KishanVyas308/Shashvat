@@ -352,13 +352,13 @@ const ProductDetail = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Shape:</span>
                         <span className="font-medium">
-                          {product.details?.shape || "----"}
+                          {product.shape || "----"}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Color:</span>
                         <span className="font-medium">
-                          {product.details?.color || "----"}
+                          {product.color || "----"}
                         </span>
                       </div>
                     </div>
@@ -370,13 +370,13 @@ const ProductDetail = () => {
                         <span className="text-gray-600">Pattern:</span>
 
                         <span className="font-medium">
-                          {product.details?.pattern || "----"}
+                          {product.pattern || "----"}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Finish:</span>
                         <span className="font-medium">
-                          {product.details?.finish || "----"}
+                          {product.finish || "----"}
                         </span>
                       </div>
                     </div>

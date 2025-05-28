@@ -9,7 +9,6 @@ const ProductList = () => {
   // Keep same functionality but improve visual presentation
   const latestProducts = allProducts !== null 
     ? allProducts
-        .filter(product => product && product.imageUrl)
         .filter(product => product.latest === true)
     : [];
 
