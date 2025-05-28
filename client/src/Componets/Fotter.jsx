@@ -142,13 +142,13 @@ const Footer = () => {
                 </h2>
                 <nav className="list-none mb-10 space-y-3">
                   <li>
-                    <a href="https://linktr.ee/Nit_Patel" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-purple-500 hover:translate-x-2 transition-all duration-300 flex items-center group text-sm font-medium">
+                    <a href="https://nitportfolio.pages.dev/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-purple-500 hover:translate-x-2 transition-all duration-300 flex items-center group text-sm font-medium">
                       <span className="w-1 h-1 bg-purple-400 rounded-full mr-3 group-hover:w-2 transition-all duration-300"></span>
                       Nit Sanghani
                     </a>
                   </li>
                   <li>
-                    <a href="https://linktr.ee/kishanvyas" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-purple-500 hover:translate-x-2 transition-all duration-300 flex items-center group text-sm font-medium">
+                    <a href="https://kishanvyas.tech/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-purple-500 hover:translate-x-2 transition-all duration-300 flex items-center group text-sm font-medium">
                       <span className="w-1 h-1 bg-purple-400 rounded-full mr-3 group-hover:w-2 transition-all duration-300"></span>
                       Kishan Vyas
                     </a>
@@ -218,7 +218,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   <a 
-                    href="https://linktr.ee/Nit_Patel" 
+                    href="https://nitportfolio.pages.dev/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-purple-500 transition-colors duration-300 font-medium"
@@ -227,7 +227,7 @@ const Footer = () => {
                   </a>
                   <span className="text-gray-400">•</span>
                   <a 
-                    href="https://linktr.ee/kishanvyas" 
+                    href="https://kishanvyas.tech/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-purple-500 transition-colors duration-300 font-medium"
