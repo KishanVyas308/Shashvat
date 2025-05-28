@@ -80,7 +80,7 @@ import { prisma } from '../index';
  *         description: Some server error
  */
 export const addRequirementRequest = async (req: any, res: any) => {
-  const { name, email, contactNo, whatsAppNo, companyName, description, isNewProductRequest, productId, productName } = req.body;
+  const { name, email, contactNo, whatsAppNo, description, isNewProductRequest, productId, productName } = req.body;
 
   try {
     const newRequirement = await prisma.requests.create({
@@ -89,7 +89,7 @@ export const addRequirementRequest = async (req: any, res: any) => {
         email,
         contactNo,
         whatsAppNo,
-        companyName,
+       
         description,
         isNewProductRequest,
         productId,

@@ -70,9 +70,9 @@ const ClientRequirements = () => {
 
   return (
     <div className="p-4">
-      {loding && 
-      <Loading />
-      } 
+      {loding &&
+        <Loading />
+      }
       <h1 className="text-3xl font-bold mb-6">Client Requirements</h1>
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg overflow-auto">
         {requirements && requirements.length === 0 ? (
@@ -101,126 +101,63 @@ const ClientRequirements = () => {
               {requirements &&
                 requirements.map((requirement, index) => (
                   <tr key={index} className="border-b border-gray-200">
-                    <td className="py-2 px-2 md:px-4 border border-gray-200  w-2">
-                      {index + 1}
-                    </td>
                     <td className="py-2 px-2 md:px-4 border border-gray-200">
-                      <table className="w-full ">
-                        <tbody>
-                          <tr>
-                            <td className="border px-2 py-1 min-w-36 font-semibold">
-                              Name:
-                            </td>
-                            <td className="border px-2 py-1 min-w-72">
-                              {requirement.user.name}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="border px-2 py-1 font-semibold">
-                              E-mail:
-                            </td>
-                            <td className="border px-2 py-1">
-                              {requirement.user.email}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="border px-2 py-1 font-semibold">
-                              Contact No:
-                            </td>
-                            <td className="border px-2 py-1">
-                              {requirement.user.contactNo}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="border px-2 py-1 font-semibold">
-                              WhatsApp No:
-                            </td>
-                            <td className="border px-2 py-1">
-                              {requirement.user.whatsAppNo}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </td>
-                    <td className="py-2 px-2 md:px-4 border border-gray-200">
-                      <div className="flex">
-                        <div className="w-32 h-32 mr-3">
-                          <img
-                            src={requirement.product.imageUrl}
-                            alt="Product"
-                            className="w-full h-full object-cover rounded"
-                          />
+                      {requirement.product ? (
+                        <div className="flex">
+                          <div className="w-32 h-32 mr-3">
+                            <img
+                              src={requirement.product.imageUrl}
+                              alt="Product"
+                              className="w-full h-full object-cover rounded"
+                            />
+                          </div>
+                          <div>
+                            <table className="w-full table-auto">
+                              <tbody>
+                                <tr>
+                                  <td className="border px-2 py-1 font-semibold min-w-36">
+                                    Name:
+                                  </td>
+                                  <td className="border px-2 py-1 min-w-72">
+                                    {requirement.product.name}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-2 py-1 font-semibold min-w-36">
+                                    Category:
+                                  </td>
+                                  <td className="border px-2 py-1 min-w-72">
+                                    {requirement.product.category}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-2 py-1 font-semibold min-w-36">
+                                    Material:
+                                  </td>
+                                  <td className="border px-2 py-1 min-w-72">
+                                    {requirement.product.material}
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-2 py-1 font-semibold min-w-36">
+                                    Link:
+                                  </td>
+                                  <td className="border px-2 py-1 min-w-72 text-blue-500">
+                                    <Link
+                                      target="_blank"
+                                      to={`https://shashvatenterprise.com/productdetail/${requirement.product.id}`}
+                                    >
+                                      Open Product
+                                    </Link>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
-                        <div>
-                          <table className="w-full table-auto">
-                            <tbody>
-                              <tr>
-                                <td className="border px-2 py-1 font-semibold min-w-36">
-                                  Name:
-                                </td>
-                                <td className="border px-2 py-1 min-w-72">
-                                  {requirement.product.name}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="border px-2 py-1 font-semibold min-w-36">
-                                  Category:
-                                </td>
-                                <td className="border px-2 py-1 min-w-72">
-                                  {requirement.product.category}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="border px-2 py-1 font-semibold min-w-36">
-                                  Material:
-                                </td>
-                                <td className="border px-2 py-1 min-w-72">
-                                  {requirement.product.material}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="border px-2 py-1 font-semibold min-w-36">
-                                  Link:
-                                </td>
-                                <td className="border px-2 py-1 min-w-72 text-blue-500">
-                                  {" "}
-                                  <Link
-                                    target="_blank"
-                                    to={`https://shashvatenterprise.com/productdetail/${requirement.product.id}`}
-                                  >
-                                    Open Product
-                                  </Link>{" "}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-2 px-2 md:px-4 border border-gray-200">
-                      {requirement.specificDetail}
-                    </td>
-                    <td className="py-2 px-2 md:px-4 border flex md:gap-3">
-                      <button
-                        className="bg-green-500 gap-1 flex items-center text-white py-1 px-2  md:px-4 rounded mr-2 transition duration-300 hover:bg-green-600"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sendReplayToRequest(
-                            requirement.product,
-                            requirement.user,
-                            requirement.specificDetail
-                          );
-                        }}
-                      >
-                        <RiWhatsappLine className="text-white text-[18px]" />
-                        Answer
-                      </button>
-                      <div
-                        className="text-[18px] w-8 p-2 flex items-center justify-center rounded-md bg-red-300 bg-opacity-90 hover:bg-red-300 cursor-pointer"
-                        onClick={(e) => handleDeleteRequest(e, requirement.id)}
-                      >
-                        <MdDeleteOutline className="text-red-600" />
-                      </div>
+                      ) : (
+                        <div className="text-gray-500 italic">No product details</div>
+                      )}
                     </td>
                   </tr>
                 ))}

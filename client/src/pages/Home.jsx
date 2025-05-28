@@ -5,7 +5,7 @@ import HeroSlider from "../Componets/HeroSlider";
 import ProductList from "../Componets/ProductList";
 import InfoSection from "../Componets/InfoSection";
 import PopularProduct from "../Componets/PopularProduct";
-import Testinomial from "../Componets/Testinomial";
+// import Testinomial from "../Componets/Testinomial";
 
 import ContactInfo from "../Componets/ContactInfo";
 import Fotter from "../Componets/Fotter";
@@ -18,8 +18,13 @@ import SEO from '../Componets/SEO';
 import seoData from '../Componets/Seos';
 import Testinomialcaresoul from "../Componets/Testinomialcaresoul";
 import CounterContainer from "../Componets/CounterContainer";
+import { allCategoriesAtom } from "../Atoms/categories";
+import { fetchCategories } from "../backend/init";
+import { backendUrl } from "../globle";
+// import ManufacturingProcess from "../Componets/ManufacturingProcess";
 const Home = () => {
   const [products, setProducts] = useRecoilState(productAtom);
+  const [categories, setCategories] = useRecoilState(allCategoriesAtom)
 
   const { title, description, keywords } = seoData.home;
 
@@ -36,7 +41,10 @@ const Home = () => {
   }
   
   useEffect(() => {
-  
+    if (!categories || categories.length === 0) {
+      const API_BASE = `${backendUrl}/categories`;
+      fetchCategories(setCategories, API_BASE);
+    }
     scrollToTop()
     setUp();
   }, []);
@@ -45,7 +53,7 @@ const Home = () => {
     <div>
       <SEO title={title} description={description} keywords={keywords}  />
       
-      <main className="p-0  m-0">
+      <main className="px-3  m-0">
         <HeroSlider />
       </main>
       <Info />
@@ -53,10 +61,8 @@ const Home = () => {
       
       <ProductList />
       <InfoSection />
-        <h2 className="text-center text-4xl font-bold mb-8">
-        <span className="text-blue-600">Popular</span> Products
-      </h2>
       <PopularProduct />
+      {/* <ManufacturingProcess/> */}
       <CounterContainer />
       <Testinomialcaresoul />
       {/* <Testinomial /> */}

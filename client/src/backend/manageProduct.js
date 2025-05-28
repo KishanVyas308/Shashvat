@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../globle";
 
-import { convertImageToBase64, uploadImageAndGetUrl } from "./helper";
+import { uploadImageAndGetUrl, deleteImage, updateImage } from "./helper";
 
 export async function addProduct(formData) {
   try {
@@ -13,14 +13,11 @@ export async function addProduct(formData) {
     }
 
 
-
-
-    // Update image field to base64 if needed
     for (let item of simpleDataArray) {
       if (item.key === "image" && (item.value instanceof File || item.value instanceof Blob)) {
-        const base64Image = await convertImageToBase64(item.value);
+        const imageurl = await uploadImageAndGetUrl(item.value);
 
-        item.value = base64Image;
+        item.value = imageurl;
       }
     }
 
@@ -51,23 +48,10 @@ export async function allProduct() {
   try {
     const response = await axios.get(`${backendUrl}/products/all`);
     const products = response.data;
+    // Convert base64 image strings to usable image URL
 
-    // Convert base64 image strings to usable image URLs
-    const updatedProducts = products.map((product) => {
-      if (product.img && typeof product.img === "string" && product.img.startsWith("data:image")) {
-        // Already a data URL (base64)
-        product.imageUrl = product.img;
-      } else if (product.img && typeof product.img === "string") {
-        // Not a data URL: assume it's base64 and wrap it
-        product.imageUrl = `data:image/png;base64,${product.img}`;
-      } else {
-        product.imageUrl = null; // Fallback
-      }
-      return product;
-    });
-
-    console.log("Fetched Products:", updatedProducts);
-    return updatedProducts;
+    console.log("Fetched Products:", products);
+    return products;
   } catch (error) {
     console.error("Error fetching products:", error);
     toast.error("Failed to fetch products. Please try again.");
@@ -76,9 +60,18 @@ export async function allProduct() {
 }
 
 
-export async function deleteProduct(productId) {
+export async function deleteProduct(productId, selectedProductImg) {
   try {
-    await axios.delete(`${backendUrl}/products/delete`, {
+
+    if (selectedProductImg) {
+      const isDeleted = await deleteImage(selectedProductImg);
+      if (!isDeleted) {
+        toast.error("Failed to delete image. Please try again.");
+        return;
+      }
+    }
+
+    const response = await axios.delete(`${backendUrl}/products/delete`, {
       data: { productId },
       headers: {
         "x-auth-token": localStorage.getItem("authToken"),
@@ -100,18 +93,22 @@ export async function updateProduct(formData) {
       simpleDataArray.push({ key, value });
     }
 
-    console.log("niwdwhdidhiwhiwdh", simpleDataArray);
+   // update if image is not same
+    console.log("image data:", formData.get("image"));
+    console.log("original image data:", formData.get("originalimg"));
 
+    const isImageChanged = formData.get("image") !== formData.get("originalimg");
 
-    // Helper to convert File to base64
-    async function convertImageToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+    console.log("isImageChanged:", isImageChanged);
+    
+    if (isImageChanged) {
+      const isUpdated = await updateImage(formData.get("image"));
+      if (!isUpdated) {
+        toast.error("Failed to update image. Please try again.");
+        return;
+      }
     }
+
 
     // Convert image field to base64 if it's a File
     for (let item of simpleDataArray) {

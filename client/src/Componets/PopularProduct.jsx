@@ -59,7 +59,9 @@ const PopularProduct = ({ productId = null, category = null }) => {
 
   return (
     <div className="relative w-full max-w-7xl mx-auto px-4 py-10">
-    
+      <h2 className="text-center text-4xl font-bold mb-8">
+        <span className="text-blue-600">Popular</span> Products
+      </h2>
       <div className="container mx-auto px-4">
         <div className="relative w-full overflow-hidden">
           {/* Navigation buttons */}
