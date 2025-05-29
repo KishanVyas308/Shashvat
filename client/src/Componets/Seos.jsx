@@ -1,7 +1,7 @@
 const seoData = {
     home: {
       title: "Shashvat EnterPrise ",
-      description: "Shashvat EnterPrise located in Jamnagar. We specialize in production, manufacturing, and supplying components, sanitary, and hardware products.",
+      description: "Shashvat EnterPrise located in Jamnagar. We specialize in production, manufacturing, and supplying components, sanitary Bath fitting, and hardware ,  products.",
       keywords: "EnterPrise, Jamnagar, components, sanitary, hardware, angel cock, Kamlesh Bhai Sanghani",
     
     },
