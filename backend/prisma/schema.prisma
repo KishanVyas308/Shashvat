@@ -26,6 +26,8 @@ model User {
   createdAt  DateTime @default(now())
 
   products Product[]
+
+  @@index([email])
 }
 
 model Review {
@@ -37,6 +39,8 @@ model Review {
   rating      Int
   createdAt   DateTime @default(now())
   isApproved  Boolean  @default(false)
+
+  @@index([companyName])
 }
 
 model Product {
@@ -62,6 +66,9 @@ model Product {
   userId String
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([name])
+  @@index([category, subCategory])
 }
 
 model Category {
@@ -69,6 +76,8 @@ model Category {
   name        String   @unique
   subCategory String[]
   createdAt   DateTime @default(now())
+
+  @@index([name])
 }
 
 model Requests {
@@ -84,4 +93,8 @@ model Requests {
   isNewProductRequest Boolean @default(false)
   productId           String?
   productName         String?
+
+  @@index([email])
+  @@index([productId])
 }
+
